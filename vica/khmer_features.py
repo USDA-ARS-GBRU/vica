@@ -62,7 +62,7 @@ def main():
 
     parser = argparse.ArgumentParser(description='A script to generate k-mer coposition frequency')
     parser.add_argument('--input', help="A multi-sequence fasta file", default='-')
-    parser.add_argument('--output', help= "Output file, space delimited format", default='-')
+    parser.add_argument('--output', help= "Output file, csv format", default='-')
     parser.add_argument('--ksize', help="size of kmer, default=4", default = 4, choices=['4','5','6','7','8'])
 
     args = parser.parse_args()

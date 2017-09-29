@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 '''prodigal.py: a module to call genes with prodigal then count codon usage
-and transform into centered log ratio'''
+and transform into centered log ratio returning values as a CSV'''
 
 import subprocess
 import os
 import numpy as np
-from collections import OrderedDict
 from collections import defaultdict
-from functools import reduce
 import math
 from Bio import SeqIO
 import tempfile
@@ -32,6 +30,7 @@ codon_list = ["TTT", "TCT", "TAT", "TGT",
 
 
 def clr(composition):
+    '''calcualtes a centered log ratio transformation'''
     def geomean(vector):
         a = np.array(vector)
         return a.prod()**(1.0/len(a))
@@ -101,6 +100,7 @@ def count_dict_to_clr_array(count_dict, codon_list, pseudocount=0.01):
     return clr(output_list)
 
 def dsum(*dicts):
+    '''add up values in two dicts returning their sum'''
     ret = defaultdict(int)
     for d in dicts:
         for k, v in d.items():
@@ -125,8 +125,10 @@ def count_codon_in_gene(record, cdict={}):
 
 
 def count_codons(seqio_iterator, csv_writer_instance):
+    '''Count codons in from sequences in a BioIO seq iterator, and write to a csv handle'''
 
     def record_line(id, codon_dict, csv_writer_instance):
+        '''combine id and codon data from the three frames, writing to csv handle'''
         l0 = count_dict_to_clr_array(codon_dict[0], codon_list)
         l1 = count_dict_to_clr_array(codon_dict[1], codon_list)
         l2 = count_dict_to_clr_array(codon_dict[2], codon_list)
@@ -152,7 +154,19 @@ def count_codons(seqio_iterator, csv_writer_instance):
 
 
 def contigs_to_feature_file(infile, outfile):
+    '''for each contig in a file, count codons and write to csv'''
     seqs = SeqIO.parse(infile, 'fasta')
     with open(outfile, 'w') as csvfile:
         csv_writer_instance = csv.writer(csvfile)
         count_codons(seqio_iterator= seqs, csv_writer_instance=csv_writer_instance)
+
+def main():
+
+    parser = argparse.ArgumentParser(description='A script to generate codon use frequency from Prodigal')
+    parser.add_argument('--input', help="A multi-sequence fasta file")
+    parser.add_argument('--output', help= "An output file of the clr transformed codon usage for frames 1, 2, and 3, in csv format")
+
+    contigs_to_feature_file(infile=args.input, outfile=args.output)
+
+if __name__ == '__main__':
+    main()
