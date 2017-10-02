@@ -48,3 +48,30 @@ def libsvm_to_tfrecords(input_filename, output_filename):
     writer.close()
     print("Successfully convert {} to {}".format(input_filename,
                                                output_filename))
+def parse_sketch_to_tfrecord(sketchfile, tfrecordfile, labeldict):
+    writer = tf.python_io.TFRecordWriter(tfrecordfile)
+    try:
+        with open(sketchfile, 'r') as f:
+            label = None
+            taxidlist = []
+            matchlist = []
+            for line in f:
+                if line.strip() == '':
+                    # write tf record examples
+                    pass
+                    # 3 reset lists and label
+                    taxidlist = []
+                    matchlist = []
+                    label = None
+                elif line.startswith("Query:"):
+                    ll = line.strip().split("\t")
+                    key1 = ll[0].split(":")[1].split()[0]
+                    label = labeldict[key1]
+                elif line.startswith("WKID"):
+                    next
+                else:
+                    ll2 = line.strip().split("\t")
+                    taxidlist.append(int(ll2[5]))
+                    matchlist.append(int(ll2[3]))
+    except IOError:
+        print("could not parse of the sketch file %s" % (file))

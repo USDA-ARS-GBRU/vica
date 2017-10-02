@@ -60,7 +60,7 @@ def write_kmers_as_csv(infile, outfile, ksize, kmers):
 
 def main():
 
-    parser = argparse.ArgumentParser(description='A script to generate k-mer coposition frequency')
+    parser = argparse.ArgumentParser(description='A script to generate k-mer coposition frequency using Khmer')
     parser.add_argument('--input', help="A multi-sequence fasta file", default='-')
     parser.add_argument('--output', help= "Output file, csv format", default='-')
     parser.add_argument('--ksize', help="size of kmer, default=4", default = 4, choices=['4','5','6','7','8'])
