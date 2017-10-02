@@ -10,7 +10,7 @@ import math
 from Bio import SeqIO
 import tempfile
 import csv
-
+import shutil
 codon_list = ["TTT", "TCT", "TAT", "TGT",
               "TTC", "TCC", "TAC", "TGC",
               "TTA", "TCA", "TAA", "TGA",
@@ -39,15 +39,14 @@ def clr(composition):
 
 
 
-def call_genes(file, outfile, tempdir):
+def call_genes(infile, outfile):
     '''Runs prodigal calling genes'''
     options = ["prodigal",
-               "-i", file,
+               "-i", infile,
                "-p", "meta",
-               "-d", "outfile",
-               "-o", "genecalls.txt"]
-    sendsketchout = subprocess.run(options, stderr=subprocess.PIPE)
-    return sendsketchout.stderr.decode('utf-8')
+               "-d", outfile]
+    callgenesout = subprocess.run(options, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+    return callgenesout.stderr.decode('utf-8')
 
 
 def _gene_to_codon(genestring):
@@ -65,6 +64,7 @@ def _gene_to_codon(genestring):
 def _codon_to_dict(genestring, offset):
     '''counts codons in a gene string, with a reading frame offest returning
        codon counts as a dict.'''
+    assert offset in [0,1,2], "Offset must be 0, 1, or 2"
     framen = _gene_to_codon(genestring[offset:])
     cdict = {}
     for codon in framen:
@@ -155,10 +155,15 @@ def count_codons(seqio_iterator, csv_writer_instance):
 
 def contigs_to_feature_file(infile, outfile):
     '''for each contig in a file, count codons and write to csv'''
-    seqs = SeqIO.parse(infile, 'fasta')
+    dtemp = tempfile.mkdtemp()
+    genefile= os.path.join(dtemp, "genes.fasta")
+    call_genes(infile, genefile)
+    seqs = SeqIO.parse(genefile, 'fasta')
     with open(outfile, 'w') as csvfile:
         csv_writer_instance = csv.writer(csvfile)
         count_codons(seqio_iterator= seqs, csv_writer_instance=csv_writer_instance)
+    shutil.rmtree(dtemp)
+
 
 def main():
 

@@ -1,3 +1,3 @@
 from .minhash import *
 from .prodigal import *
-from .kmer import *
+from .khmer_features import *
