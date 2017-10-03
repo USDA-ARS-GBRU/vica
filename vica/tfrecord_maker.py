@@ -1,77 +1,84 @@
 #!/usr/bin/env python3
 '''tfrecord_maker.py: a module to create tf record files'''
+import tensorflow as tf
+import subprocess
+import itertools
+import tempfile
 
-def csv_to_tfrecords(input_filename, output_filename, delimiter=","):
-    '''convert csv file to a dense tfrecord file, label should be in first column freatures should be in all other columns'''
-    print("Start to convert {} to {}".format(input_filename, output_filename))
-    writer = tf.python_io.TFRecordWriter(output_filename)
+def external_sort(infile, outfile, sep, size=1073741824, key=1):
+    options = ['sort', '--field-separator=' + sep, '--buffer-size=' + size , '--key=' + key, '>', '--output=' + outfile ]
+    subprocess.run(options)
 
-    for line in open(input_filename, "r"):
-        data = line.split(delimiter)
-        label = float(data[0])
-        features = [float(i) for i in data[1:]]
+def external_join(infile1, infile2, outfile, sep):
+    options = ['join', '-t ' + sep, '-1 1', '-1 2', infile1, infile2, '> ' + outfile ]
+    subprocess.run(options)
 
-    example = tf.train.Example(features=tf.train.Features(feature={
-        "label":
-        tf.train.Feature(float_list=tf.train.FloatList(value=[label])),
-        "features":
-        tf.train.Feature(float_list=tf.train.FloatList(value=features)),
-        }))
-    writer.write(example.SerializeToString())
+# def parse_mapping(file):
+#         '''parse two colum file in the format: label <tab> id'''
+#         mdict = {}
+#         with open(file, 'r') as f:
+#             for line in f:
+#                 ll = line.strip()split()
+#                 mdict[ll[1]] = ll[0]
+#         return mdict
 
-    writer.close()
-    print("Successfully convert {} to {}".format(input_filename,
-                                               output_filename))
-def libsvm_to_tfrecords(input_filename, output_filename):
-    print("Start to convert {} to {}".format(input_filename, output_filename))
-    writer = tf.python_io.TFRecordWriter(output_filename)
 
-    for line in open(input_filename, "r"):
-        data = line.split(" ")
-        label = float(data[0])
-        ids = []
-        values = []
-        for fea in data[1:]:
-            id, value = fea.split(":")
-            ids.append(int(id))
-            values.append(float(value))
-
-    # Write each example one by one
-    example = tf.train.Example(features=tf.train.Features(feature={
-        "label":
-        tf.train.Feature(float_list=tf.train.FloatList(value=[label])),
-        "ids": tf.train.Feature(int64_list=tf.train.Int64List(value=ids)),
-        "values": tf.train.Feature(float_list=tf.train.FloatList(value=values))
-    }))
-
-    writer.write(example.SerializeToString())
-    writer.close()
-    print("Successfully convert {} to {}".format(input_filename,
-                                               output_filename))
-def parse_sketch_to_tfrecord(sketchfile, tfrecordfile, labeldict):
+def combine_libsvm_csv_to_tfrecords(label, libsvmfile, csvfile,  tfrecordfile):
+    '''convert a sorted libsvm file of sparse data and a sorted csv file into a tfrecord file'''
     writer = tf.python_io.TFRecordWriter(tfrecordfile)
-    try:
-        with open(sketchfile, 'r') as f:
-            label = None
-            taxidlist = []
-            matchlist = []
-            for line in f:
-                if line.strip() == '':
-                    # write tf record examples
-                    pass
-                    # 3 reset lists and label
-                    taxidlist = []
-                    matchlist = []
-                    label = None
-                elif line.startswith("Query:"):
-                    ll = line.strip().split("\t")
-                    key1 = ll[0].split(":")[1].split()[0]
-                    label = labeldict[key1]
-                elif line.startswith("WKID"):
-                    next
-                else:
-                    ll2 = line.strip().split("\t")
-                    taxidlist.append(int(ll2[5]))
-                    matchlist.append(int(ll2[3]))
-    except IOError:
-        print("could not parse of the sketch file %s" % (file))
+    with open(libsvmfile) as file1, open(csvfile) as file2:
+        for line1, line2 in izip(file1, file2):
+            ll1 = line1.split(' ')
+            ll2 = line2.split(',')
+            assert ll1[0] == ll2[0], "Lines in the svmlib file and the csv file do not match"
+            densefeatures = [float(i) for i in ll2[1:]]
+            values = []
+            ids =  []
+            for fea in ll1[1:]:
+                id, value = fea.split(":")
+                ids.append(int(id))
+                values.append(float(value))
+            example = tf.train.Example(features=tf.train.Features(feature={
+                "label":
+                    tf.train.Feature(float_list=tf.train.FloatList(value=[label])),
+                "densefeatures":
+                    tf.train.Feature(float_list=tf.train.FloatList(value=densefeatures)),
+                "minhashids":
+                    tf.train.Feature(int64_list=tf.train.Int64List(value=ids)),
+                "minhashvalues":
+                    tf.train.Feature(float_list=tf.train.FloatList(value=values))
+                }))
+            writer.write(example.SerializeToString())
+
+            writer.close()
+            print("Successfully converted {} and {} to {}".format(libsvmfile, csvfile,
+                                                                  tfrecordfile))
+
+
+def convert_to_tfrecords(kmerfile, codonfile, minhashfile, tfrecordfile, label):
+    dtemp = tempfile.mkdtemp()
+    ksorted = os.path.join(dtemp, kmer_sorted.csv)
+    csorted = os.path.join(dtemp, codon_sorted.csv)
+    densefile = os.path.join(dtemp, dense.csv)
+    external_sort(infile=kmerfile, oufile=ksorted, sep=",")
+    external_sort(infile=codonfile, oufile=csorted, sep=",")
+    external_join(infile1=ksorted, infile2=csorted, outfile=densefile, sep=",")
+    combine_libsvm_csv_to_tfrecords(label=label, libsvmfile=minhashfile,
+                                    csvfile=densefile,  tfrecordfile=tfrecordfile)
+
+def main():
+
+    parser = argparse.ArgumentParser(description='A script to generate a tfrecord file from feature files')
+    parser.add_argument('--kmerin', help="A csv of kmer frequencies")
+    parser.add_argument('--codonin', help="A csv of codon frequencies")
+    parser.add_argument('--minhashin', help="A libsvm file of taxonids and minhash matches")
+    parser.add_argument('--outfile', help= "A tfrecord file")
+    parser.add_argument('--label', help= "An interger label of the class")
+    args = parser.parse_args()
+
+    convert_to_tfrecords(kmerfile=args.kmerin, codonfile=args.codonin,
+                         minhashfile=args.minhashin, tfrecordfile=args.utfile,
+                         label=args.label)
+
+if __name__ == '__main__':
+    main()
