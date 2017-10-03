@@ -24,21 +24,25 @@ def iterate_kmer(k):
 
 def get_composition(ksize, seq, kmers, norm):
     """ get the composition profile and return a list of kmer counts or normalized kmer counts"""
-    nkmers = 4**ksize
-    tablesize = nkmers + 100
-    counting_hash = khmer.Countgraph(ksize, tablesize, 1)
-    counting_hash.consume(seq)
-    composition = [counting_hash.get(kmer) for kmer in kmers]
-    if norm == True:
-        total = sum(composition)
-        nc = []
-        for item in composition:
-            if item == 0:
-                nc.append(0)
-            else:
-                nc.append(float(item)/float(total))
-        composition = nc
-    return composition
+    try:
+        nkmers = 4**ksize
+        tablesize = nkmers + 100
+        counting_hash = khmer.Countgraph(ksize, tablesize, 1)
+        counting_hash.consume(seq)
+        composition = [counting_hash.get(kmer) for kmer in kmers]
+        if norm == True:
+            total = sum(composition)
+            nc = []
+            for item in composition:
+                if item == 0:
+                    nc.append(0)
+                else:
+                    nc.append(float(item)/float(total))
+                composition = nc
+        return composition
+    except RuntimeError:
+        print("Could not calculate composition using khmer")
+
 
 def write_kmers_as_csv(infile, outfile, ksize, kmers):
     try:
