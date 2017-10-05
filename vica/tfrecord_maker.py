@@ -77,7 +77,7 @@ def main():
     args = parser.parse_args()
 
     convert_to_tfrecords(kmerfile=args.kmerin, codonfile=args.codonin,
-                         minhashfile=args.minhashin, tfrecordfile=args.utfile,
+                         minhashfile=args.minhashin, tfrecordfile=args.outfile,
                          label=args.label)
 
 if __name__ == '__main__':

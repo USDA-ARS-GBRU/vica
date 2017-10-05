@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os
 import argparse
@@ -13,8 +13,8 @@ def estimate_samples_lognorm(genomelength, samples, shape, loc, scale):
     """Return the number of sequences to output from a gamma distribution"""
     assert samples > 0 , "Sample value must be greater than 0"
     if samples <  1:
-    	mean = scipy.stats.lognorm.stats(s = shape, loc = loc, scale = scale, moments='m')
-#    	print "mean",mean
+        mean = scipy.stats.lognorm.stats(s = shape, loc = loc, scale = scale, moments='m')
+#       print "mean",mean
         num = genomelength * samples /mean
 #       print "num",num
     else:
@@ -82,34 +82,34 @@ def shred(fasta, shred, samples, shape, loc, scale, length, test):
             subrecord.description = record.description
             sampled_frags.append(subrecord)
         except:
-            print "error"
+            print("error")
             continue
     return sampled_frags
 
 
 def main():
 
-	parser = argparse.ArgumentParser(description='A script to shred a genome file into sizes specified by a fixed length or a lognormal distbution')
-	parser.add_argument('--shred', help="Select method to shred the genome contigs", choices =["lognorm", "fixed"], default="fixed")
-	parser.add_argument('--input', help="A fasta file",type=argparse.FileType('r'), default='-')
-	parser.add_argument('--output', help= "Name of output file written", type=argparse.FileType('w'), default='-')
-	parser.add_argument('--samples', help="Total number of shreded contigs to create, or if between 0 and 1, the proportion of the genome to sample", default = 0.5, type=float)
-	parser.add_argument('--length', help="The length of the genome subsamples if fixed is selected", default = 5000, type=int)
-	parser.add_argument('--shape', help="Shape parameter of lognormal distribution, size", default =1.333, type=float)
-	parser.add_argument('--loc', help= "Offset, or minimum contig length allowed determined from fitting", default = 3000, type=int)
-	parser.add_argument('--scale', help="Scale parameter of gamma distribution, theta", default = 1140, type=float)
-	parser.add_argument('--testing', help="Testing mode",  action="store_true")
+    parser = argparse.ArgumentParser(description='A script to shred a genome file into sizes specified by a fixed length or a lognormal distbution')
+    parser.add_argument('--shred', help="Select method to shred the genome contigs", choices =["lognorm", "fixed"], default="fixed")
+    parser.add_argument('--input', help="A fasta file",type=argparse.FileType('r'), default='-')
+    parser.add_argument('--output', help= "Name of output file written", type=argparse.FileType('w'), default='-')
+    parser.add_argument('--samples', help="Total number of shreded contigs to create, or if between 0 and 1, the proportion of the genome to sample", default = 0.5, type=float)
+    parser.add_argument('--length', help="The length of the genome subsamples if fixed is selected", default = 5000, type=int)
+    parser.add_argument('--shape', help="Shape parameter of lognormal distribution, size", default =1.333, type=float)
+    parser.add_argument('--loc', help= "Offset, or minimum contig length allowed determined from fitting", default = 3000, type=int)
+    parser.add_argument('--scale', help="Scale parameter of gamma distribution, theta", default = 1140, type=float)
+    parser.add_argument('--testing', help="Testing mode",  action="store_true")
 
-	args = parser.parse_args()
-	testing = True # temperary
-	if args.testing:
-#   	    print "Testing mode is on"
-   	    testing = True
+    args = parser.parse_args()
+    testing = True # temperary
+    if args.testing:
+#           print "Testing mode is on"
+           testing = True
 
-	samples_frags = shred(fasta = args.input, shred = args.shred, samples = args.samples, \
-	shape = args.shape, loc=args.loc, scale = args.scale, length=args.length, test = testing)
-	if samples_frags:
-		SeqIO.write(samples_frags, args.output, "fasta")
+    samples_frags = shred(fasta = args.input, shred = args.shred, samples = args.samples, \
+    shape = args.shape, loc=args.loc, scale = args.scale, length=args.length, test = testing)
+    if samples_frags:
+        SeqIO.write(samples_frags, args.output, "fasta")
 
 
 if __name__ == '__main__':
