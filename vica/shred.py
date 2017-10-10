@@ -30,7 +30,7 @@ def estimate_samples_fixed(genomelength, samples, length):
         num = samples
     return int(num)
 
-def shred(fasta, shred, samples, shape, loc, scale, length, test):
+def shred_contigs(fasta, shred, samples, length, test, shape=1.333, loc=3000, scale=1140):
     """Take a large FASTA and Return a Multi sequence FASTA with fragments of specified length"""
     #create weighting vectors based on the length of the contigs in the genome
     if test:
@@ -106,7 +106,7 @@ def main():
 #           print "Testing mode is on"
            testing = True
 
-    samples_frags = shred(fasta = args.input, shred = args.shred, samples = args.samples, \
+    samples_frags = shred_contigs(fasta = args.input, shred = args.shred, samples = args.samples, \
     shape = args.shape, loc=args.loc, scale = args.scale, length=args.length, test = testing)
     if samples_frags:
         SeqIO.write(samples_frags, args.output, "fasta")

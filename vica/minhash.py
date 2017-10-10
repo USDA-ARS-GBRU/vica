@@ -35,6 +35,8 @@ def send_sketch(infile, outfile):
     return sendsketchout.stderr.decode('utf-8')
     #return sendsketchout
 
+
+
 def compare_sketch(infile, outfile, ref, blacklist, tree):
     '''Runs bbtools sendsketch.sh on a file of sequences returning a classification for each'''
     options = ["comparesketch.sh",

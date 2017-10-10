@@ -4,66 +4,88 @@ import tensorflow as tf
 import subprocess
 import itertools
 import tempfile
+import os
+import csv
+import itertools
+import argparse
 
-def external_sort(infile, outfile, sep, size=1073741824, key=1):
-    options = ['sort', '--field-separator=' + sep, '--buffer-size=' + size , '--key=' + key, '>', '--output=' + outfile ]
+def external_sort(infile, outfile, sep, size=1048576, key=1):
+    options = ['sort', '--field-separator=' + sep, '--buffer-size=' + str(size) , '--key=' + str(key), '--output=' + outfile, infile ]
     subprocess.run(options)
 
-def external_join(infile1, infile2, outfile, sep):
-    options = ['join', '-t ' + sep, '-1 1', '-1 2', infile1, infile2, '> ' + outfile ]
-    subprocess.run(options)
 
-# def parse_mapping(file):
-#         '''parse two colum file in the format: label <tab> id'''
-#         mdict = {}
-#         with open(file, 'r') as f:
-#             for line in f:
-#                 ll = line.strip()split()
-#                 mdict[ll[1]] = ll[0]
-#         return mdict
+def python_join(infile1, infile2, outfile, sep):
+    with open(outfile, 'w', newline='') as csvfile, open(infile1, 'r') as f1, open(infile2, 'r') as f2:
+        csv_writer_instance = csv.writer(csvfile, delimiter=sep, quoting=csv.QUOTE_MINIMAL)
+        for line1, line2 in zip(f1, f2):
+            l1 = line1.strip().split(',')
+            l2 = line2.strip().split(',')
+            assert l1[0] == l2[0], "the ids for the codon and kmer data do not match: {} and {}".format(l1, l2)
+            ll = l1 + l1[1:]
+            csv_writer_instance.writerow(ll)
 
+def parse_sketchout(file):
+    '''parses bbtools sendsketch output returning python dictionary'''
+    try:
+        tempdf = {}
+        with open(file, 'r') as f:
+            for line in f:
+                if line.strip() == '':
+                    next
+                elif line.startswith("Query:"):
+                    ll = line.strip().split("\t")
+                    key1 = ll[0].split(":")[1].split()[0]
+                    tempdf[key1] = {}
+                elif line.startswith("WKID"):
+                    next
+                else:
+                    ll2 = line.strip().split("\t")
+                    tempdf[key1][int(ll2[5])] = int(ll2[3])
+        return tempdf
+    except IOError:
+        print("could not parse of the  line {} of sketch file {}".format(i, file))
 
-def combine_libsvm_csv_to_tfrecords(label, libsvmfile, csvfile,  tfrecordfile):
-    '''convert a sorted libsvm file of sparse data and a sorted csv file into a tfrecord file'''
+def combine_dict_csv_to_tfrecords(label, minhashdict, csvfile,  tfrecordfile):
+    '''convert a dictionary of minhash data and a sorted csv file into a tfrecord file'''
     writer = tf.python_io.TFRecordWriter(tfrecordfile)
-    with open(libsvmfile) as file1, open(csvfile) as file2:
-        for line1, line2 in izip(file1, file2):
-            ll1 = line1.split(' ')
-            ll2 = line2.split(',')
-            assert ll1[0] == ll2[0], "Lines in the svmlib file and the csv file do not match"
-            densefeatures = [float(i) for i in ll2[1:]]
-            values = []
-            ids =  []
-            for fea in ll1[1:]:
-                id, value = fea.split(":")
-                ids.append(int(id))
-                values.append(float(value))
+    with open(csvfile, 'r') as file:
+        for line in file:
+            ll1 = line.split(',')
+            ll1lab = ll1[0]
+            ll1data = ll1[1:]
+            densefeatures = [float(i) for i in ll1data]
+            if minhashdict[ll1lab]:
+                taxids = sorted(minhashdict[ll1lab])
+                values =  [float(minhashdict[ll1lab][k]) for k in taxids]
+            else:
+                taxids = []
+                values = []
             example = tf.train.Example(features=tf.train.Features(feature={
                 "label":
-                    tf.train.Feature(float_list=tf.train.FloatList(value=[label])),
+                    tf.train.Feature(int64_list=tf.train.Int64List(value=[int(label)])),
                 "densefeatures":
                     tf.train.Feature(float_list=tf.train.FloatList(value=densefeatures)),
                 "minhashids":
-                    tf.train.Feature(int64_list=tf.train.Int64List(value=ids)),
+                    tf.train.Feature(int64_list=tf.train.Int64List(value=taxids)),
                 "minhashvalues":
                     tf.train.Feature(float_list=tf.train.FloatList(value=values))
                 }))
             writer.write(example.SerializeToString())
-
-            writer.close()
-            print("Successfully converted {} and {} to {}".format(libsvmfile, csvfile,
+    writer.close()
+    print("Successfully converted minhash data and {} to tfrecord file named {}".format( csvfile,
                                                                   tfrecordfile))
 
 
 def convert_to_tfrecords(kmerfile, codonfile, minhashfile, tfrecordfile, label):
     dtemp = tempfile.mkdtemp()
-    ksorted = os.path.join(dtemp, kmer_sorted.csv)
-    csorted = os.path.join(dtemp, codon_sorted.csv)
-    densefile = os.path.join(dtemp, dense.csv)
-    external_sort(infile=kmerfile, oufile=ksorted, sep=",")
-    external_sort(infile=codonfile, oufile=csorted, sep=",")
-    external_join(infile1=ksorted, infile2=csorted, outfile=densefile, sep=",")
-    combine_libsvm_csv_to_tfrecords(label=label, libsvmfile=minhashfile,
+    ksorted = os.path.join(dtemp, "kmer_sorted.csv")
+    csorted = os.path.join(dtemp, "codon_sorted.csv")
+    densefile = os.path.join(dtemp, "dense.csv")
+    minhashdict = parse_sketchout(minhashfile)
+    external_sort(infile=kmerfile, outfile=ksorted, sep=",")
+    external_sort(infile=codonfile, outfile=csorted, sep=",")
+    python_join(infile1=ksorted, infile2=csorted, outfile=densefile, sep=",")
+    combine_dict_csv_to_tfrecords(label=label, minhashdict=minhashdict,
                                     csvfile=densefile,  tfrecordfile=tfrecordfile)
 
 def main():
