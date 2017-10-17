@@ -6,6 +6,7 @@ from itertools import chain
 import itertools
 from Bio.Seq import Seq
 import csv
+import vica.prodigal
 
 
 def iterate_kmer(k):
@@ -35,7 +36,7 @@ def get_composition(ksize, seq, kmers, norm):
             nc = []
             for item in composition:
                 if item == 0:
-                    nc.append(0)
+                    nc.append(0.0)
                 else:
                     nc.append(float(item)/float(total))
                 composition = nc
@@ -54,10 +55,12 @@ def write_kmers_as_csv(infile, outfile, ksize, kmers):
                 # mywriter.writerow(header)
                 ksize = int(ksize)
                 kmers = iterate_kmer(ksize)
+                pseudocount = 0.01
                 for record in SeqIO.parse(f1, 'fasta'):
                     rl = [record.id]
-                    kmer_frequency = get_composition(ksize,str(record.seq).upper(), kmers,True)
-                    rl.extend(kmer_frequency)
+                    kmer_frequency = get_composition(ksize,str(record.seq).upper(), kmers, False)
+                    kmer_ilr = vica.prodigal.ilr(kmer_frequency)
+                    rl.extend(kmer_ilr)
                     mywriter.writerow(rl)
     except RuntimeError:
         print("Could not write kmer profiles to file")

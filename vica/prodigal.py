@@ -11,6 +11,9 @@ from Bio import SeqIO
 import tempfile
 import csv
 import shutil
+import scipy.linalg
+import argparse
+import scipy.stats
 codon_list = ["TTT", "TCT", "TAT", "TGT",
               "TTC", "TCC", "TAC", "TGC",
               "TTA", "TCA", "TAA", "TGA",
@@ -30,13 +33,22 @@ codon_list = ["TTT", "TCT", "TAT", "TGT",
 
 
 def clr(composition):
-    '''calcualtes a centered log ratio transformation'''
-    def geomean(vector):
-        a = np.array(vector)
-        return a.prod()**(1.0/len(a))
-    gm = geomean(composition)
-    return list(map(lambda x: math.log(x/gm), composition))
+    '''calcualtes a centered log ratio transformation from a list of values'''
+    a = np.array(composition)
+    am =np.ma.masked_equal(a, 0)
+    gm = scipy.stats.mstats.gmean(am)
+    clrm = am/gm
+    clrarray = np.ma.getdata(clrm)
+    return list(clrarray)
 
+
+def ilr(composition):
+    '''claculates isometric log ratio transformation from list of values'''
+    clrlen= len(composition)
+    clrarray = clr(composition)
+    hmat = scipy.linalg.helmert(clrlen)
+    ilrmat = np.inner(clrarray, hmat)
+    return list(ilrmat)
 
 
 def call_genes(infile, outfile):
@@ -87,17 +99,27 @@ def _parse_prodigal_id_from_biopython(id):
     '''strips off prodigal gene annotations and returns the id as it was in the contig file'''
     return '_'.join(str(id).split('_')[:-1])
 
-def count_dict_to_clr_array(count_dict, codon_list, pseudocount=0.01):
+def count_dict_to_clr_array(count_dict, codon_list):
     '''Takes a dictionary of counts where the key is the upper case codon,
-       orders them by codon, and performs a clr transformation returning a 1D np array'''
+       orders them by codon, and performs a clr transformation returning a list'''
     output_list = []
     for i in codon_list:
         if i in count_dict:
             output_list.append(count_dict[i])
         else:
             output_list.append(0)
-    output_list = [x + pseudocount for x in output_list]
     return clr(output_list)
+
+def count_dict_to_ilr_array(count_dict, codon_list):
+    '''Takes a dictionary of counts where the key is the upper case codon,
+       orders them by codon, and performs a ilr transformation returning a list'''
+    output_list = []
+    for i in codon_list:
+        if i in count_dict:
+            output_list.append(count_dict[i])
+        else:
+            output_list.append(0)
+    return ilr(output_list)
 
 def dsum(*dicts):
     '''add up values in two dicts returning their sum'''
@@ -129,9 +151,9 @@ def count_codons(seqio_iterator, csv_writer_instance):
 
     def record_line(id, codon_dict, csv_writer_instance):
         '''combine id and codon data from the three frames, writing to csv handle'''
-        l0 = count_dict_to_clr_array(codon_dict[0], codon_list)
-        l1 = count_dict_to_clr_array(codon_dict[1], codon_list)
-        l2 = count_dict_to_clr_array(codon_dict[2], codon_list)
+        l0 = count_dict_to_ilr_array(codon_dict[0], codon_list)
+        l1 = count_dict_to_ilr_array(codon_dict[1], codon_list)
+        l2 = count_dict_to_ilr_array(codon_dict[2], codon_list)
         id_and_data = [id]
         id_and_data.extend(list(np.concatenate((l0, l1, l2))))
         csv_writer_instance.writerow(id_and_data)
@@ -170,7 +192,7 @@ def main():
     parser = argparse.ArgumentParser(description='A script to generate codon use frequency from Prodigal')
     parser.add_argument('--input', help="A multi-sequence fasta file")
     parser.add_argument('--output', help= "An output file of the clr transformed codon usage for frames 1, 2, and 3, in csv format")
-
+    args = parser.parse_args()
     contigs_to_feature_file(infile=args.input, outfile=args.output)
 
 if __name__ == '__main__':
