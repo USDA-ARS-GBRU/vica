@@ -18,7 +18,7 @@ n_classes = 2
 
 
 filenames = ["tests/test-data/combined.tfrecord"]
-densefeatures = tf.feature_column.numeric_column(key='densefeatures', shape=(372,))
+densefeatures = tf.feature_column.numeric_column(key='densefeatures', shape=(270,))
 
 
 
@@ -28,18 +28,16 @@ def dataset_input_fn():
     dataset = tf.contrib.data.TFRecordDataset(filenames)
     def parser(record):
         keys_to_features = {"label": tf.FixedLenFeature((), tf.int64),
-            "densefeatures": tf.FixedLenFeature((),tf.float32),
+            "densefeatures": tf.FixedLenFeature([270],tf.float32),
             "minhashids": tf.VarLenFeature(tf.int64),
             "minhashvalues": tf.VarLenFeature(tf.float32)}
         parsed = tf.parse_single_example(record, keys_to_features)
         return {'densefeatures': parsed["densefeatures"]}, parsed['label']
         #return {'densefeatures': parsed["densefeatures"], 'minhashids': parsed["minhashids"], 'minhashvalues' : parsed["minhashvalues"]}, parsed['label']
-    # Use `tf.parse_single_example()` to extract data from a `tf.Example`
-    # protocol buffer, and perform any additional per-record preprocessing.
     dataset = dataset.map(parser)
-    #dataset = dataset.shuffle(buffer_size=100)
-    #dataset = dataset.batch(32)
-    #dataset = dataset.repeat(num_epochs)
+    dataset = dataset.shuffle(buffer_size=10000)
+    dataset = dataset.batch(32)
+    dataset = dataset.repeat(32)
     iterator = dataset.make_one_shot_iterator()
     # `features` is a dictionary in which each value is a batch of values for
     # that feature; `labels` is a batch of labels.

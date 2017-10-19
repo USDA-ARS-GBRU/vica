@@ -1,0 +1,802 @@
+
+Query: NC_005072.1|pos|1639762..1644762 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4475	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.27%	214.0	21	0	190047
+
+Query: NC_005072.1|pos|564841..569841 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4621	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.34%	248.9	27	0	190047
+
+Query: NC_005072.1|pos|847948..852948 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4410	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.23%	195.1	18	0	190047
+
+Query: NC_005072.1|pos|745556..750556 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4388	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.25%	207.9	20	0	190047
+
+Query: NC_005072.1|pos|162769..167769 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4917	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+95.45%	0.27%	210.1	21	0	190047
+
+Query: NC_005072.1|pos|1566017..1571017 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4585	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.33%	243.3	26	0	190047
+
+Query: NC_005072.1|pos|935707..940707 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.33%	243.3	26	0	190047
+
+Query: NC_005072.1|pos|818403..823403 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.31%	231.9	24	0	190047
+
+Query: NC_005072.1|pos|297456..302456 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.24%	201.6	19	0	190047
+
+Query: NC_005072.1|pos|1564377..1569377 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4876	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.42%	280.7	33	0	190047
+
+Query: NC_005072.1|pos|667387..672387 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4268	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.20%	181.8	16	0	190047
+
+Query: NC_005072.1|pos|1201803..1206803 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4784	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.23%	195.1	18	0	190047
+
+Query: NC_005072.1|pos|1361747..1366747 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.28%	220.1	22	0	190047
+
+Query: NC_005072.1|pos|171924..176924 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.39%	270.4	31	0	190047
+
+Query: NC_005072.1|pos|103270..108270 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.32%	237.6	25	0	190047
+
+Query: NC_005072.1|pos|1379730..1384730 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.33%	243.3	26	0	190047
+
+Query: NC_005072.1|pos|873021..878021 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.34%	248.9	27	1	59919
+
+Query: NC_005072.1|pos|364318..369318 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.33%	243.3	26	0	190047
+
+Query: NC_005072.1|pos|1137823..1142823 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4421	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.22%	188.6	17	0	190047
+
+Query: NC_005072.1|pos|1243062..1248062 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.29%	226.1	23	0	190047
+
+Query: NC_005072.1|pos|656353..661353 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.15%	153.0	12	0	190047
+
+Query: NC_005072.1|pos|159414..164414 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4750	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.28%	220.1	22	0	190047
+
+Query: NC_005072.1|pos|911780..916780 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4804	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.32%	237.6	25	0	190047
+
+Query: NC_005072.1|pos|708704..713704 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.37%	259.8	29	0	190047
+
+Query: NC_005072.1|pos|1505432..1510432 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.33%	243.3	26	0	190047
+
+Query: NC_005072.1|pos|1178576..1183576 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4852	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.27%	214.0	21	0	190047
+
+Query: NC_005072.1|pos|182846..187846 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4204	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.27%	214.0	21	0	190047
+
+Query: NC_005072.1|pos|1474940..1479940 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4397	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+95.24%	0.25%	203.9	20	0	190047
+
+Query: NC_005072.1|pos|1417491..1422491 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.23%	195.1	18	0	190047
+
+Query: NC_005072.1|pos|1044375..1049375 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4684	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.29%	226.1	23	0	190047
+
+Query: NC_005072.1|pos|1549469..1554469 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4887	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.28%	220.1	22	0	190047
+
+Query: NC_005072.1|pos|691606..696606 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.25%	207.9	20	0	190047
+
+Query: NC_005072.1|pos|204612..209612 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4800	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.27%	214.0	21	0	59919
+
+Query: NC_005072.1|pos|565688..570688 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4729	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.34%	248.9	27	0	190047
+
+Query: NC_005072.1|pos|999659..1004659 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.43%	285.8	34	0	190047
+
+Query: NC_005072.1|pos|399709..404709 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4958	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.29%	226.1	23	0	190047
+
+Query: NC_005072.1|pos|35777..40777 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4725	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.22%	188.6	17	0	190047
+
+Query: NC_005072.1|pos|50744..55744 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.42%	280.7	33	0	190047
+
+Query: NC_005072.1|pos|1147697..1152697 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4885	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.39%	270.4	31	0	190047
+
+Query: NC_005072.1|pos|1246209..1251209 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.37%	259.8	29	0	190047
+
+Query: NC_005072.1|pos|990743..995743 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.24%	201.6	19	0	190047
+
+Query: NC_005072.1|pos|1548118..1553118 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.29%	226.1	23	0	190047
+
+Query: NC_005072.1|pos|1617610..1622610 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.36%	254.4	28	0	190047
+
+Query: NC_005072.1|pos|1039789..1044789 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4750	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.31%	231.9	24	0	190047
+
+Query: NC_005072.1|pos|1554257..1559257 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4289	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.28%	220.1	22	0	190047
+
+Query: NC_005072.1|pos|1637353..1642353 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4723	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.36%	254.4	28	0	190047
+
+Query: NC_005072.1|pos|588266..593266 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4829	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.23%	195.1	18	0	190047
+
+Query: NC_005072.1|pos|997170..1002170 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+97.30%	0.46%	292.6	36	0	190047
+
+Query: NC_005072.1|pos|279922..284922 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4958	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.36%	254.4	28	0	190047
+
+Query: NC_005072.1|pos|1208089..1213089 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+95.24%	0.25%	203.9	20	0	190047
+
+Query: NC_005072.1|pos|1629348..1634348 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4783	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.28%	220.1	22	0	190047
+
+Query: NC_005072.1|pos|136682..141682 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4819	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.24%	201.6	19	0	190047
+
+Query: NC_005072.1|pos|110802..115802 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.38%	265.1	30	0	190047
+
+Query: NC_005072.1|pos|1142416..1147416 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4663	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+93.75%	0.19%	170.5	15	0	190047
+
+Query: NC_005072.1|pos|645245..650245 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4811	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.18%	167.8	14	0	190047
+
+Query: NC_005072.1|pos|637685..642685 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4882	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.19%	174.9	15	1	190047
+
+Query: NC_005072.1|pos|1158590..1163590 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4835	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+89.47%	0.22%	180.4	17	0	190047
+
+Query: NC_005072.1|pos|31346..36346 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4840	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.29%	226.1	23	0	190047
+
+Query: NC_005072.1|pos|732259..737259 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.28%	220.1	22	0	190047
+
+Query: NC_005072.1|pos|1472246..1477246 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4443	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+95.24%	0.25%	203.9	20	1	190047
+
+Query: NC_005072.1|pos|690052..695052 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4809	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.28%	220.1	22	0	190047
+
+Query: NC_005072.1|pos|266799..271799 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.32%	237.6	25	0	190047
+
+Query: NC_005072.1|pos|186807..191807 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4377	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.19%	174.9	15	0	190047
+
+Query: NC_005072.1|pos|1647355..1652355 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.39%	270.4	31	0	190047
+
+Query: NC_005072.1|pos|788950..793950 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4371	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.32%	237.6	25	0	190047
+
+Query: NC_005072.1|pos|880245..885245 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.38%	265.1	30	2	59919
+
+Query: NC_005072.1|pos|526549..531549 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.34%	248.9	27	0	190047
+
+Query: NC_005072.1|pos|1433350..1438350 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.45%	290.8	35	0	190047
+
+Query: NC_005072.1|pos|1608466..1613466 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4628	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.23%	195.1	18	0	190047
+
+Query: NC_005072.1|pos|124237..129237 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4746	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.31%	231.9	24	0	190047
+
+Query: NC_005072.1|pos|1502285..1507285 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4893	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.32%	237.6	25	0	190047
+
+Query: NC_005072.1|pos|404938..409938 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.24%	201.6	19	0	190047
+
+Query: NC_005072.1|pos|1210790..1215790 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+94.74%	0.23%	191.0	18	0	190047
+
+Query: NC_005072.1|pos|1345002..1350002 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.34%	248.9	27	0	190047
+
+Query: NC_005072.1|pos|965343..970343 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4811	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.24%	201.6	19	0	190047
+
+Query: NC_005072.1|pos|1486814..1491814 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.36%	254.4	28	0	190047
+
+Query: NC_005072.1|pos|176594..181594 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4659	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.29%	226.1	23	0	190047
+
+Query: NC_005072.1|pos|1505219..1510219 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4951	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.33%	243.3	26	0	190047
+
+Query: NC_005072.1|pos|1477410..1482410 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4699	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.22%	188.6	17	0	190047
+
+Query: NC_005072.1|pos|747568..752568 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4719	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.31%	231.9	24	0	190047
+
+Query: NC_005072.1|pos|381240..386240 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.32%	237.6	25	0	190047
+
+Query: NC_005072.1|pos|693065..698065 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.27%	214.0	21	0	190047
+
+Query: NC_005072.1|pos|1295842..1300842 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.33%	243.3	26	0	190047
+
+Query: NC_005072.1|pos|1526896..1531896 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4317	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.17%	160.5	13	0	190047
+
+Query: NC_005072.1|pos|91658..96658 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.31%	231.9	24	0	190047
+
+Query: NC_005072.1|pos|1449029..1454029 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.25%	207.9	20	0	190047
+
+Query: NC_005072.1|pos|196618..201618 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.34%	248.9	27	0	190047
+
+Query: NC_005072.1|pos|990289..995289 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.23%	195.1	18	0	190047
+
+Query: NC_005072.1|pos|394205..399205 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4793	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.15%	153.0	12	0	190047
+
+Query: NC_005072.1|pos|1450888..1455888 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+95.24%	0.25%	203.9	20	0	190047
+
+Query: NC_005072.1|pos|1016986..1021986 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4860	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.27%	214.0	21	0	190047
+
+Query: NC_005072.1|pos|819708..824708 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+95.65%	0.28%	216.2	22	0	190047
+
+Query: NC_005072.1|pos|1465040..1470040 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4561	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.32%	237.6	25	0	190047
+
+Query: NC_005072.1|pos|1322687..1327687 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4763	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.24%	201.6	19	0	190047
+
+Query: NC_005072.1|pos|99676..104676 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4924	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.36%	254.4	28	0	190047
+
+Query: NC_005072.1|pos|611616..616616 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.33%	243.3	26	0	190047
+
+Query: NC_005072.1|pos|1473057..1478057 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4594	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+95.24%	0.25%	203.9	20	1	190047
+
+Query: NC_005072.1|pos|980919..985919 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4888	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.32%	237.6	25	0	190047
+
+Query: NC_005072.1|pos|894462..899462 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4826	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.17%	160.5	13	0	190047
+
+Query: NC_005072.1|pos|648555..653555 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4825	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.25%	207.9	20	0	190047
+
+Query: NC_005072.1|pos|1496166..1501166 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.24%	201.6	19	0	190047
+
+Query: NC_005072.1|pos|1644694..1649694 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.36%	254.4	28	0	190047
+
+Query: NC_005072.1|pos|744026..749026 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4388	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.25%	207.9	20	0	190047
+
+Query: NC_005072.1|pos|474280..479280 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.43%	285.8	34	0	190047
+
+Query: NC_005072.1|pos|1073122..1078122 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.34%	248.9	27	0	190047
+
+Query: NC_005072.1|pos|906351..911351 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4591	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.27%	214.0	21	0	190047
+
+Query: NC_005072.1|pos|58779..63779 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.33%	243.3	26	0	190047
+
+Query: NC_005072.1|pos|979572..984572 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.32%	237.6	25	0	190047
+
+Query: NC_005072.1|pos|306609..311609 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.39%	270.4	31	0	190047
+
+Query: NC_005072.1|pos|1035295..1040295 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4883	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.28%	220.1	22	0	190047
+
+Query: NC_005072.1|pos|442888..447888 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.23%	195.1	18	0	190047
+
+Query: NC_005072.1|pos|1318828..1323828 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4532	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.20%	181.8	16	0	190047
+
+Query: NC_005072.1|pos|128222..133222 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4736	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.38%	265.1	30	0	59919
+
+Query: NC_005072.1|pos|1149561..1154561 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.29%	226.1	23	0	190047
+
+Query: NC_005072.1|pos|209604..214604 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4616	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.28%	220.1	22	0	190047
+
+Query: NC_005072.1|pos|1526578..1531578 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4382	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.17%	160.5	13	0	190047
+
+Query: NC_005072.1|pos|120316..125316 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.31%	231.9	24	0	190047
+
+Query: NC_005072.1|pos|703550..708550 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4720	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.23%	195.1	18	0	190047
+
+Query: NC_005072.1|pos|1108317..1113317 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4786	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.14%	145.2	11	0	190047
+
+Query: NC_005072.1|pos|462162..467162 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4917	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.33%	243.3	26	0	190047
+
+Query: NC_005072.1|pos|1035373..1040373 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4904	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.29%	226.1	23	0	190047
+
+Query: NC_005072.1|pos|1110547..1115547 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4634	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.19%	174.9	15	0	190047
+
+Query: NC_005072.1|pos|1224923..1229923 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4576	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.24%	201.6	19	0	190047
+
+Query: NC_005072.1|pos|371730..376730 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4617	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.23%	195.1	18	0	190047
+
+Query: NC_005072.1|pos|507199..512199 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.34%	248.9	27	0	190047
+
+Query: NC_005072.1|pos|515761..520761 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.28%	220.1	22	0	190047
+
+Query: NC_005072.1|pos|1250446..1255446 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.15%	153.0	12	0	190047
+
+Query: NC_005072.1|pos|1476857..1481857 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4700	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.25%	207.9	20	0	190047
+
+Query: NC_005072.1|pos|1213200..1218200 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.37%	259.8	29	0	190047
+
+Query: NC_005072.1|pos|367782..372782 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.32%	237.6	25	0	190047
+
+Query: NC_005072.1|pos|948851..953851 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4547	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.29%	226.1	23	0	190047
+
+Query: NC_005072.1|pos|78674..83674 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4899	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.37%	259.8	29	0	190047
+
+Query: NC_005072.1|pos|1570131..1575131 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4818	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.25%	207.9	20	0	190047
+
+Query: NC_005072.1|pos|260392..265392 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.38%	265.1	30	0	190047
+
+Query: NC_005072.1|pos|909312..914312 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4830	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.34%	248.9	27	0	190047
+
+Query: NC_005072.1|pos|364249..369249 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.32%	237.6	25	0	190047
+
+Query: NC_005072.1|pos|953509..958509 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4421	SketchLen: 183	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.22%	188.6	17	0	190047
+
+Query: NC_005072.1|pos|1308230..1313230 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4602	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.20%	181.8	16	0	190047
+
+Query: NC_005072.1|pos|511349..516349 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4494	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.23%	195.1	18	0	190047
+
+Query: NC_005072.1|pos|1504976..1509976 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4951	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.32%	237.6	25	0	190047
+
+Query: NC_005072.1|pos|35631..40631 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4731	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.23%	195.1	18	0	190047
+
+Query: NC_005072.1|pos|1613906..1618906 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.43%	285.8	34	0	190047
+
+Query: NC_005072.1|pos|264126..269126 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.32%	237.6	25	0	190047
+
+Query: NC_005072.1|pos|549760..554760 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4754	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.22%	188.6	17	0	190047
+
+Query: NC_005072.1|pos|619320..624320 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.37%	259.8	29	0	190047
+
+Query: NC_005072.1|pos|261156..266156 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.36%	254.4	28	0	190047
+
+Query: NC_005072.1|pos|206740..211740 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.31%	231.9	24	0	59919
+
+Query: NC_005072.1|pos|1399801..1404801 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.34%	248.9	27	0	190047
+
+Query: NC_005072.1|pos|86195..91195 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4866	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.32%	237.6	25	0	190047
+
+Query: NC_005072.1|pos|317941..322941 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4840	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+90.00%	0.34%	238.6	27	0	190047
+
+Query: NC_005072.1|pos|478700..483700 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4720	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.25%	207.9	20	0	190047
+
+Query: NC_005072.1|pos|1517277..1522277 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.32%	237.6	25	0	190047
+
+Query: NC_005072.1|pos|462389..467389 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4797	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.28%	220.1	22	0	190047
+
+Query: NC_005072.1|pos|466707..471707 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+96.77%	0.38%	261.7	30	0	190047
+
+Query: NC_005072.1|pos|414637..419637 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4633	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+94.12%	0.20%	177.5	16	0	190047
+
+Query: NC_005072.1|pos|132058..137058 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4486	SketchLen: 183	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.33%	243.3	26	0	190047
+
+Query: NC_005072.1|pos|445996..450996 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4727	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.24%	201.6	19	0	190047
+
+Query: NC_005072.1|pos|827732..832732 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.34%	248.9	27	0	190047
+
+Query: NC_005072.1|pos|302907..307907 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.45%	290.8	35	0	190047
+
+Query: NC_005072.1|pos|808083..813083 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4964	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.27%	214.0	21	0	190047
+
+Query: NC_005072.1|pos|576468..581468 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4693	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.31%	231.9	24	0	190047
+
+Query: NC_005072.1|pos|289437..294437 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4607	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.27%	214.0	21	0	190047
+
+Query: NC_005072.1|pos|700091..705091 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.20%	181.8	16	0	190047
+
+Query: NC_005072.1|pos|1143601..1148601 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4805	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+95.24%	0.25%	203.9	20	0	190047
+
+Query: NC_005072.1|pos|1229539..1234539 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4918	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.27%	214.0	21	0	190047
+
+Query: NC_005072.1|pos|1078428..1083428 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.28%	220.1	22	0	190047
+
+Query: NC_005072.1|pos|1438003..1443003 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.34%	248.9	27	0	190047
+
+Query: NC_005072.1|pos|706877..711877 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4809	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.32%	237.6	25	0	190047
+
+Query: NC_005072.1|pos|1439243..1444243 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.31%	231.9	24	0	190047
+
+Query: NC_005072.1|pos|1474387..1479387 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4547	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+95.45%	0.27%	210.1	21	0	190047
+
+Query: NC_005072.1|pos|1385284..1390284 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.33%	243.3	26	0	190047
+
+Query: NC_005072.1|pos|686909..691909 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+96.55%	0.36%	250.8	28	0	190047
+
+Query: NC_005072.1|pos|1041116..1046116 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4350	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.27%	214.0	21	0	190047
+
+Query: NC_005072.1|pos|1528835..1533835 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4701	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.18%	167.8	14	0	190047
+
+Query: NC_005072.1|pos|1623664..1628664 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.38%	265.1	30	0	190047
+
+Query: NC_005072.1|pos|77572..82572 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4456	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.39%	270.4	31	0	190047
+
+Query: NC_005072.1|pos|1287685..1292685 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+96.43%	0.34%	245.3	27	0	190047
+
+Query: NC_005072.1|pos|448270..453270 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4430	SketchLen: 183	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.23%	195.1	18	0	190047
+
+Query: NC_005072.1|pos|63186..68186 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.34%	248.9	27	0	190047
+
+Query: NC_005072.1|pos|502496..507496 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.25%	207.9	20	0	190047
+
+Query: NC_005072.1|pos|311986..316986 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.22%	188.6	17	0	190047
+11.11%	0.04%	24.84	3	0	39717
+
+Query: NC_005072.1|pos|1481652..1486652 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.33%	243.3	26	1	59919
+
+Query: NC_005072.1|pos|332691..337691 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4608	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.25%	207.9	20	0	190047
+
+Query: NC_005072.1|pos|162673..167673 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+95.45%	0.27%	210.1	21	0	190047
+
+Query: NC_005072.1|pos|981294..986294 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4929	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.32%	237.6	25	0	190047
+
+Query: NC_005072.1|pos|1002110..1007110 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.29%	226.1	23	0	190047
+
+Query: NC_005072.1|pos|1486927..1491927 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.37%	259.8	29	0	190047
+
+Query: NC_005072.1|pos|803641..808641 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4934	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.32%	237.6	25	0	190047
+
+Query: NC_005072.1|pos|938082..943082 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.31%	231.9	24	0	190047
+
+Query: NC_005072.1|pos|606106..611106 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.25%	207.9	20	0	190047
+
+Query: NC_005072.1|pos|284476..289476 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.39%	270.4	31	0	190047
+
+Query: NC_005072.1|pos|974930..979930 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.37%	259.8	29	0	190047
+
+Query: NC_005072.1|pos|1047120..1052120 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4944	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.23%	195.1	18	0	190047
+
+Query: NC_005072.1|pos|930495..935495 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.24%	201.6	19	0	190047
+
+Query: NC_005072.1|pos|866042..871042 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.33%	243.3	26	0	190047
+
+Query: NC_005072.1|pos|1203889..1208889 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.25%	207.9	20	0	190047
+
+Query: NC_005072.1|pos|766364..771364 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4621	SketchLen: 184	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.28%	220.1	22	0	190047
+
+Query: NC_005072.1|pos|1299219..1304219 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.32%	237.6	25	0	190047
+
+Query: NC_005072.1|pos|364752..369752 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4970	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.29%	226.1	23	0	190047
+
+Query: NC_005072.1|pos|122937..127937 NC_005072.1 Prochlorococcus marinus MED4 complete genome	DB: RefSeq	Seqs: 1 	Bases: 5000	gSize: 4615	SketchLen: 185	File: med4-shred.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.23%	195.1	18	0	190047
+

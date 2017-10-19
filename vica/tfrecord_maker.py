@@ -24,26 +24,6 @@ def python_join(infile1, infile2, outfile, sep):
             ll = l1 + l1[1:]
             csv_writer_instance.writerow(ll)
 
-def parse_sketchout(file):
-    '''parses bbtools sendsketch output returning python dictionary'''
-    try:
-        tempdf = {}
-        with open(file, 'r') as f:
-            for line in f:
-                if line.strip() == '':
-                    next
-                elif line.startswith("Query:"):
-                    ll = line.strip().split("\t")
-                    key1 = ll[0].split(":")[1].split()[0]
-                    tempdf[key1] = {}
-                elif line.startswith("WKID"):
-                    next
-                else:
-                    ll2 = line.strip().split("\t")
-                    tempdf[key1][int(ll2[5])] = int(ll2[3])
-        return tempdf
-    except IOError:
-        print("could not parse of the  line {} of sketch file {}".format(i, file))
 
 def combine_dict_csv_to_tfrecords(label, minhashdict, csvfile,  tfrecordfile):
     '''convert a dictionary of minhash data and a sorted csv file into a tfrecord file'''
