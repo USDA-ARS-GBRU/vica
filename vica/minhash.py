@@ -89,56 +89,113 @@ def parse_sketchout(file):
                     tempdf[key1][int(ll2[5])] = float(ll2[2])
         return tempdf
     except IOError:
-        print("could not parse of the  line {} of sketch file {}".format(i, file))
+        print("could not parse sketch file {}".format(file))
+
+superkingdom = {2:"Bacteria", 2157: "Archaea", 2759: "Eukaryota", 12884: "Viroids", 10239: "Viruses"}
+
+noncellular = {39759: "Deltavirus",
+               35237: "dsDNA viruses, no RNA stage",
+               35325: "dsRNA viruses",
+               1910928: "Genomoviridae",
+               35268: "Retro-transcribing viruses",
+               12877: "Satellites",
+               29258: "ssDNA viruses",
+               439488: "ssRNA viruses",
+               1714266: "Virus families not assigned to an order",
+               686617: "unassigned viruses",
+               451344: "unclassified archaeal viruses",
+               12333: "unclassified bacterial viruses",
+               1922347: "unclassified RNA viruses",
+               552364: "unclassified virophages",
+               12429: "unclassified viruses",
+               12884: "Viroids"}
+
+def _find_key(input_dict, value):
+    return next((k for k, v in input_dict.items() if v == value), None)
+
+def pick_higher_level(taxid, taxinstance):
+    '''take a taxid and an ete3 taxonomy instance and returns a higher level taxid'''
+    lineage = taxinstance.get_lineage(taxid)
+    rank = taxinstance.get_rank(lineage)
+    cellularlist = [2, 2157, 2759]
+    noncellularlist = [12884, 10239]
+    if set(lineage).intersection(cellularlist): # is it archaea, bacteria or euk?
+        if "superphylum" in rank.values():
+            hightax = _find_key(rank, "superphylum")
+        elif "phylum" in rank.values():
+            hightax = _find_key(rank, "phylum")
+        elif "subphylum" in rank.values():
+            hightax = _find_key(rank, "subphylum")
+        else:
+            hightax = 1
+    elif set(lineage).intersection(noncellularlist): #is it virus or viroid?
+        for key, val in rank.items():
+            if key in noncellular:
+                hightax = key
+    else:
+        hightax = 1
+    return hightax
 
 
-def taxid_to_phylum(taxdict, taxinstance):
+def raise_taxdict_level(taxdict, taxinstance):
     '''takes a dict in the form {taxid1: score1, taxid2: score2, ...} and
-       returns dict with scores summed at the phylum level'''
+       returns dict with scores summed at the phylum level for cellular oganisms or top ICVT level for viruses'''
     newdict ={}
     for key, item in taxdict.items():
-        lineage = taxinstance.get_lineage(key)
-        rank = taxinstance.get_rank(lineage)
-        for key2, item2 in rank.items():
-            if item2 in ["superphylum", "phylum", "subphylum"]:
-                phyid = key2
-                if phyid in newdict:
-                    newdict[phyid] = newdict[phyid] + item
-                else:
-                    newdict[phyid] = item
-                break
+        phyid = pick_higher_level(taxid=key, taxinstance=taxinstance)
+        if phyid in newdict:
+            newdict[phyid] = newdict[phyid] + item
+        else:
+            newdict[phyid] = item
     return newdict
 
 
 
-def get_phylum_list(nodesdmpfile):
-    '''takes a NCBI taxonomy nodes.dmp file and returns a list of taxids at the superphylum, phylum or subphylum level'''
+def get_feature_list(nodesdmpfile, noncellular):
+    '''takes a NCBI taxonomy nodes.dmp file and a dict with high level
+       noncellular categories and returns a list of taxids at the selected level'''
     with open(nodesdmpfile, 'r') as nodes:
         phylist =[]
         for line in nodes:
             ll = line.strip().split()
             if ll[4] in ["superphylum", "phylum", "subphylum"]:
                 phylist.append(int(ll[0]))
+        for key in noncellular:
+                phylist.append(int(key))
     return sorted(phylist)
 
 
-def dict_to_csv(sketchdict, phylumlist, csvfile):
+def dict_to_csv(sketchdict, taxlist, outfile):
     newdict = {}
     ncbi = NCBITaxa()
     for key, item in sketchdict.items():
-        newdict[key]= taxid_to_phylum(item, ncbi)
-    with open(csvfile, 'w') as csvhandle:
+        newdict[key]= raise_taxdict_level(taxdict=item, taxinstance=ncbi)
+    with open(outfile, 'w') as csvhandle:
         csv_writer_instance = csv.writer(csvhandle)
         for key, item in newdict.items():
             line = []
             line.append(key)
-            for i in phylumlist:
+            for i in taxlist:
                 if i in item:
                     line.append(item[i])
                 else:
                     line.append(0.)
             csv_writer_instance.writerow(line)
 
+def minhashlocal(dtemp, infile, outfile, nodesfile, localsketchdir, blacklist, tree):
+    sketchfile = os.path.join(dtemp,"sketchout.txt")
+    refs = os.path.join(localsketchdir, "*.sketch")
+    compare_sketch(infile=infile, outfile=sketchfile, ref=refs, blacklist=blacklist, tree=tree)
+    sketchdict = parse_sketchout(sketchfile)
+    phylumlist = get_phylum_list(nodes)
+    dict_to_csv(sketchdict, phylumlist, outfile=outfile)
+
+def minhashremote(dtemp, infile, outfile, nodesfile):
+    sketchfile = os.path.join(dtemp,"sketchout.txt")
+    send_sketch(infile=infile, outfile=sketchfile)
+    sketchdict = parse_sketchout(sketchfile)
+    taxlist = get_feature_list(nodesdmpfile=nodesfile, noncellular=noncellular)
+    dict_to_csv(sketchdict, taxlist=taxlist, outfile=outfile)
 
 def main():
 
@@ -153,16 +210,13 @@ def main():
 
     args = parser.parse_args()
     dtemp = tempfile.mkdtemp()
-    outfile = os.path.join(dtemp,"sketchout.txt")
     if args.local:
-        refs = os.path.join(os.path.abspath(args.localsketchdir), "*.sketch")
-        compare_sketch(infile=args.input, outfile=outfile, ref=refs, blacklist=args.blacklist, tree=args.tree)
+        minhashlocal(dtemp=dtemp, infile=args.input, outfile=args.output,
+                     nodesfile=args.nodes, localsketchdir=args.localsketchdir,
+                     blacklist=args.blacklist, tree=args.tree)
     else:
-        send_sketch(infile=args.input, outfile=outfile)
-
-    sketchdict = parse_sketchout(outfile)
-    phylumlist = get_phylum_list(args.nodes)
-    dict_to_csv(sketchdict, phylumlist, args.output)
+        minhashremote(dtemp=dtemp, infile=args.input, outfile=args.output,
+                     nodesfile=args.nodes)
 
     shutil.rmtree(dtemp)
 
