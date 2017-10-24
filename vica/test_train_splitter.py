@@ -4,7 +4,7 @@
 import argparse
 from pyfaidx import Fasta
 import random
-import textwrap
+
 
 
 
@@ -75,8 +75,9 @@ def assign_to_test(train_seq_tot, test_seq_tot, testpct):
     return v
 
 def _write_record(record,handle):
-    handle.write(">" + record.long_name + "\n")
-    seqlist = ["".join(x) for x in zip(*[iter(str(record))] * 60)]
+    seqlist = []
+    seqlist.append(">" + record.long_name + "\n")
+    seqlist.extend(["".join(x) for x in zip(*[iter(str(record))] * 60)])
     handle.writelines(seqlist)
 
 
@@ -132,8 +133,8 @@ def main():
 
     parser = argparse.ArgumentParser(description='A script to generate a split a reftree fasta file into test and train as specific taxonomic levels')
     parser.add_argument('--infile', help="A fasta file to split")
-    parser.add_argument('--testout', help="the test file")
-    parser.add_argument('--trainout', help="the train file")
+    parser.add_argument('--testout', help="the test file in fasta format")
+    parser.add_argument('--trainout', help="the train file in fasta format")
     parser.add_argument('--testpct', help="the percent of data to keep in the test set")
     parser.add_argument('--taxlevel', help= "the taxonomic level to select on 1-24 [ 24= species, 16= family]")
     args = parser.parse_args()
