@@ -31,8 +31,7 @@ def main():
     args = parser.parse_args()
 
     #create workng directory and file names
-    #dtemp = tempfile.mkdtemp()
-    dtemp = '/Users/rivers/Documents/vica_docs/testdata/tmp'
+    dtemp = tempfile.mkdtemp()
     segments = os.path.join(dtemp, "segments.fasta")
     reflist = glob.glob(os.path.join(args.minhashrefs, "*.sketch"))
     if reflist:
