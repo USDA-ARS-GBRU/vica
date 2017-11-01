@@ -13,6 +13,7 @@ import vica.prodigal
 import vica.tfrecord_maker
 import glob
 from Bio import SeqIO
+from pyfaidx import Fasta
 import shutil
 
 def main():
@@ -21,7 +22,7 @@ def main():
     parser.add_argument('--output', help="path to tfrecord file written", required=True)
     parser.add_argument('--nodes', help="path to NCBI taxonomy nodes file", required=True)
     parser.add_argument('--label', help="An integer representing the classification label", type=int, required=True)
-    parser.add_argument('--shred', help="A flag to shred data into rangomly sampled contigs. Default is false", action="store_true")
+    parser.add_argument('--shred', help="A flag to shred data into randomly sampled contigs. Default is false", action="store_true")
     parser.add_argument('--length', help="The length of the genome subsamples if fixed is selected", default = 5000, type=int)
     parser.add_argument('--samples', help="Total number of shreded contigs to create, or if between 0 and 1, the proportion of the genome to sample", default = 0.5, type=float)
     parser.add_argument('--testing', help="Testing mode",  action="store_true")
@@ -32,7 +33,8 @@ def main():
     args = parser.parse_args()
 
     #create workng directory and file names
-    dtemp = tempfile.mkdtemp()
+    #dtemp = tempfile.mkdtemp()
+    dtemp = '/Users/rivers/Documents/vica_docs/testdata/tmp'
     segments = os.path.join(dtemp, "segments.fasta")
     reflist = glob.glob(os.path.join(args.minhashrefs, "*.sketch"))
     if reflist:
@@ -44,9 +46,17 @@ def main():
 
     # shred gneomes into contigs
     if args.shred:
-        samples_frags = vica.shred.shred_contigs(fasta=args.input, shred="fixed", samples=args.samples, length=args.length, test=args.testing)
-    if samples_frags:
-        SeqIO.write(samples_frags, segments, "fasta")
+        inhandle = Fasta(args.input, read_ahead=10000)
+        with open( segments, 'w') as outhandle:
+            samples_all = vica.shred. shred_all(inhandle=inhandle,
+                                                outhandle=outhandle,
+                                                samples=args.samples,
+                                                samplemethod="fixed",
+                                                testing=args.testing,
+                                                length=args.length,
+                                                shape=1.333,
+                                                loc=3000,
+                                                scale=1140)
     else:
         segments = args.input
 

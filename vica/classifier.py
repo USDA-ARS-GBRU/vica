@@ -20,7 +20,7 @@ n_classes = 2
 # filenames = ["tests/test-data/combined.tfrecord"]
 kmer = tf.feature_column.numeric_column(key='kmer', shape=(135,))
 codon = tf.feature_column.numeric_column(key='codon', shape=(177,))
-minhash = tf.feature_column.numeric_column(key='minhash', shape=(250,))
+minhash = tf.feature_column.numeric_column(key='minhash', shape=(266,))
 
 
 def dataset_input_fn():
@@ -31,7 +31,7 @@ def dataset_input_fn():
         keys_to_features = {"label": tf.FixedLenFeature((), tf.int64),
             "kmer": tf.FixedLenFeature([135], tf.float32),
             "codon": tf.FixedLenFeature([177], tf.float32),
-            "minhash": tf.FixedLenFeature([250], tf.float32)}
+            "minhash": tf.FixedLenFeature([266], tf.float32)}
         parsed = tf.parse_single_example(record, keys_to_features)
         return {'kmer': parsed['kmer'], 'codon': parsed['codon'], 'minhash': parsed['minhash']}, parsed['label']
     dataset = dataset.map(parser)

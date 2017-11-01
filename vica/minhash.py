@@ -84,11 +84,13 @@ def parse_sketchout(file):
                     tempdf[key1] = {}
                 elif line.startswith("WKID"):
                     next
+                elif line.startswith("No hits."):
+                    next
                 else:
                     ll2 = line.strip().split("\t")
                     tempdf[key1][int(ll2[5])] = float(ll2[2])
         return tempdf
-    except IOError:
+    except RuntimeError:
         print("could not parse sketch file {}".format(file))
 
 superkingdom = {2:"Bacteria", 2157: "Archaea", 2759: "Eukaryota", 12884: "Viroids", 10239: "Viruses"}

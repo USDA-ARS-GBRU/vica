@@ -76,13 +76,14 @@ def assign_to_test(train_seq_tot, test_seq_tot, testpct):
 
 def _write_record(record,handle):
     seqlist = []
-    seqlist.append(">" + record.long_name + "\n")
-    seqlist.extend(["".join(x) for x in zip(*[iter(str(record))] * 60)])
+    label = (">" + record.long_name + "\n")
+    seqlist=(["".join(x)+"\n" for x in zip(*[iter(str(record[:].seq))] * 60)])
+    handle.write(label)
     handle.writelines(seqlist)
 
 
 # iterate through records
-def split_records(genes,genekeys, testout, trainout, testpct, taxlevel):
+def split_records(genes, genekeys, testout, trainout, testpct, taxlevel):
     train_set = set()
     test_set = set()
     test_record_count = 0
