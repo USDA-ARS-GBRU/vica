@@ -2,7 +2,6 @@
 '''prodigal.py: a module to call genes with prodigal then count codon usage
 and transform into centered log ratio returning values as a CSV'''
 
-import subprocess
 import argparse
 import tempfile
 import os
@@ -12,7 +11,6 @@ import vica.khmer_features
 import vica.prodigal
 import vica.tfrecord_maker
 import glob
-from Bio import SeqIO
 from pyfaidx import Fasta
 import shutil
 
