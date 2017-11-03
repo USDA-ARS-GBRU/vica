@@ -41,6 +41,7 @@ def _calc_seg_len(samplemethod, length, shape, loc, scale):
         raise ValueError("Sample method must be fixed or lognorm")
     return seglen
 
+
 def shred_all(inhandle, outhandle, samples, samplemethod, testing, length=5000, shape=1.333, loc=3000, scale=1140):
     if testing:
         seed = 435903852
@@ -56,7 +57,8 @@ def shred_all(inhandle, outhandle, samples, samplemethod, testing, length=5000, 
                 if seq_length > seglen:
                     pos = np.random.choice(seq_length - seglen)
                     endpos = pos+ seglen
-                    writeseq(record, pos, seglen, outhandle)
+                    if record[pos: seglen + pos].seq.count("N")/seglen < 0.1:
+                        writeseq(record, pos, seglen, outhandle)
                 length_used += seglen
     elif sample_type =='set_number':
         for record in inhandle:
@@ -67,7 +69,8 @@ def shred_all(inhandle, outhandle, samples, samplemethod, testing, length=5000, 
                 if seq_length > seglen:
                     pos = np.random.choice(seq_length - seglen)
                     endpos = pos+length
-                    writeseq(record, pos, seglen, outhandle)
+                    if record[pos: seglen + pos].seq.count("N")/seglen < 0.1:
+                        writeseq(record, pos, seglen, outhandle)
                 samples_written += 1
     elif sample_type =='all':
         for record in inhandle:
@@ -75,7 +78,8 @@ def shred_all(inhandle, outhandle, samples, samplemethod, testing, length=5000, 
             pos = 0
             seglen = _calc_seg_len(samplemethod, length, shape, loc, scale)
             while pos + seglen < seq_length:
-                writeseq(record, pos, seglen, outhandle)
+                if record[pos: seglen + pos].seq.count("N")/seglen < 0.1:
+                    writeseq(record, pos, seglen, outhandle)
                 pos += seglen
                 seglen = _calc_seg_len(samplemethod, length, shape, loc, scale)
     else:
@@ -103,7 +107,7 @@ def main():
     lognorm_parser.set_defaults(whichmethod='lognorm')
     args = parser.parse_args()
 
-    inhandle = Fasta(args.input, read_ahead=1000)
+    inhandle = Fasta(args.input, read_ahead=10000)
     if args.whichmethod == 'fixed':
         shred_all(inhandle=inhandle, outhandle=args.output, samples=args.samples, samplemethod=args.whichmethod,  length=args.length)
     elif args.whichmethod == 'lognorm':

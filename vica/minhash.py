@@ -85,7 +85,7 @@ def parse_sketchout(file):
                 elif line.startswith("WKID"):
                     next
                 elif line.startswith("No hits."):
-                    next
+                    tempdf[key1]['0'] = 0
                 else:
                     ll2 = line.strip().split("\t")
                     tempdf[key1][int(ll2[5])] = float(ll2[2])
@@ -116,27 +116,31 @@ def _find_key(input_dict, value):
     return next((k for k, v in input_dict.items() if v == value), None)
 
 def pick_higher_level(taxid, taxinstance):
-    '''take a taxid and an ete3 taxonomy instance and returns a higher level taxid'''
-    lineage = taxinstance.get_lineage(taxid)
-    rank = taxinstance.get_rank(lineage)
-    cellularlist = [2, 2157, 2759]
-    noncellularlist = [12884, 10239]
-    if set(lineage).intersection(cellularlist): # is it archaea, bacteria or euk?
-        if "superphylum" in rank.values():
-            hightax = _find_key(rank, "superphylum")
-        elif "phylum" in rank.values():
-            hightax = _find_key(rank, "phylum")
-        elif "subphylum" in rank.values():
-            hightax = _find_key(rank, "subphylum")
+    try:
+        '''take a taxid and an ete3 taxonomy instance and returns a higher level taxid'''
+        lineage = taxinstance.get_lineage(taxid)
+        rank = taxinstance.get_rank(lineage)
+        cellularlist = [2, 2157, 2759]
+        noncellularlist = [12884, 10239]
+        if set(lineage).intersection(cellularlist): # is it archaea, bacteria or euk?
+            if "superphylum" in rank.values():
+                hightax = _find_key(rank, "superphylum")
+            elif "phylum" in rank.values():
+                hightax = _find_key(rank, "phylum")
+            elif "subphylum" in rank.values():
+                hightax = _find_key(rank, "subphylum")
+            else:
+                hightax = 1
+        elif set(lineage).intersection(noncellularlist): #is it virus or viroid?
+            for key, val in rank.items():
+                if key in noncellular:
+                    hightax = key
         else:
             hightax = 1
-    elif set(lineage).intersection(noncellularlist): #is it virus or viroid?
-        for key, val in rank.items():
-            if key in noncellular:
-                hightax = key
-    else:
-        hightax = 1
-    return hightax
+        return hightax
+    except:
+        if taxid == 0:
+            return 0
 
 
 def raise_taxdict_level(taxdict, taxinstance):
@@ -157,7 +161,7 @@ def get_feature_list(nodesdmpfile, noncellular):
     '''takes a NCBI taxonomy nodes.dmp file and a dict with high level
        noncellular categories and returns a list of taxids at the selected level'''
     with open(nodesdmpfile, 'r') as nodes:
-        phylist =[]
+        phylist =[0]
         for line in nodes:
             ll = line.strip().split()
             if ll[4] in ["superphylum", "phylum", "subphylum"]:

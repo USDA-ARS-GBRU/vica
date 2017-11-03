@@ -13,7 +13,7 @@ import tensorflow as tf
 import tempfile
 
 tmpdir = tempfile.mkdtemp()
-n_classes = 2
+n_classes = 5
 
 
 
@@ -25,7 +25,7 @@ minhash = tf.feature_column.numeric_column(key='minhash', shape=(266,))
 
 def dataset_input_fn():
     #filenames = tf.placeholder(tf.string, shape=[None])
-    filenames = ["tests/test-data/combined-test.tfrecord"]
+    filenames = ["combined-test.tfrecord"]
     dataset = tf.contrib.data.TFRecordDataset(filenames)
     def parser(record):
         keys_to_features = {"label": tf.FixedLenFeature((), tf.int64),
@@ -44,15 +44,6 @@ def dataset_input_fn():
     features, labels = iterator.get_next()
     return features, labels
 
-estimator1 = tf.estimator.DNNClassifier(
-    model_dir = "DNNdir",
-    n_classes=n_classes,
-    # deep settings
-    feature_columns=[kmer, codon],
-    dropout=0.5,
-    activation_fn=tf.nn.relu,
-    hidden_units=[80, 20],
-    optimizer='Adagrad')
 
 def _print_tfrecords(filename):
     for example in tf.python_io.tf_record_iterator(filename):
@@ -71,4 +62,4 @@ estimator = tf.estimator.DNNLinearCombinedClassifier(
     dnn_hidden_units=[80, 20],
     dnn_optimizer='Adagrad')
 
-model1 = estimator.train(input_fn=dataset_input_fn)
+# model1 = estimator.train(input_fn=dataset_input_fn)

@@ -29,7 +29,6 @@ def get_composition(ksize, seq, kmers, norm):
         nkmers = 4**ksize
         tablesize = nkmers + 100
         counting_hash = khmer.Countgraph(ksize, tablesize, 1)
-        print(len(seq))
         counting_hash.consume(seq)
         composition = [counting_hash.get(kmer) for kmer in kmers]
         if norm == True:
@@ -59,7 +58,6 @@ def write_kmers_as_csv(infile, outfile, ksize, kmers):
                 pseudocount = 0.01
                 for record in SeqIO.parse(f1, 'fasta'):
                     rl = [record.id]
-                    print(rl)
                     kmer_frequency = get_composition(ksize,str(record.seq).upper(), kmers, False)
                     kmer_ilr = vica.prodigal.ilr(kmer_frequency)
                     rl.extend(kmer_ilr)

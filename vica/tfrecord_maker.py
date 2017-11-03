@@ -7,26 +7,60 @@ import tempfile
 import os
 import csv
 import argparse
+import numpy as np
 
-def external_sort(infile, outfile, sep, size=1048576, key=1):
-    options = ['sort', '--field-separator=' + sep, '--buffer-size=' + str(size) , '--key=' + str(key), '--output=' + outfile, infile ]
-    subprocess.run(options)
+def external_sort(infile, outfile, sep, key=1):
+    '''Externally sort and make unique csv files using built-in linux utilities'''
+    try:
+        sortoptions = ['sort', '-t', sep, '-k', str(key), '-s','-u', '-o', outfile,  infile ]
+        p1 = subprocess.run(sortoptions, check=True,)
+        return outfile
+    except:
+        print("Input files could not be sorterd")
+
+def join(kmerfile, codonfile, minhashfile, dtemp):
+    '''Externally join with built-in linux utilities in hte order label, kmers,codons,minhash'''
+    kcfile= os.path.join(dtemp, "kcfile.csv")
+    mergefile = os.path.join(dtemp, "mergefile.csv")
+    try:
+        with open(kcfile, 'w') as kcf:
+            options = ['join', '-t', ',', '-1', '1', '-2', '1', kmerfile, codonfile]
+            subprocess.run(options,  check=True, stdout=kcf)
+        with open(mergefile, "w") as  mf:
+            options2 = ['join', '-t', ',', '-1', '1', '-2', '1', kcfile, minhashfile]
+            subprocess.run(options2,  check=True, stdout=mf)
+        os.remove(kcfile)
+        return mergefile
+    except RuntimeError:
+        print("Could not merge csv files using unix join command")
+
+def count_features(**kwargs):
+    '''given a dictionary of fileypes and file locations return a dictionary of feature lengths'''
+    featuredict ={}
+    for key, val in kwargs.items():
+        with open(val, 'r') as f:
+            features = len(f.readline().strip().split(",")) - 1
+        featuredict[key] = features
+    return featuredict
 
 
-def csv_to_tfrecords(kmerfile, codonfile, minhashfile, tfrecordfile, label):
+def csv_to_tfrecords(kmerfile, codonfile, minhashfile, mergefile, tfrecordfile, label):
     '''convert csv files of features to ttfrecord files'''
     writer = tf.python_io.TFRecordWriter(tfrecordfile)
-    with open(kmerfile, 'r') as kfile, open(codonfile, 'r') as cfile, open(minhashfile, 'r') as mfile:
-        dataiter = zip(kfile, cfile, mfile)
-        for kline, cline, mline in dataiter:
-            kl = kline.split(',')
-            cl = cline.split(',')
-            ml = mline.split(',')
-            assert kl[0] == cl[0] and cl[0] == ml[0], "the ids for the data files do not match. kmer id: {}, codon ID: {}, minhashid: {}".format(kl[0], cl[0], ml[0])
-            lab = kl[0]
-            kdat = [float(i) for i in kl[1:]]
-            cdat = [float(i) for i in cl[1:]]
-            mdat = [float(i) for i in ml[1:]]
+    features = count_features(kmers=kmerfile,codons=codonfile,minhash=minhashfile)
+    kstart = 1
+    kend = features['kmers']
+    cstart = kend + 1
+    cend = kend + features['codons']
+    mstart = cend + 1
+    mend = cend + features['minhash']
+    with open(mergefile, 'r') as mergedata:
+        for i, lstring in enumerate(mergedata):
+            line = lstring.strip().split(",")
+            lab = line[0]
+            kdat = np.array(line[kstart:kend], dtype='float32')
+            cdat = np.array(line[cstart:cend], dtype='float32')
+            mdat = np.array(line[mstart:mend], dtype='float32')
             example = tf.train.Example(features=tf.train.Features(feature={
                 "label":
                     tf.train.Feature(int64_list=tf.train.Int64List(value=[int(label)])),
@@ -39,7 +73,7 @@ def csv_to_tfrecords(kmerfile, codonfile, minhashfile, tfrecordfile, label):
                 }))
             writer.write(example.SerializeToString())
     writer.close()
-    print("Successfully converted data to the tfrecord file: {}".format(tfrecordfile))
+    print("Successfully converted {} records to the tfrecord file: {}".format(i+1, tfrecordfile))
 
 
 def convert_to_tfrecords(dtemp, kmerfile, codonfile, minhashfile,
@@ -48,6 +82,7 @@ def convert_to_tfrecords(dtemp, kmerfile, codonfile, minhashfile,
         ksorted = os.path.join(dtemp, "kmer_sorted.csv")
         csorted = os.path.join(dtemp, "codon_sorted.csv")
         msorted = os.path.join(dtemp, "minhash_sorted.csv")
+        mergefile = os.path.join(dtemp, "mergefile.csv")
         external_sort(infile=kmerfile, outfile=ksorted, sep=",")
         external_sort(infile=codonfile, outfile=csorted, sep=",")
         external_sort(infile=minhashfile, outfile=msorted, sep=",")
@@ -55,7 +90,8 @@ def convert_to_tfrecords(dtemp, kmerfile, codonfile, minhashfile,
         ksorted = kmerfile
         csorted = codonfile
         msorted = minhashfile
-    csv_to_tfrecords(kmerfile=ksorted, codonfile=csorted, minhashfile=msorted,
+    mergefile = join(kmerfile=ksorted, codonfile=csorted, minhashfile=msorted, dtemp=dtemp)
+    csv_to_tfrecords(kmerfile=ksorted, codonfile=csorted, minhashfile=msorted,mergefile=mergefile,
                      tfrecordfile=tfrecordfile, label=label)
 
 def main():
@@ -70,6 +106,7 @@ def main():
     args = parser.parse_args()
 
     dtemp = tempfile.mkdtemp()
+    # dtemp = '/Users/rivers/Desktop/tfrecordtest'
     convert_to_tfrecords(dtemp= dtemp, kmerfile=args.kmerin, codonfile=args.codonin,
                          minhashfile=args.minhashin, tfrecordfile=args.outfile,
                          label=args.label, sort=args.sort)
