@@ -9,6 +9,7 @@ from ete3 import NCBITaxa
 import csv
 import tempfile
 import shutil
+import logging
 
 # Constants
 
@@ -91,7 +92,7 @@ def parse_sketchout(file):
                     tempdf[key1][int(ll2[5])] = float(ll2[2])
         return tempdf
     except RuntimeError:
-        print("could not parse sketch file {}".format(file))
+        logging.error("could not parse sketch file {}".format(file))
 
 superkingdom = {2:"Bacteria", 2157: "Archaea", 2759: "Eukaryota", 12884: "Viroids", 10239: "Viruses"}
 
@@ -177,7 +178,7 @@ def dict_to_csv(sketchdict, taxlist, outfile):
     for key, item in sketchdict.items():
         newdict[key]= raise_taxdict_level(taxdict=item, taxinstance=ncbi)
     with open(outfile, 'w') as csvhandle:
-        csv_writer_instance = csv.writer(csvhandle)
+        csv_writer_instance = csv.writer(csvhandle, lineterminator='\n')
         for key, item in newdict.items():
             line = []
             line.append(key)
@@ -191,14 +192,19 @@ def dict_to_csv(sketchdict, taxlist, outfile):
 def minhashlocal(dtemp, infile, outfile, nodesfile, localsketchdir, blacklist, tree):
     sketchfile = os.path.join(dtemp,"sketchout.txt")
     refs = os.path.join(localsketchdir, "*.sketch")
-    compare_sketch(infile=infile, outfile=sketchfile, ref=refs, blacklist=blacklist, tree=tree)
+    cresult = compare_sketch(infile=infile, outfile=sketchfile, ref=refs, blacklist=blacklist, tree=tree)
+    logging.debug(cresult)
+    logging.info("Parsing results file from BBtools Comparesketch.sh")
     sketchdict = parse_sketchout(sketchfile)
     phylumlist = get_phylum_list(nodes)
     dict_to_csv(sketchdict, phylumlist, outfile=outfile)
 
 def minhashremote(dtemp, infile, outfile, nodesfile):
     sketchfile = os.path.join(dtemp,"sketchout.txt")
-    send_sketch(infile=infile, outfile=sketchfile)
+    logging.info("Using BBtools Sendsketch.sh to send minhash sketches to the server {}".format(jgi_server_url))
+    sresult = send_sketch(infile=infile, outfile=sketchfile)
+    logging.debug(sresult)
+    logging.info("Parsing results file from BBtools Sendsketch.sh")
     sketchdict = parse_sketchout(sketchfile)
     taxlist = get_feature_list(nodesdmpfile=nodesfile, noncellular=noncellular)
     dict_to_csv(sketchdict, taxlist=taxlist, outfile=outfile)

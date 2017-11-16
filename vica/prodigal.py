@@ -14,6 +14,7 @@ import shutil
 import scipy.linalg
 import argparse
 import scipy.stats
+import logging
 codon_list = ["TTT", "TCT", "TAT", "TGT",
               "TTC", "TCC", "TAC", "TGC",
               "TTA", "TCA", "TAA", "TGA",
@@ -34,20 +35,22 @@ codon_list = ["TTT", "TCT", "TAT", "TGT",
 
 def clr(composition):
     '''calcualtes a centered log ratio transformation from a list of values'''
-    a = np.array(composition)
-    am =np.ma.masked_equal(a, 0)
-    gm = scipy.stats.mstats.gmean(am)
-    clrm = am/gm
-    clrarray = np.ma.getdata(clrm)
+    with np.errstate(divide='ignore', invalid='ignore'):
+        a = np.array(composition)
+        am =np.ma.masked_equal(a, 0)
+        gm = scipy.stats.mstats.gmean(am)
+        clrm = am/gm
+        clrarray = np.ma.getdata(clrm)
     return list(clrarray)
 
 
 def ilr(composition):
     '''claculates isometric log ratio transformation from list of values'''
-    clrlen= len(composition)
-    clrarray = clr(composition)
-    hmat = scipy.linalg.helmert(clrlen)
-    ilrmat = np.inner(clrarray, hmat)
+    with np.errstate(divide='ignore', invalid='ignore'):
+        clrlen= len(composition)
+        clrarray = clr(composition)
+        hmat = scipy.linalg.helmert(clrlen)
+        ilrmat = np.inner(clrarray, hmat)
     return list(ilrmat)
 
 
@@ -69,8 +72,8 @@ def _gene_to_codon(genestring):
             if not len(f1[-1]) == 3:
                 f1 = f1[:-1]
             return f1
-    except ValueError:
-        print("Warning: could not convert gene sequence to a list for codon counting")
+    except:
+        logger.exception("Warning: could not convert gene sequence to a list for codon counting")
         return []
 
 def _codon_to_dict(genestring, offset):
@@ -147,7 +150,7 @@ def count_codon_in_gene(record, cdict={}):
 
 
 def count_codons(seqio_iterator, csv_writer_instance):
-    '''Count codons in from sequences in a BioIO seq iterator, and write to a csv handle'''
+    '''Count codons from sequences in a BioIO seq iterator, and write to a csv handle'''
 
     def record_line(id, codon_dict, csv_writer_instance):
         '''combine id and codon data from the three frames, writing to csv handle'''
@@ -158,33 +161,36 @@ def count_codons(seqio_iterator, csv_writer_instance):
         id_and_data.extend(list(np.concatenate((l0, l1, l2))))
         csv_writer_instance.writerow(id_and_data)
 
-    print("running count_codons")
     last_base_id = None
     codon_dict = {}
+    lc = 0
     for record in seqio_iterator:
         base_id = _parse_prodigal_id_from_biopython(record.id)
         if base_id == last_base_id:
                 codon_dict = count_codon_in_gene(record=record, cdict=codon_dict)
-            # print("in loop 1")
         elif base_id is not last_base_id:
             if codon_dict != {}:
                 record_line(id=last_base_id, codon_dict=codon_dict, csv_writer_instance=csv_writer_instance)
+                lc +=1
             codon_dict =count_codon_in_gene(record=record, cdict={})
             last_base_id = base_id
     if codon_dict != {}:
         record_line(id=base_id, codon_dict=codon_dict, csv_writer_instance=csv_writer_instance)
+        lc += 1
+    return lc
 
 
-def contigs_to_feature_file(infile, outfile):
+def contigs_to_feature_file(infile, outfile, dtemp):
     '''for each contig in a file, count codons and write to csv'''
-    dtemp = tempfile.mkdtemp()
     genefile= os.path.join(dtemp, "genes.fasta")
-    call_genes(infile, genefile)
+    cgout = call_genes(infile, genefile)
+    logging.debug("From prodigal gene caller:")
+    logging.debug(cgout)
     seqs = SeqIO.parse(genefile, 'fasta')
     with open(outfile, 'w') as csvfile:
-        csv_writer_instance = csv.writer(csvfile)
-        count_codons(seqio_iterator= seqs, csv_writer_instance=csv_writer_instance)
-    shutil.rmtree(dtemp)
+        csv_writer_instance = csv.writer(csvfile, lineterminator='\n')
+        lc = count_codons(seqio_iterator= seqs, csv_writer_instance=csv_writer_instance)
+        logging.info("Wrote {} examples to the temporary file".format(lc, outfile))
 
 
 def main():
@@ -193,7 +199,8 @@ def main():
     parser.add_argument('--input', help="A multi-sequence fasta file")
     parser.add_argument('--output', help= "An output file of the clr transformed codon usage for frames 1, 2, and 3, in csv format")
     args = parser.parse_args()
-    contigs_to_feature_file(infile=args.input, outfile=args.output)
+    dtemp = tempfile.tempdir()
+    contigs_to_feature_file(infile=args.input, outfile=args.output, dtemp=dtemp)
 
 if __name__ == '__main__':
     main()

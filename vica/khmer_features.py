@@ -7,21 +7,21 @@ import itertools
 from Bio.Seq import Seq
 import csv
 import vica.prodigal
+import logging
 
 
 def iterate_kmer(k):
-    """ get the list of tetramers"""
-    bases = ['A','C','T','G']
-    kmers = [''.join(p) for p in itertools.product(bases, repeat=k)]
-#    print kmers
-    core_kmer = []
-    for kmer in kmers:
-        if not str(Seq(kmer).reverse_complement()) in core_kmer:
-            core_kmer.append(kmer)
-#    print core_kmer
-#    print len(core_kmer)
-    return core_kmer
-
+    try:
+        """ get the list of tetramers"""
+        bases = ['A','C','T','G']
+        kmers = [''.join(p) for p in itertools.product(bases, repeat=k)]
+        core_kmer = []
+        for kmer in kmers:
+            if not str(Seq(kmer).reverse_complement()) in core_kmer:
+                core_kmer.append(kmer)
+        return core_kmer
+    except:
+        logging.exception("Could not calculate the list of kmers for k = {}".format(k))
 
 def get_composition(ksize, seq, kmers, norm):
     """ get the composition profile and return a list of kmer counts or normalized kmer counts"""
@@ -41,15 +41,15 @@ def get_composition(ksize, seq, kmers, norm):
                     nc.append(float(item)/float(total))
                 composition = nc
         return composition
-    except RuntimeError:
-        print("Could not calculate composition using khmer")
+    except:
+        logging.exception("Could not calculate composition using khmer")
 
 
 def write_kmers_as_csv(infile, outfile, ksize, kmers):
     try:
         with open(infile, 'r') as f1:
             with open(outfile, 'w') as csvfile:
-                mywriter = csv.writer(csvfile)
+                mywriter = csv.writer(csvfile, lineterminator='\n')
                 header = ["id"]
                 header.extend(kmers)
                 # mywriter.writerow(header)
@@ -62,8 +62,8 @@ def write_kmers_as_csv(infile, outfile, ksize, kmers):
                     kmer_ilr = vica.prodigal.ilr(kmer_frequency)
                     rl.extend(kmer_ilr)
                     mywriter.writerow(rl)
-    except RuntimeError:
-        print("Could not write kmer profiles to file")
+    except:
+        logging.exception("Could not write kmer profiles to file")
 
 def main():
 

@@ -8,6 +8,7 @@ import os
 import csv
 import argparse
 import numpy as np
+import logging
 
 def external_sort(infile, outfile, sep, key=1):
     '''Externally sort and make unique csv files using built-in linux utilities'''
@@ -16,7 +17,7 @@ def external_sort(infile, outfile, sep, key=1):
         p1 = subprocess.run(sortoptions, check=True,)
         return outfile
     except:
-        print("Input files could not be sorterd")
+        logging.exception("Input files could not be sorterd")
 
 def join(kmerfile, codonfile, minhashfile, dtemp):
     '''Externally join with built-in linux utilities in hte order label, kmers,codons,minhash'''
@@ -32,7 +33,7 @@ def join(kmerfile, codonfile, minhashfile, dtemp):
         os.remove(kcfile)
         return mergefile
     except RuntimeError:
-        print("Could not merge csv files using unix join command")
+        logging.exception("Could not merge csv files using unix join command")
 
 def count_features(**kwargs):
     '''given a dictionary of fileypes and file locations return a dictionary of feature lengths'''
@@ -49,19 +50,19 @@ def csv_to_tfrecords(kmerfile, codonfile, minhashfile, mergefile, tfrecordfile, 
     writer = tf.python_io.TFRecordWriter(tfrecordfile)
     features = count_features(kmers=kmerfile,codons=codonfile,minhash=minhashfile)
     kstart = 1
-    kend = features['kmers']
-    cstart = kend + 1
+    kend = features['kmers'] + 1
     cend = kend + features['codons']
-    mstart = cend + 1
-    mend = cend + features['minhash']
+    i = 0
     with open(mergefile, 'r') as mergedata:
-        for i, lstring in enumerate(mergedata):
+        for i, lstring in enumerate(mergedata, 1):
             line = lstring.strip().split(",")
             lab = line[0]
             kdat = np.array(line[kstart:kend], dtype='float32')
-            cdat = np.array(line[cstart:cend], dtype='float32')
-            mdat = np.array(line[mstart:mend], dtype='float32')
+            cdat = np.array(line[kend:cend], dtype='float32')
+            mdat = np.array(line[cend:], dtype='float32')
             example = tf.train.Example(features=tf.train.Features(feature={
+                "id":
+                    tf.train.Feature(bytes_list=tf.train.BytesList(value=[tf.compat.as_bytes(lab)])),
                 "label":
                     tf.train.Feature(int64_list=tf.train.Int64List(value=[int(label)])),
                 "kmer":
@@ -73,7 +74,7 @@ def csv_to_tfrecords(kmerfile, codonfile, minhashfile, mergefile, tfrecordfile, 
                 }))
             writer.write(example.SerializeToString())
     writer.close()
-    print("Successfully converted {} records to the tfrecord file: {}".format(i+1, tfrecordfile))
+    logging.info("Successfully converted {} records to to TFrecord format".format(i))
 
 
 def convert_to_tfrecords(dtemp, kmerfile, codonfile, minhashfile,
