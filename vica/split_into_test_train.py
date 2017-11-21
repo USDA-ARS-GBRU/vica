@@ -7,7 +7,6 @@ import random
 
 
 
-
 #load fasta records and create index
 def _read_data(file):
     '''read a fasta or bgzf fasta and optionally an equivelantly named faidx and return a pyfaidx handle'''

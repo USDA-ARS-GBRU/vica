@@ -5,4 +5,6 @@ Vica: A classifier for the identification of RNA and RNA viruses in complex meta
           Qingpeng Zhang, US Department of Energy, Joint Genome Institute
 
 :External Dependencies: BBtools version 37.53,
-                        Prodigal version 2.6.3, GNU Coreutils (join, sort)
+                        Prodigal version 2.6.3,
+                        GNU Coreutils (join, sort),
+                        pigz

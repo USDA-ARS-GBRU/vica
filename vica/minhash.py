@@ -143,6 +143,11 @@ def pick_higher_level(taxid, taxinstance):
         if taxid == 0:
             return 0
 
+def pick_higher_level_bbtools(taxid):
+    try:
+        '''take a taxid and return a higher level taxid based on bbtools taxonomy'''
+
+
 
 def raise_taxdict_level(taxdict, taxinstance):
     '''takes a dict in the form {taxid1: score1, taxid2: score2, ...} and
@@ -178,7 +183,7 @@ def dict_to_csv(sketchdict, taxlist, outfile):
     for key, item in sketchdict.items():
         newdict[key]= raise_taxdict_level(taxdict=item, taxinstance=ncbi)
     with open(outfile, 'w') as csvhandle:
-        csv_writer_instance = csv.writer(csvhandle, lineterminator='\n')
+        csv_writer_instance = csv.writer(csvhandle, linrminator='\n')
         for key, item in newdict.items():
             line = []
             line.append(key)
