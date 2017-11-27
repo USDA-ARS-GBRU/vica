@@ -6,7 +6,12 @@ setup(
     packages=['vica'],
     license='All rights reserved, pending review by USDA ARS office of Technology Transfer and Lawrence Berkeley National Laboratory',
     long_description=open('README.rst').read(),
-    keywords='virus classifier metagenome RNA DNA microbiome',
+    classifiers=['Topic :: Scientific/Engineering :: Bio-Informatics',
+                 'Topic :: Scientific/Engineering :: Artificial Intelligence',
+                 'Programming Language :: Python :: 3.5',
+                 'Development Status :: 2 - Pre-Alpha']
+    keywords='virus classifier metagenome RNA DNA microbiome tensorflow',
+    url='http://github.com/usda-ars-gbru/vica'
     test_suite ='nose.collector',
     #tests_require=['nose'],
     author='Adam R. Rivers, Qingpeng Zhang',

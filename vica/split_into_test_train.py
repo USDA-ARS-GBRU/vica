@@ -10,7 +10,7 @@ import random
 #load fasta records and create index
 def _read_data(file):
     '''read a fasta or bgzf fasta and optionally an equivelantly named faidx and return a pyfaidx handle'''
-    genes = Fasta(file)#, read_long_names=True)
+    genes = Fasta(file, number=10000)
     return genes
 
 
