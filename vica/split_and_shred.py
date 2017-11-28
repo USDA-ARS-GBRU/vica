@@ -4,6 +4,9 @@
 import pyfaidx
 import ete3
 import pandas
+import logging
+import numpy
+import subprocess
 
 #workflow
 # Index sorted.fa.gz, the file from bbtools taxonomy processing
@@ -30,24 +33,39 @@ def _shuffle_keys(ddict):
     kls = random.shuffle(keylist)
     return keylist
 
-def _profile_sequences(seqobj, ncbiobj, splitlevel, classes):
+def _get_taxonomy(minlevel, maxlevel, treefile, infile):
+    '''takes a bbtools formatted sequence fasta file andretuns a list containing the lineage at the min and max levels requested'''
+    options = ["taxonomy.sh",
+               "tree=" + treefile,
+               "minlevel=" + minlevel,
+               "maxlevel=" + minlevel,
+               "in=" + infile]
+    sendsketchout = subprocess.run(options, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    return sendsketchout.stdout.decode('utf-8').splitlines()
+
+def _profile_sequences(seqobj, ncbiobj, minsplitlevel, maxsplitlevel, classes):
     '''collect data on all sequences in the reference db'''
+    taxlevels = ['species', 'genus', 'family', 'order','class', 'phylum', 'kingdom', ]
     datadict = {}
     for key in seqobj.keys():
-        rec = key.strip().split("|")
-        tid = rec[1]
-        accession = rec[2]
-        length = len(seqobj[key])
-        revlinlist = ncbiobj.get_lineage(tid)[::-1]
-        rankdict = ncbiobj.get_rank(revlinlist)
-        sltaxon = None
-        cltaxon = None
-        for item in revlinlist:
-            if rankdict[item] == splitlevel:
-                sltaxon = item
-            if item in classes:
-                cltaxon = item
-        datadict[key] = [tid, sltaxon, cltaxon, length]
+        try:
+            rec = key.strip().split("|")
+            tid = rec[1]
+            accession = rec[2]
+            length = len(seqobj[key])
+            revlinlist = ncbiobj.get_lineage(tid)[::-1]
+            rankdict = ncbiobj.get_rank(revlinlist)
+            sltaxon = None
+            cltaxon = None
+            for item in revlinlist:
+                if rankdict[item] == splitlevel:
+                    sltaxon = item
+                if item in classes:
+                    cltaxon = item
+            datadict[key] = [tid, sltaxon, cltaxon, length]
+        except Exception:
+            logging.exception("An error occured while profiling the sequence {} in the reference database. Coninuing with the next sequence.".format(str(key)))
+            pass
     df = pandas.DataFrame.from_dict(datadict, orient="index")
     df.columns = ["taxid", "taxlevelid", "classid", "length"]
     return df
@@ -57,10 +75,14 @@ def _split_levels(testfrac, df, classes):
     cd = {}
     for taxid in classes:
          dff = df[df.classid==taxid]
+         print(dff)
          classids =set(dff['taxlevelid'])
+         print(classids)
          clength = len(classids)
+         print(clength)
          test = round(clength*testfrac)
-         testids = set(numpy.random.choice(a=classids, size = test, replace=False))
+         print(test)
+         testids = set(numpy.random.choice(a=list(classids), size = test, replace=False))
          trainids = set(classids) - testids
          cd[taxid]={'test':testids,'train': trainids, 'total':clength}
     return(cd)
@@ -141,3 +163,5 @@ def shred_all(fastafile, outdir, length=5000, n_per_class=100000, testfrac =0.1,
     df = _profile_sequences(seqobj, ncbi, 'family', classes)
     cd = _split_levels(testfrac=testfrac, df=df, classes=classes)
     _select_contigs(n_per_class=n_per_class, cd=cd, outdir=outdir,length=length,df=df, seqobj=seqobj)
+
+    classes={2: "Bacteria", 2157: "Archaea", 2759: "Eukaryota",10239: "Viruses"}

@@ -22,14 +22,15 @@ Usage
 -----
 
 This package can classify assembled data and train new classification models.
-Most users will only use the classification functionality in Vica. This can be
-easily invoked with the command ```vica classify [options]```. We provide
-trained models for classifying contigs.
+Most users will only use the classification functionality in Vica. We provide
+trained models for classifying contigs. This can be
+easily invoked with the command::
 
- The package also has a suite of tools to train evaluate and use new
- classification models. many of the workflows for doing this can be evoked with
- the same sub command interface for example ```vica get_features```,
- ```vica train```, ```vica evaluate```. for details see the Tutorial.
+   vica classify [options]
+
+The package also has a suite of tools to train evaluate and use new
+classification models. many of the workflows for doing this can be evoked with
+the same sub command interface. For details see the Tutorial.
 
 Requirements
 ------------

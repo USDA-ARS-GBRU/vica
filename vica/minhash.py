@@ -143,11 +143,6 @@ def pick_higher_level(taxid, taxinstance):
         if taxid == 0:
             return 0
 
-def pick_higher_level_bbtools(taxid):
-    try:
-        '''take a taxid and return a higher level taxid based on bbtools taxonomy'''
-
-
 
 def raise_taxdict_level(taxdict, taxinstance):
     '''takes a dict in the form {taxid1: score1, taxid2: score2, ...} and
