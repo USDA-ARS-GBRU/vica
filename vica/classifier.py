@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-'''classifier.py: a module to train models and classify contigs fro mtfrecords
-   of features. It uses tensorflow's datasets api and estimator api'''
+"""classifier.py: a module to train models and classify contigs fro mtfrecords
+   of features. It uses tensorflow's datasets api and estimator api"""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -94,7 +94,7 @@ def _count_tfrecords(filename):
     return i
 
 def _count_labels(filename):
-    '''read tfrecords, return a count of'''
+    """read tfrecords, return a count of"""
     def parser(record):
         keys_to_features = {"label": tf.FixedLenFeature((), tf.int64)}
         parsed = tf.parse_single_example(record, keys_to_features)

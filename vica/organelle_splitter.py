@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-'''organelle_splitter.py: a script to randomly sleect reads from a file '''
+"""organelle_splitter.py: a script to randomly sleect reads from a file """
 
 import argparse
 from pyfaidx import Fasta
@@ -10,12 +10,12 @@ import random
 
 #load fasta records and create index
 def _read_data(file):
-    '''read a fasta and optionally an equivelantly named faidx and return a pyfaidx handle'''
+    """read a fasta and optionally an equivelantly named faidx and return a pyfaidx handle"""
     genes = Fasta(file, read_long_names=True, read_ahead=10000)
     return genes
 
 def _shuffle_keys(ddict):
-    '''take the pyfaidx file and return a suffled list of the keys'''
+    """take the pyfaidx file and return a suffled list of the keys"""
     keylist = []
     for key in ddict.keys():
         keylist.append(key)
@@ -23,7 +23,7 @@ def _shuffle_keys(ddict):
     return keylist
 
 def _is_organelle(string):
-    '''parses the name and returns a tuple of lists conatining the taxid and rank from lowest to highest order'''
+    """parses the name and returns a tuple of lists conatining the taxid and rank from lowest to highest order"""
     ll = string.split(" ")
     name = 'll[0]'
     taxstringlist = ll[1].split(",")

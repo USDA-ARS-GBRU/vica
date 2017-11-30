@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-'''prodigal.py: a module to call genes with prodigal then count codon usage
-and transform into centered log ratio returning values as a CSV'''
+"""prodigal.py: a module to call genes with prodigal then count codon usage
+and transform into centered log ratio returning values as a CSV"""
 
 import argparse
 import tempfile

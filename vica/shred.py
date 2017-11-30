@@ -13,7 +13,7 @@ import logging
 ## Functions
 
 def parse_samples(samples):
-    '''Takes input value for samples and returns type all, fraction or fixed'''
+    """Takes input value for samples and returns type all, fraction or fixed"""
     try:
         def eq( a, b, eps=0.0001):
             return abs(a - b) <= eps
@@ -27,7 +27,7 @@ def parse_samples(samples):
         logging.exception("the input parameter 'samples' had an unexpected input")
 
 def writeseq(record, pos, length, handle):
-    '''writes a fasta sequence to a file, adding position information to the id'''
+    """writes a fasta sequence to a file, adding position information to the id"""
     seqlist = []
     label = (">" + record.name + "|pos|" + str(pos) + ".." + str(pos + length) + "\n")
     end = pos + length
@@ -37,7 +37,7 @@ def writeseq(record, pos, length, handle):
     handle.writelines(seqlist)
 
 def _calc_seg_len(samplemethod, length, shape, loc, scale):
-    '''Returns a length value for a sequence'''
+    """Returns a length value for a sequence"""
     try:
         if samplemethod == 'fixed':
             seglen = length

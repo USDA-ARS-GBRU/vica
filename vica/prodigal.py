@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-'''prodigal.py: a module to call genes with prodigal then count codon usage
-and transform into centered log ratio returning values as a CSV'''
+"""prodigal.py: a module to call genes with prodigal then count codon usage
+and transform into centered log ratio returning values as a CSV"""
 
 import subprocess
 import os
@@ -34,7 +34,7 @@ codon_list = ["TTT", "TCT", "TAT", "TGT",
 
 
 def clr(composition):
-    '''calcualtes a centered log ratio transformation from a list of values'''
+    """calcualtes a centered log ratio transformation from a list of values"""
     with np.errstate(divide='ignore', invalid='ignore'):
         a = np.array(composition)
         am =np.ma.masked_equal(a, 0)
@@ -45,7 +45,7 @@ def clr(composition):
 
 
 def ilr(composition):
-    '''claculates isometric log ratio transformation from list of values'''
+    """claculates isometric log ratio transformation from list of values"""
     with np.errstate(divide='ignore', invalid='ignore'):
         clrlen= len(composition)
         clrarray = clr(composition)
@@ -55,7 +55,7 @@ def ilr(composition):
 
 
 def call_genes(infile, outfile):
-    '''Runs prodigal calling genes'''
+    """Runs prodigal calling genes"""
     options = ["prodigal",
                "-i", infile,
                "-p", "meta",
@@ -65,7 +65,7 @@ def call_genes(infile, outfile):
 
 
 def _gene_to_codon(genestring):
-    '''Converts a DNA sequence string to a list of codons'''
+    """Converts a DNA sequence string to a list of codons"""
     try:
         if len(genestring)>=3:
             f1 = [genestring[i:i+3] for i in range(0, len(genestring), 3)]
@@ -77,8 +77,8 @@ def _gene_to_codon(genestring):
         return []
 
 def _codon_to_dict(genestring, offset):
-    '''counts codons in a gene string, with a reading frame offest returning
-       codon counts as a dict.'''
+    """counts codons in a gene string, with a reading frame offest returning
+       codon counts as a dict."""
     assert offset in [0,1,2], "Offset must be 0, 1, or 2"
     framen = _gene_to_codon(genestring[offset:])
     cdict = {}
@@ -90,7 +90,7 @@ def _codon_to_dict(genestring, offset):
     return cdict
 
 def get_id_list(fasta):
-    '''extract the ids from a fasta file'''
+    """extract the ids from a fasta file"""
     idlist = []
     with open(fasta, 'r') as f:
         for line in f:
@@ -99,12 +99,12 @@ def get_id_list(fasta):
     return idlist
 
 def _parse_prodigal_id_from_biopython(id):
-    '''strips off prodigal gene annotations and returns the id as it was in the contig file'''
+    """strips off prodigal gene annotations and returns the id as it was in the contig file"""
     return '_'.join(str(id).split('_')[:-1])
 
 def count_dict_to_clr_array(count_dict, codon_list):
-    '''Takes a dictionary of counts where the key is the upper case codon,
-       orders them by codon, and performs a clr transformation returning a list'''
+    """Takes a dictionary of counts where the key is the upper case codon,
+       orders them by codon, and performs a clr transformation returning a list"""
     output_list = []
     for i in codon_list:
         if i in count_dict:
@@ -114,8 +114,8 @@ def count_dict_to_clr_array(count_dict, codon_list):
     return clr(output_list)
 
 def count_dict_to_ilr_array(count_dict, codon_list):
-    '''Takes a dictionary of counts where the key is the upper case codon,
-       orders them by codon, and performs a ilr transformation returning a list'''
+    """Takes a dictionary of counts where the key is the upper case codon,
+       orders them by codon, and performs a ilr transformation returning a list"""
     output_list = []
     for i in codon_list:
         if i in count_dict:
@@ -125,7 +125,7 @@ def count_dict_to_ilr_array(count_dict, codon_list):
     return ilr(output_list)
 
 def dsum(*dicts):
-    '''add up values in two dicts returning their sum'''
+    """add up values in two dicts returning their sum"""
     ret = defaultdict(int)
     for d in dicts:
         for k, v in d.items():
@@ -133,9 +133,9 @@ def dsum(*dicts):
     return dict(ret)
 
 def count_codon_in_gene(record, cdict={}):
-    '''takes a biopython sequence record and optionally a defaultdict and
+    """takes a biopython sequence record and optionally a defaultdict and
        returns a defaultdict with the counts for the three codon frames adding
-       them to the existing default dict if one was supplied.'''
+       them to the existing default dict if one was supplied."""
     seq = str(record.seq)
     d1 = {}
     d2 = {}
@@ -150,10 +150,10 @@ def count_codon_in_gene(record, cdict={}):
 
 
 def count_codons(seqio_iterator, csv_writer_instance):
-    '''Count codons from sequences in a BioIO seq iterator, and write to a csv handle'''
+    """Count codons from sequences in a BioIO seq iterator, and write to a csv handle"""
 
     def record_line(id, codon_dict, csv_writer_instance):
-        '''combine id and codon data from the three frames, writing to csv handle'''
+        """combine id and codon data from the three frames, writing to csv handle"""
         l0 = count_dict_to_ilr_array(codon_dict[0], codon_list)
         l1 = count_dict_to_ilr_array(codon_dict[1], codon_list)
         l2 = count_dict_to_ilr_array(codon_dict[2], codon_list)
@@ -181,7 +181,7 @@ def count_codons(seqio_iterator, csv_writer_instance):
 
 
 def contigs_to_feature_file(infile, outfile, dtemp):
-    '''for each contig in a file, count codons and write to csv'''
+    """for each contig in a file, count codons and write to csv"""
     genefile= os.path.join(dtemp, "genes.fasta")
     cgout = call_genes(infile, genefile)
     logging.debug("From prodigal gene caller:")

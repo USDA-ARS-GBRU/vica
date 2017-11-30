@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-'''minhash.py: a module to run bbtools minhash function on a set of data and
-return a file of tab delimited classification data'''
+"""minhash.py: a module to run bbtools minhash function on a set of data and
+return a file of tab delimited classification data"""
 
 import subprocess
 import argparse
@@ -16,7 +16,7 @@ import logging
 jgi_server_url='https://refseq-sketch.jgi-psf.org/sketch'
 
 def send_sketch(infile, outfile):
-    '''Runs bbtools sendsketch.sh on a file of sequences returning a classification for each'''
+    """Runs bbtools sendsketch.sh on a file of sequences returning a classification for each"""
     options = ["sendsketch.sh",
                "in=" + infile,
                "out=" + outfile,
@@ -44,7 +44,7 @@ def send_sketch(infile, outfile):
 
 
 def compare_sketch(infile, outfile, ref, blacklist, tree):
-    '''Runs bbtools sendsketch.sh on a file of sequences returning a classification for each'''
+    """Runs bbtools sendsketch.sh on a file of sequences returning a classification for each"""
     options = ["comparesketch.sh",
                "in=" + infile,
                "out=" + outfile,
@@ -72,7 +72,7 @@ def compare_sketch(infile, outfile, ref, blacklist, tree):
     #return sendsketchout
 
 def parse_sketchout(file):
-    '''parses bbtools sendsketch output returning python dictionary'''
+    """parses bbtools sendsketch output returning python dictionary"""
     try:
         tempdf = {}
         with open(file, 'r') as f:
@@ -118,7 +118,7 @@ def _find_key(input_dict, value):
 
 def pick_higher_level(taxid, taxinstance):
     try:
-        '''take a taxid and an ete3 taxonomy instance and returns a higher level taxid'''
+        """take a taxid and an ete3 taxonomy instance and returns a higher level taxid"""
         lineage = taxinstance.get_lineage(taxid)
         rank = taxinstance.get_rank(lineage)
         cellularlist = [2, 2157, 2759]
@@ -145,8 +145,8 @@ def pick_higher_level(taxid, taxinstance):
 
 
 def raise_taxdict_level(taxdict, taxinstance):
-    '''takes a dict in the form {taxid1: score1, taxid2: score2, ...} and
-       returns dict with scores summed at the phylum level for cellular oganisms or top ICVT level for viruses'''
+    """takes a dict in the form {taxid1: score1, taxid2: score2, ...} and
+       returns dict with scores summed at the phylum level for cellular oganisms or top ICVT level for viruses"""
     newdict ={}
     for key, item in taxdict.items():
         phyid = pick_higher_level(taxid=key, taxinstance=taxinstance)
@@ -159,8 +159,8 @@ def raise_taxdict_level(taxdict, taxinstance):
 
 
 def get_feature_list(nodesdmpfile, noncellular):
-    '''takes a NCBI taxonomy nodes.dmp file and a dict with high level
-       noncellular categories and returns a list of taxids at the selected level'''
+    """takes a NCBI taxonomy nodes.dmp file and a dict with high level
+       noncellular categories and returns a list of taxids at the selected level"""
     with open(nodesdmpfile, 'r') as nodes:
         phylist =[0]
         for line in nodes:
