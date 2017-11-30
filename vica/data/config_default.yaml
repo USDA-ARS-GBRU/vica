@@ -1,0 +1,45 @@
+# This file contains a default configuration file in YAML 1.2 format
+
+# parameters for the minhash module
+minhash:
+  jgi_server_url: "https://refseq-sketch.jgi-psf.org/sketch"
+  # NCBI taxonomy ids and labels for high level classes
+  superkingdom :
+    2: "Bacteria"
+    2157: "Archaea"
+    2759: "Eukaryota"
+    12884: "Viroids"
+    10239: "Viruses"
+  # NCBI taxonomy ids and labels for top level viral classes
+  noncellular :
+    39759: "Deltavirus"
+    35237: "dsDNA viruses, no RNA stage"
+    35325: "dsRNA viruses"
+    1910928: "Genomoviridae"
+    35268: "Retro-transcribing viruses"
+    12877: "Satellites"
+    29258: "ssDNA viruses"
+    439488: "ssRNA viruses"
+    1714266: "Virus families not assigned to an order"
+    686617: "unassigned viruses"
+    451344: "unclassified archaeal viruses"
+    12333: "unclassified bacterial viruses"
+    1922347: "unclassified RNA viruses"
+    552364: "unclassified virophages"
+    12429: "unclassified viruses"
+    12884: "Viroids"”
+  # the location of the file containing phylum levels, used to define feautres
+  nodesfile: "data/phylum.txt"
+  # refs: a directory containing a local minhash database.
+  refs: ""
+  # A bbtools tree file, typically 'tree.taxtree.gz'
+  tree: ""
+  # blacklist: a file continaing the minhashes of kmers that are found in too
+  # many reference sequences to be informative
+  blacklist: ""
+# paramters for the get_features module
+get_features:
+  ksize: 5
+  tempdir: None
+classifier:
+  model: ""
