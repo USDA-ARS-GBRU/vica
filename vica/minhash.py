@@ -5,11 +5,13 @@ return a file of tab delimited classification data"""
 import subprocess
 import argparse
 import os
-from ete3 import NCBITaxa
 import csv
 import tempfile
 import shutil
+
 import logging
+from ete3 import NCBITaxa
+
 
 # Constants
 
@@ -209,29 +211,29 @@ def minhashremote(dtemp, infile, outfile, nodesfile):
     taxlist = get_feature_list(nodesdmpfile=nodesfile, noncellular=noncellular)
     dict_to_csv(sketchdict, taxlist=taxlist, outfile=outfile)
 
-def main():
-
-    parser = argparse.ArgumentParser(description='A script to generate minhash compositions usung BBtools Sendsketch')
-    parser.add_argument('--input', help="A multi-sequence fasta file")
-    parser.add_argument('--output', help= "A tabular sketch file")
-    parser.add_argument('--nodes', help= "An ncbi nodes taxonomy file")
-    parser.add_argument('--local', action='store_true')
-    parser.add_argument('--localsketchdir', help= "Directory containing sketches, if local flag is used", default=None)
-    parser.add_argument('--blacklist', help= "Blacklisted kmers, if local flag is used", default=None)
-    parser.add_argument('--tree', help= "Taxonomy tree, if local flag is used", default=None)
-
-    args = parser.parse_args()
-    dtemp = tempfile.mkdtemp()
-    if args.local:
-        minhashlocal(dtemp=dtemp, infile=args.input, outfile=args.output,
-                     nodesfile=args.nodes, localsketchdir=args.localsketchdir,
-                     blacklist=args.blacklist, tree=args.tree)
-    else:
-        minhashremote(dtemp=dtemp, infile=args.input, outfile=args.output,
-                     nodesfile=args.nodes)
-
-    shutil.rmtree(dtemp)
-
-
-if __name__ == '__main__':
-    main()
+# def main():
+#
+#     parser = argparse.ArgumentParser(description='A script to generate minhash compositions usung BBtools Sendsketch')
+#     parser.add_argument('--input', help="A multi-sequence fasta file")
+#     parser.add_argument('--output', help= "A tabular sketch file")
+#     parser.add_argument('--nodes', help= "An ncbi nodes taxonomy file")
+#     parser.add_argument('--local', action='store_true')
+#     parser.add_argument('--localsketchdir', help= "Directory containing sketches, if local flag is used", default=None)
+#     parser.add_argument('--blacklist', help= "Blacklisted kmers, if local flag is used", default=None)
+#     parser.add_argument('--tree', help= "Taxonomy tree, if local flag is used", default=None)
+#
+#     args = parser.parse_args()
+#     dtemp = tempfile.mkdtemp()
+#     if args.local:
+#         minhashlocal(dtemp=dtemp, infile=args.input, outfile=args.output,
+#                      nodesfile=args.nodes, localsketchdir=args.localsketchdir,
+#                      blacklist=args.blacklist, tree=args.tree)
+#     else:
+#         minhashremote(dtemp=dtemp, infile=args.input, outfile=args.output,
+#                      nodesfile=args.nodes)
+#
+#     shutil.rmtree(dtemp)
+#
+#
+# if __name__ == '__main__':
+#     main()

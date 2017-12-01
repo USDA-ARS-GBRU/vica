@@ -1,27 +1,31 @@
 #!/usr/bin/env python3
 """train_eval.py: a module to train models and evaluate models from tfrecords
    of features. It uses The Tensorflow 1.3+ datasets api and estimator api"""
+
+
 import os
 import urllib
-
-import numpy as np
-import tensorflow as tf
 import tempfile
-import vica.khmer_features
 import time
 import datetime
 from collections import Counter
 
+import numpy as np
+import tensorflow as tf
+
+import vica.khmer_features
+
+
 def _featureshape(k):
     """Determine the shape of the features for each feature type including
     for kmers of different lengths."""
-        codonlength = 177
-        minhashlength= 267
-        kmerdim = len(vica.khmer_features.iterate_kmer(k)) - 1
-        kmer = tf.feature_column.numeric_column(key='kmer', shape=(kmerdim))
-        codon = tf.feature_column.numeric_column(key='codon', shape=(codonlength))
-        minhash = tf.feature_column.numeric_column(key='minhash', shape=(minhashlength))
-        return kmerdim, kmer, codon, minhash
+    codonlength = 177
+    minhashlength= 267
+    kmerdim = len(vica.khmer_features.iterate_kmer(k)) - 1
+    kmer = tf.feature_column.numeric_column(key='kmer', shape=(kmerdim))
+    codon = tf.feature_column.numeric_column(key='codon', shape=(codonlength))
+    minhash = tf.feature_column.numeric_column(key='minhash', shape=(minhashlength))
+    return kmerdim, kmer, codon, minhash
 
 
 def train_eval_input_fn():

@@ -5,17 +5,19 @@ and transform into centered log ratio returning values as a CSV"""
 import argparse
 import tempfile
 import os
+import glob
+import shutil
+import logging
+import time
+import datetime
+
+from pyfaidx import Fasta
+
 import vica.shred
 import vica.minhash
 import vica.khmer_features
 import vica.prodigal
 import vica.tfrecord_maker
-import glob
-from pyfaidx import Fasta
-import shutil
-import logging
-import time
-import datetime
 
 def parser():
         parser = argparse.ArgumentParser(description='A script to take a fasta with contigs and extract features to a TFrecord file')

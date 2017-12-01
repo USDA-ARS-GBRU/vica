@@ -41,5 +41,6 @@ minhash:
 get_features:
   ksize: 5
   tempdir: None
-classifier:
-  model: ""
+# paramters for the classify module
+classifier: None
+#paramters for the train_and_eval module

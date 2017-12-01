@@ -3,12 +3,14 @@
 import os
 import argparse
 import subprocess
-import numpy as np
-import scipy.stats
 import argparse
-from pyfaidx import Fasta
 import random
 import logging
+
+import numpy as np
+import scipy.stats
+from pyfaidx import Fasta
+
 
 ## Functions
 

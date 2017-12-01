@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
 '''tfrecord_maker.py: a module to create tf record files'''
-import tensorflow as tf
+
 import subprocess
 import itertools
 import tempfile
 import os
 import csv
 import argparse
-import numpy as np
 import logging
+
+import tensorflow as tf
+import numpy as np
+
 
 def external_sort(infile, outfile, sep, key=1):
     '''Externally sort and make unique csv files using built-in linux utilities'''

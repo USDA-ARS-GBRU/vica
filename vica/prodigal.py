@@ -2,19 +2,23 @@
 """prodigal.py: a module to call genes with prodigal then count codon usage
 and transform into centered log ratio returning values as a CSV"""
 
+
 import subprocess
 import os
-import numpy as np
-from collections import defaultdict
-import math
-from Bio import SeqIO
+import logging
 import tempfile
 import csv
 import shutil
-import scipy.linalg
 import argparse
+import math
+
+import numpy as np
+import scipy.linalg
 import scipy.stats
-import logging
+from Bio import SeqIO
+from collections import defaultdict
+
+
 codon_list = ["TTT", "TCT", "TAT", "TGT",
               "TTC", "TCC", "TAC", "TGC",
               "TTA", "TCA", "TAA", "TGA",

@@ -1,13 +1,16 @@
 #!/usr/bin/env python
-import khmer
+
 import argparse
-from Bio import SeqIO
-from itertools import chain
 import itertools
-from Bio.Seq import Seq
 import csv
-import vica.prodigal
 import logging
+from itertools import chain
+
+import khmer
+from Bio import SeqIO
+from Bio.Seq import Seq
+
+import vica.prodigal
 
 
 def iterate_kmer(k):
