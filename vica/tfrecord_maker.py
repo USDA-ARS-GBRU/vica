@@ -97,25 +97,3 @@ def convert_to_tfrecords(dtemp, kmerfile, codonfile, minhashfile,
     mergefile = join(kmerfile=ksorted, codonfile=csorted, minhashfile=msorted, dtemp=dtemp)
     csv_to_tfrecords(kmerfile=ksorted, codonfile=csorted, minhashfile=msorted,mergefile=mergefile,
                      tfrecordfile=tfrecordfile, label=label)
-
-def run():
-    pass
-
-def main():
-    parser = argparse.ArgumentParser(description='A script to generate a tfrecord file from feature files')
-    parser.add_argument('--kmerin', help="A csv of kmer frequencies")
-    parser.add_argument('--codonin', help="A csv of codon frequencies")
-    parser.add_argument('--minhashin', help="A libsvm file of taxonids and minhash matches")
-    parser.add_argument('--outfile', help= "A tfrecord file")
-    parser.add_argument('--label', help= "An interger label of the class")
-    parser.add_argument('--sort', help= "A flag to sort input files", action="store_true")
-    args = parser.parse_args()
-
-    dtemp = tempfile.mkdtemp()
-    # dtemp = '/Users/rivers/Desktop/tfrecordtest'
-    convert_to_tfrecords(dtemp= dtemp, kmerfile=args.kmerin, codonfile=args.codonin,
-                         minhashfile=args.minhashin, tfrecordfile=args.outfile,
-                         label=args.label, sort=args.sort)
-
-if __name__ == '__main__':
-    main()
