@@ -19,9 +19,11 @@ import pandas
 import numpy
 import pyfaidx
 import ete3
-import yaml.load
+import yaml
 
-# configuration = yaml.load()
+import vica
+
+config = yaml.load(vica.CONFIG_PATH)
 
 def _read_data(file):
     """read a fasta or bgzf fasta and optionally an equivelantly named faidx
@@ -130,7 +132,7 @@ def _read_taxid_from_fasta(outdir):
     return len(species_list)
 
 
-def process_examples(exampletype, n_per_class, cd, outdir, length, df, seqobj):
+def _process_examples(exampletype, n_per_class, cd, outdir, length, df, seqobj):
     """Sample genomes from the test/train split in each class, writing the
         desired number of fragments out to a directory.
 
@@ -184,9 +186,9 @@ def _select_contigs(n_per_class, cd, outdir, length, df, seqobj):
     if not os.path.exists(traindir):
         os.mkdir(traindir)
     # for each test and train:
-    testcount = process_examples(exampletype='test', n_per_class=n_per_class,
+    testcount = _process_examples(exampletype='test', n_per_class=n_per_class,
         cd=cd, outdir=outdir, length=length, df=df, seqobj=seqobj)
-    traincount = process_examples(exampletype='train', n_per_class=n_per_class,
+    traincount = _process_examples(exampletype='train', n_per_class=n_per_class,
         cd=cd, outdir=outdir, length=length, df=df, seqobj=seqobj)
     logging.info("Wrote a total of {} testing and {} training fragmented sequences.".format(testcount, traincount))
 
@@ -197,9 +199,12 @@ def run(fastafile, outdir, length=5000, n_per_class=100000,
               classes={2: "Bacteria",
                        2157: "Archaea",
                        2759: "Eukaryota",
-                       10239: "Viruses"}):
+                       10239: "Viruses"},
+                       configpath=vica.CONFIG_PATH):
     """shred all sequences to the desired length"""
     try:
+        global config
+        config = yaml.load(configpath)
         # Read data as pyfaidx object
         seqobj = _read_data(fastafile)
         ncbi = ete3.NCBITaxa()

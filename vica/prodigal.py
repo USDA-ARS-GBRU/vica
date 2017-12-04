@@ -18,23 +18,8 @@ import scipy.stats
 from Bio import SeqIO
 from collections import defaultdict
 
-
-codon_list = ["TTT", "TCT", "TAT", "TGT",
-              "TTC", "TCC", "TAC", "TGC",
-              "TTA", "TCA", "TAA", "TGA",
-              "TTG", "TCG", "TAG", "TGG",
-              "CTT", "CCT", "CAT", "CGT",
-              "CTC", "CCC", "CAC", "CGC",
-              "CTA", "CCA", "CAA", "CGA",
-              "CTG", "CCG", "CAG", "CGG",
-              "ATT", "ACT", "AAT", "AGT",
-              "ATC", "ACC", "AAC", "AGC",
-              "ATA", "ACA", "AAA", "AGA",
-              "ATG", "ACG", "AAG", "AGG",
-              "GTT", "GCT", "GAT", "GGT",
-              "GTC", "GCC", "GAC", "GGC",
-              "GTG", "GCG", "GAG", "GGG"]
-
+with open(vica.CONFIG_PATH) as cf:
+    config = yaml.load(cf)
 
 
 def clr(composition):
@@ -58,7 +43,7 @@ def ilr(composition):
     return list(ilrmat)
 
 
-def call_genes(infile, outfile):
+def _call_genes(infile, outfile):
     """Runs prodigal calling genes"""
     options = ["prodigal",
                "-i", infile,
@@ -93,14 +78,14 @@ def _codon_to_dict(genestring, offset):
             cdict[codon] += 1
     return cdict
 
-def get_id_list(fasta):
-    """extract the ids from a fasta file"""
-    idlist = []
-    with open(fasta, 'r') as f:
-        for line in f:
-            if line.startswith(">"):
-                idlist.append(line.strip().split()[0])
-    return idlist
+# def get_id_list(fasta):
+#     """extract the ids from a fasta file"""
+#     idlist = []
+#     with open(fasta, 'r') as f:
+#         for line in f:
+#             if line.startswith(">"):
+#                 idlist.append(line.strip().split()[0])
+#     return idlist
 
 def _parse_prodigal_id_from_biopython(id):
     """strips off prodigal gene annotations and returns the id as it was in the contig file"""
@@ -153,7 +138,7 @@ def count_codon_in_gene(record, cdict={}):
     return d2
 
 
-def count_codons(seqio_iterator, csv_writer_instance):
+def count_codons(seqio_iterator, csv_writer_instance, codon_list):
     """Count codons from sequences in a BioIO seq iterator, and write to a csv handle"""
 
     def record_line(id, codon_dict, csv_writer_instance):
@@ -184,27 +169,30 @@ def count_codons(seqio_iterator, csv_writer_instance):
     return lc
 
 
-def contigs_to_feature_file(infile, outfile, dtemp):
+def contigs_to_feature_file(infile, outfile, dtemp, configpath):
     """for each contig in a file, count codons and write to csv"""
+    with open(configpath, "r") as cf:
+        global config
+        config = yaml.load(cf)
     genefile= os.path.join(dtemp, "genes.fasta")
-    cgout = call_genes(infile, genefile)
+    cgout = _call_genes(infile, genefile)
     logging.debug("From prodigal gene caller:")
     logging.debug(cgout)
     seqs = SeqIO.parse(genefile, 'fasta')
     with open(outfile, 'w') as csvfile:
         csv_writer_instance = csv.writer(csvfile, lineterminator='\n')
-        lc = count_codons(seqio_iterator= seqs, csv_writer_instance=csv_writer_instance)
+        lc = count_codons(seqio_iterator= seqs, csv_writer_instance=csv_writer_instance, codon_list= config["prodigal"]["codon_list"])
         logging.info("Wrote {} examples to the temporary file".format(lc, outfile))
 
 
-def main():
-
-    parser = argparse.ArgumentParser(description='A script to generate codon use frequency from Prodigal')
-    parser.add_argument('--input', help="A multi-sequence fasta file")
-    parser.add_argument('--output', help= "An output file of the clr transformed codon usage for frames 1, 2, and 3, in csv format")
-    args = parser.parse_args()
-    dtemp = tempfile.tempdir()
-    contigs_to_feature_file(infile=args.input, outfile=args.output, dtemp=dtemp)
-
-if __name__ == '__main__':
-    main()
+# def main():
+#
+#     parser = argparse.ArgumentParser(description='A script to generate codon use frequency from Prodigal')
+#     parser.add_argument('--input', help="A multi-sequence fasta file")
+#     parser.add_argument('--output', help= "An output file of the clr transformed codon usage for frames 1, 2, and 3, in csv format")
+#     args = parser.parse_args()
+#     dtemp = tempfile.tempdir()
+#     contigs_to_feature_file(infile=args.input, outfile=args.output, dtemp=dtemp)
+#
+# if __name__ == '__main__':
+#     main()

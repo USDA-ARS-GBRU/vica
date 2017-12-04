@@ -13,7 +13,7 @@
 #Ensure necessary executables are in your path
 module load bbtools
 module load pigz
-
+module load samtools
 
 # Fetch RefSeq
 time wget -nv ftp://ftp.ncbi.nlm.nih.gov/refseq/release/complete/*genomic.fna.gz
@@ -30,9 +30,11 @@ time gi2taxid.sh -Xmx63g in=all.fa.gz out=renamed.fa.gz tree=auto table=auto acc
 # Remove all.fa.gz
 rm all.fa.gz
 
-#Sort by taxonomy.
+#Sort by taxonomy and compress with bgzip for random access by pyfaidx
 #This makes sketching by taxa use much less memory because sketches can be written to disk as soon as they are finished.
-time sortbyname.sh -Xmx63g in=renamed.fa.gz out=sorted.fa.gz zl=6 pigz=32 taxa tree=auto gi=ignore fastawrap=255 minlen=60
+time sortbyname.sh -Xmx63g in=renamed.fa.gz out=stdout.fa taxa tree=auto gi=ignore fastawrap=255 minlen=60 | bgzip -c > sorted.fa.bgzip.gz
 
-# Remove all.fa.gz
+
+#remove all.fa.gz and reanmed.fa.gz
 rm renamed.fa.gz
+rm all.fa.gz

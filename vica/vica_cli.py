@@ -9,12 +9,10 @@ import os
 import sys
 import logging
 
-import pkg_resources
+import vica
 
-import vica.get_features
-import vica.classify
-# import vica.train_eval
-import vica.split_shred
+# Set config path for modules in the event that they are accesed directly and
+# not from the vica-cli
 
 def config_logging(logfile, level=logging.DEBUG):
     """Set up logging"""
@@ -52,6 +50,9 @@ def parser():
     evaluate = subparsers.add_parser(
         'evaluate', help="Evaluate the classification performance of a \
         model from test data.")
+    evaluate = subparsers.add_parser(
+        'evaluate', help="Evaluate the classification performance of a \
+        model from test data.")
     # vica classify subparser
     classify.set_defaults(whichmethod='classify')
     classify.add_argument(
@@ -64,12 +65,13 @@ def parser():
         '--threshold', help="A probability value to call a contig viral.",
         type=float, default=0.5)
     classify.add_argument(
-        '--config', help="A config file with additional parameters.",
-        default=pkg_resources.resource_filename(__name__, "config.yaml"))
-    classify.add_argument(
         '--logfile',help="A file to record the analysis. If the same log file \
         is given for multiple vica commands all the setps in the workflow will \
         be recorded.", default="vica.log")
+    classify.add_argument(
+        '--config', help="path to YAML formatted configuration file, default \
+        is " + vica.CONFIG_PATH,
+        default=vica.CONFIG_PATH)
     # vica split subparser
     split.set_defaults(whichmethod='split')
     split.add_argument(
@@ -100,6 +102,10 @@ def parser():
         '--logfile',help="A file to record the analysis. If the same log file \
         is given for multiple vica commands all the setps in the workflow will \
         be recorded.", default="vica.log")
+    split.add_argument(
+        '--config', help="path to YAML formatted configuration file, default \
+        is " + vica.CONFIG_PATH,
+        default=vica.CONFIG_PATH)
     # vica get_features subparser
     get_features.set_defaults(whichmethod='get_features')
     get_features.add_argument(
@@ -119,12 +125,13 @@ def parser():
         database rather than a remote server. Default is false.",
         action="store_true")
     get_features.add_argument(
-        '--config', help="A config file with additional parameters.",
-        default=pkg_resources.resource_filename(__name__, "config.yaml"))
-    get_features.add_argument(
         '--logfile',help="A file to record the analysis. If the same log file \
         is given for multiple vica commands all the setps in the workflow will \
         be recorded.", default="vica.log")
+    get_features.add_argument(
+        '--config', help="path to YAML formatted configuration file, default \
+        is " + vica.CONFIG_PATH,
+        default=vica.CONFIG_PATH)
     # vica train subparser
     train.set_defaults(whichmethod='train')
     train.add_argument(
@@ -141,6 +148,10 @@ def parser():
         '--logfile',help="A file to record the analysis. If the same log file \
         is given for multiple vica commands all the setps in the workflow will \
         be recorded.", default="vica.log")
+    train.add_argument(
+        '--config', help="path to YAML formatted configuration file, default \
+        is " + vica.CONFIG_PATH,
+        default=vica.CONFIG_PATH)
     # vica evaluate subparser
     evaluate.set_defaults(whichmethod='evaluate')
     evaluate.add_argument(
@@ -157,6 +168,10 @@ def parser():
         '--logfile',help="A file to record the analysis. If the same log file \
         is given for multiple vica commands all the setps in the workflow will \
         be recorded.", default="vica.log")
+    evaluate.add_argument(
+        '--config', help="path to YAML formatted configuration file, default \
+        is " + vica.CONFIG_PATH,
+        default=vica.CONFIG_PATH)
     if len(sys.argv)==1:
         parser.print_help()
         raise SystemExit(1)
@@ -168,7 +183,9 @@ def main():
     set up logging and run selected subprogram
     """
     args = parser()
-    print(args)
+    with open(vica.CONFIG_PATH) as cf:
+        global config
+        config = yaml.load(cf)
     try:
         config_logging(args.logfile)
     except:
@@ -184,7 +201,8 @@ def main():
                 n_per_class=args.n_per_class,
                 testfrac =args.testfrac,
                 splitlevel=args.level,
-                classes=eval(args.classes))
+                classes=eval(args.classes),
+                configpath = args.config)
         elif args.whichmethod == 'get_features':
             pass
         elif args.whichmethod == 'train':

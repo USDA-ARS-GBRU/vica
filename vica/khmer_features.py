@@ -10,7 +10,11 @@ import khmer
 from Bio import SeqIO
 from Bio.Seq import Seq
 
-import vica.prodigal
+import vica
+
+
+with open(configpath) as cf:
+    config = yaml.load(cf)
 
 
 def iterate_kmer(k):
@@ -68,20 +72,9 @@ def write_kmers_as_csv(infile, outfile, ksize, kmers):
     except:
         logging.exception("Could not write kmer profiles to file")
 
-def main():
-
-    parser = argparse.ArgumentParser(description='A script to generate k-mer coposition frequency using Khmer')
-    parser.add_argument('--input', help="A multi-sequence fasta file", default='-')
-    parser.add_argument('--output', help= "Output file, csv format", default='-')
-    parser.add_argument('--ksize', help="size of kmer, default=4", default = 4, choices=['4','5','6','7','8'])
-
-    args = parser.parse_args()
-
-    ## File parsing and variable assignment
-    ksize = int(args.ksize)
+def run(infile, outfile, configpath=vica.CONFIG_PATH):
+    global config
+    config = yaml.load(configpath)
+    ksize = config["khmer_features"]["ksize"]
     kmers = iterate_kmer(ksize)
-    write_kmers_as_csv(infile=args.input, outfile=args.output, ksize=args.ksize, kmers=kmers)
-
-
-if __name__ == '__main__':
-    main()
+    write_kmers_as_csv(infile=infile, outfile=outfile, ksize=ksize, kmers=kmers)

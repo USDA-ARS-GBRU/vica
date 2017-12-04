@@ -98,8 +98,10 @@ def convert_to_tfrecords(dtemp, kmerfile, codonfile, minhashfile,
     csv_to_tfrecords(kmerfile=ksorted, codonfile=csorted, minhashfile=msorted,mergefile=mergefile,
                      tfrecordfile=tfrecordfile, label=label)
 
-def main():
+def run():
+    pass
 
+def main():
     parser = argparse.ArgumentParser(description='A script to generate a tfrecord file from feature files')
     parser.add_argument('--kmerin', help="A csv of kmer frequencies")
     parser.add_argument('--codonin', help="A csv of codon frequencies")

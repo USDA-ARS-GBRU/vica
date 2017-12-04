@@ -13,7 +13,7 @@ from collections import Counter
 import numpy as np
 import tensorflow as tf
 
-import vica.khmer_features
+import vica
 
 
 def _featureshape(k):
