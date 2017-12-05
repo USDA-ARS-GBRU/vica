@@ -52,6 +52,7 @@ train_eval:
   train_batch_size: 32
   eval_batch_size: 512
   epochs: 10
+  model: "DNNLogistic"
 khmer_features:
   ksize: 5
 #parameters for the train_and_eval module

@@ -145,6 +145,9 @@ def parser():
         evaluation data for analysis. If training has been done in this \
         directory previously, the results will be added.", required=True)
     train.add_argument(
+        '--n_classes', help="the number of classes present in the training \
+        data, default 4", default=4)
+    train.add_argument(
         '--logfile',help="A file to record the analysis. If the same log file \
         is given for multiple vica commands all the setps in the workflow will \
         be recorded.", default="vica.log")
@@ -164,6 +167,9 @@ def parser():
         '--modeldir', help="A directory contianing the Tensorflow model and \
         evaluation data for analysis. If training has been done in this directory \
         previously the results will be added", required=True)
+    evaluate.add_argument(
+        '--n_classes', help="the number of classes present in the training \
+        data, default 4", default=4)
     evaluate.add_argument(
         '--logfile',help="A file to record the analysis. If the same log file \
         is given for multiple vica commands all the setps in the workflow will \
@@ -214,9 +220,17 @@ def main():
                 minhashlocal=args.minhashlocal,
                 configpath=args.config)
         elif args.whichmethod == 'train':
-            pass
+            vica.train_eval.train(infiles=args.infile,
+                out= args.out,
+                modeldir= args.modeldir,
+                n_classes= args.n_classes,
+                configpath= args.config)
         elif args.whichmethod == 'evaluate':
-            pass
+            vica.train_eval.eval(infiles=args.infile,
+                out= args.out,
+                modeldir= args.modeldir,
+                n_classes= args.n_classes,
+                configpath= args.config)
     except:
         logging.exception()
         raise SystemExit(1)

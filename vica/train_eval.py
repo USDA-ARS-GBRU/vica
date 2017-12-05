@@ -70,34 +70,6 @@ def test_input_fn():
     return features, labels
 
 
-# Utility functions
-# def _print_tfrecords(n, filename):
-#     for i, example in enumerate(tf.python_io.tf_record_iterator(filename)):
-#         if i < n:
-#             result = tf.train.Example.FromString(example)
-#             return(result)
-#         else:
-#             break
-#
-# def _count_tfrecords(filename):
-#     for i, example in enumerate(tf.python_io.tf_record_iterator(filename)):
-#         pass
-#     return i
-#
-# def _count_labels(filename):
-#     """read tfrecords, return a count of"""
-#     def parser(record):
-#         keys_to_features = {"label": tf.FixedLenFeature((), tf.int64)}
-#         parsed = tf.parse_single_example(record, keys_to_features)
-#         return parsed['label']
-#     cnt = Counter()
-#     for i, example in enumerate(tf.python_io.tf_record_iterator(filename)):
-#         cnt[parser(example)] += 1
-#     cd = dict(cnt)
-#     total = sum(cd.values())
-#     wtdict = {k: v / total for k, v in cd.items()}
-#     return wtdict
-
 # Model definitions
 combined_estimator = tf.estimator.DNNLinearCombinedClassifier(
     model_dir = modeldir,
@@ -121,45 +93,59 @@ dnn_estimator = tf.estimator.DNNClassifier(
     hidden_units=[256, 32],
     optimizer='Adagrad')
 
-def train():
-    nclasses = args.nclasses
-    kmerdim, kmer, codon, minhash = _featureshape(args.ksize)
-    filenames = [args.inputs]
-    epochs = args.epochs
-    modeldir = args.output
-    if args.model == "DNN":
-        dnn_estimator.train(input_fn=train_eval_input_fn)
-    elif args.model == "DNNLogistic":
-        combined_estimator.train(input_fn=train_eval_input_fn)
+def train(infiles, out,  modeldir, n_classes, configpath):
+    """Main training function called by vica_cli trains a Tensorflow model
+    returning a modeldir and TFmodel file used by  the tensorflow serving api
 
+    """
+    try:
+        logging.info("Beginning tensorflow model training. to see results in real-time run 'tensorboard --logdir=path/to/log-directory'")
+        with open(configpath, "r") as cf:
+            global config
+            config = yaml.load(cf)
+        kmerdim, kmer, codon, minhash = _featureshape(config["train_eval"]["ksize"])
+        filenames = [infiles]
+        epochs = config["train_eval"]["epochs"]
+        modeldir = modeldir
+        global modeldir, epochs, kmerdim, kmer, codon, minhash, n_classes, filenames
+        if config["train_eval"]["model"]args.model == "DNN":
+            dnn_estimator.train(input_fn={train_input_fn: filenames})
+        elif config["train_eval"]["model"] == "DNNLogistic":
+            combined_estimator.train(input_fn={train_input_fn: filenames})
+    except:
+        loggin.exception(" during tensorflow model training the following exception occured:")
 
-def main():
-    t0 = time.perf_counter()
-    args = parser()
-    # Set up logging
+def eval(infiles, out,  modeldir, n_classes, configpath):
+    """ Main evaluation function called by vica_cli. Load a model from a model directory
+    returning a file of predictions. In the fiture it will have other evaluation datd.
 
-
-estimator.train(input_fn=dataset_input_fn)
-dnn_estimator.train(input_fn=train_eval_input_fn)
-estimator.evaluate(input_fn=evaluate_input_fn)
-
-
-dnnpreds = dnn_estimator.predict(input_fn=evaluate_input_fn)
-with open("dnnpreds.csv", "w") as outfile:
-    csv_writer_instance = csv.writer(outfile, lineterminator='\n')
-    for rec in dnnpreds:
-        ll = [rec['classes'][0].decode("utf-8"), rec['class_ids'][0],str(rec['probabilities'][0]),str(rec['probabilities'][1])]
-        csv_writer_instance.writerow(ll)
-with open("k5preds.csv", "w") as outfile:
-    csv_writer_instance = csv.writer(outfile, lineterminator='\n')
-    for rec in k5predictions:
-        ll = [rec['classes'][0].decode("utf-8"), rec['class_ids'][0],str(rec['probabilities'][0]),str(rec['probabilities'][1])]
-        csv_writer_instance.writerow(ll)
-with open("class4preds.csv", "w") as outfile:
-    csv_writer_instance = csv.writer(outfile, lineterminator='\n')
-    for rec in class4predict:
-        plist = rec['probabilities']
-        pliststr = [str(x) for x in plist]
-        ll = [rec['classes'][0].decode("utf-8"), str(rec['class_ids'][0])]
-        ll.extend(pliststr)
-        csv_writer_instance.writerow(ll)
+    """
+    try:
+        logging.info("Beginning tensorflow model evaluation. to see results in real-time run 'tensorboard --logdir=path/to/log-directory'")
+        with open(configpath, "r") as cf:
+            global config
+            config = yaml.load(cf)
+        kmerdim, kmer, codon, minhash = _featureshape(args.ksize)
+        filenames = [infiles]
+        epochs = config["train_eval"]["epochs"]
+        modeldir = modeldir
+        global modeldir, epochs, kmerdim, kmer, codon, minhash, n_classes, filenames
+        if config["train_eval"]["model"] == "DNN":
+            preds = dnn_estimator.train(input_fn={test_input_fn: filenames})
+        elif config["train_eval"]["model"] == "DNNLogistic":
+            preds = combined_estimator.train(input_fn={test_input_fn: filenames})
+        logging.info("Tensorflow model performance. See also {}.".format(out))
+        logging.info(preds)
+        if not os.path.exists(out)
+            os.mkdir(out)
+        predictions = os.path.join(out,"modelpredictions.txt")
+        with open(predictions), "w") as outfile:
+            csv_writer_instance = csv.writer(outfile, lineterminator='\n')
+            for rec in preds:
+                plist = rec['probabilities']
+                pliststr = [str(x) for x in plist]
+                ll = [rec['classes'][0].decode("utf-8"), str(rec['class_ids'][0])]
+                ll.extend(pliststr)
+                csv_writer_instance.writerow(ll)
+    except:
+        loggin.exception(" during tensorflow model evaluation the following exception occured:")
