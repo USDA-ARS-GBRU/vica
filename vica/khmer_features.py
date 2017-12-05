@@ -7,13 +7,14 @@ import logging
 from itertools import chain
 
 import khmer
+import yaml
 from Bio import SeqIO
 from Bio.Seq import Seq
 
 import vica
 
 
-with open(configpath) as cf:
+with open(vica.CONFIG_PATH) as cf:
     config = yaml.load(cf)
 
 
@@ -62,13 +63,15 @@ def write_kmers_as_csv(infile, outfile, ksize, kmers):
                 # mywriter.writerow(header)
                 ksize = int(ksize)
                 kmers = iterate_kmer(ksize)
-                pseudocount = 0.01
+                rn = 0
                 for record in SeqIO.parse(f1, 'fasta'):
                     rl = [record.id]
                     kmer_frequency = get_composition(ksize,str(record.seq).upper(), kmers, False)
                     kmer_ilr = vica.prodigal.ilr(kmer_frequency)
                     rl.extend(kmer_ilr)
                     mywriter.writerow(rl)
+                    rn += 1
+                logging.info("Wrote {} kmer records to {}.".format(rn, outfile))
     except:
         logging.exception("Could not write kmer profiles to file")
 
@@ -77,4 +80,5 @@ def run(infile, outfile, configpath=vica.CONFIG_PATH):
     config = yaml.load(configpath)
     ksize = config["khmer_features"]["ksize"]
     kmers = iterate_kmer(ksize)
+    logging.info("identifing kmer features with a k of {}".format(ksize))
     write_kmers_as_csv(infile=infile, outfile=outfile, ksize=ksize, kmers=kmers)

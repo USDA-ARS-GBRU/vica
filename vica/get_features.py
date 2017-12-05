@@ -18,7 +18,7 @@ import vica
 
 
 
-def run(input, output, label, tempdir, minhashlocal=None, ksize=5, configpath=vica.CONFIG_PATH):
+def run(input, output, label, minhashlocal=None, configpath=vica.CONFIG_PATH):
     """A command to run all the steps in thefeature selection selection workflow
     1. the selection of minhash features
     2. the selection of codon usage features
@@ -47,7 +47,6 @@ def run(input, output, label, tempdir, minhashlocal=None, ksize=5, configpath=vi
     minhashout = os.path.join(dtemp,"minhashout.txt")
     kmerout = os.path.join(dtemp,"kmerout.csv")
     codonout = os.path.join(dtemp, "codonout.csv")
-    logging.info("Set kmer size to {}".format(ksize))
     # Shred gneomes into contigs
 
     # Extract minhash features

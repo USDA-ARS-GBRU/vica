@@ -32,7 +32,7 @@ rm all.fa.gz
 
 #Sort by taxonomy and compress with bgzip for random access by pyfaidx
 #This makes sketching by taxa use much less memory because sketches can be written to disk as soon as they are finished.
-time sortbyname.sh -Xmx63g in=renamed.fa.gz out=stdout.fa taxa tree=auto gi=ignore fastawrap=255 minlen=60 | bgzip -c > sorted.fa.bgzip.gz
+time sortbyname.sh -Xmx63g in=renamed.fa.gz out=stdout.fa taxa tree=auto gi=ignore fastawrap=255 minlen=60 | pbgzip -c -t 16 -6 > sorted.fa.bfgz
 
 
 #remove all.fa.gz and reanmed.fa.gz

@@ -183,17 +183,21 @@ def main():
     set up logging and run selected subprogram
     """
     args = parser()
-    with open(vica.CONFIG_PATH) as cf:
+    with open(args.config) as cf:
         global config
         config = yaml.load(cf)
     try:
         config_logging(args.logfile)
+        logging.info("Configuration data loaded from {}:".format(args.config))
+        logging.info(config)
     except:
         print("Could not set up logging, exiting.")
         raise SystemExit(1)
     try:
         if args.whichmethod == 'classify':
-            pass
+            print("Classification with the Tensorflow Serving API is not \
+                   currently implemented. Please use 'vica get_features' \
+                   then 'vica evaluate' with a model directory as a workaround.")
         elif args.whichmethod == 'split':
             vica.split_shred.run(fastafile=args.infile,
                 outdir=args.out,
@@ -204,7 +208,11 @@ def main():
                 classes=eval(args.classes),
                 configpath = args.config)
         elif args.whichmethod == 'get_features':
-            pass
+            vica.get_features.run(input=args.infile,
+                output=args.out,
+                label= args.label,
+                minhashlocal=args.minhashlocal,
+                configpath=args.config)
         elif args.whichmethod == 'train':
             pass
         elif args.whichmethod == 'evaluate':

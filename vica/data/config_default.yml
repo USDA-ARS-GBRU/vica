@@ -46,6 +46,12 @@ get_features:
   tempdir: None
 # parameters for the classify module
 classifier: None
+train_eval:
+  codonlength: 177
+  minhashlength: 267
+  train_batch_size: 32
+  eval_batch_size: 512
+  epochs: 10
 khmer_features:
   ksize: 5
 #parameters for the train_and_eval module

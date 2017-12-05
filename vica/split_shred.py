@@ -163,6 +163,8 @@ def _process_examples(exampletype, n_per_class, cd, outdir, length, df, seqobj):
                         _writeseq(seqobj[contigid], pos, length, outhandle)
                         recs_written += 1
                         tot_recs += 1
+                        if tot_recs % 50000 == 0:
+                            logging.info("{} total records processed".format(tot_recs))
         logging.info("Wrote {} fragmented sequences to the {} directory in the class {}".format(recs_written, exampletype, classid))
     return tot_recs
 

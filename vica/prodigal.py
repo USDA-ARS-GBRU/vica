@@ -12,11 +12,14 @@ import shutil
 import argparse
 import math
 
+import yaml
 import numpy as np
 import scipy.linalg
 import scipy.stats
 from Bio import SeqIO
 from collections import defaultdict
+
+import vica
 
 with open(vica.CONFIG_PATH) as cf:
     config = yaml.load(cf)
