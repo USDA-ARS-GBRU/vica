@@ -1,9 +1,10 @@
 
-Query: NC_003911.12 Ruegeria pomeroyi DSS-3, first 7000nt       DB: RefSeq      SketchLen: 191  Seqs: 1         Bases: 7000     gSize: 6554     File: 2testseqs.fasta
-WKID    KID     Score   Matches Unique  TaxID
-100.00% 0.17%   181.8   19      14      246200
+Query: NC_003911.12 Ruegeria pomeroyi DSS-3, first 7000nt	DB: RefSeq	SketchLen: 191	Seqs: 1 	Bases: 7000	gSize: 6554	File: 2testseqs.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.17%	181.8	19	14	246200
 
-Query: NC_005072.1 Prochlorococcus marinus MED4 first 7000nt    DB: RefSeq      SketchLen: 191  Seqs: 1         Bases: 7000     gSize: 6970     File: 2testseqs.fasta
-WKID    KID     Score   Matches Unique  TaxID
-100.00% 0.37%   259.8   29      0       190047
+Query: NC_005072.1 Prochlorococcus marinus MED4 first 7000nt	DB: RefSeq	SketchLen: 191	Seqs: 1 	Bases: 7000	gSize: 6970	File: 2testseqs.fasta
+WKID	KID	Score	Matches	Unique	TaxID
+100.00%	0.37%	259.8	29	0	190047
+
 

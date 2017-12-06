@@ -24,7 +24,6 @@ import vica
 with open(vica.CONFIG_PATH) as cf:
     config = yaml.load(cf)
 
-
 def clr(composition):
     """calcualtes a centered log ratio transformation from a list of values"""
     with np.errstate(divide='ignore', invalid='ignore'):
@@ -81,14 +80,7 @@ def _codon_to_dict(genestring, offset):
             cdict[codon] += 1
     return cdict
 
-# def get_id_list(fasta):
-#     """extract the ids from a fasta file"""
-#     idlist = []
-#     with open(fasta, 'r') as f:
-#         for line in f:
-#             if line.startswith(">"):
-#                 idlist.append(line.strip().split()[0])
-#     return idlist
+
 
 def _parse_prodigal_id_from_biopython(id):
     """strips off prodigal gene annotations and returns the id as it was in the contig file"""
