@@ -1,6 +1,9 @@
 Vica: Identify highly divergent RNA and RNA viruses in metagenomic and metatranscripomic samples
 ===============================================================================================
 
+.. image:: https://travis-ci.org/USDA-ARS-GBRU/vica.svg?branch=master
+    :target: https://travis-ci.org/USDA-ARS-GBRU/vica
+
 :Authors: Adam R. Rivers, US Department of Agriculture, Agricultural Research Service
 
           Qingpeng Zhang, US Department of Energy, Joint Genome Institute
