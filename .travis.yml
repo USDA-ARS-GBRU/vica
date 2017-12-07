@@ -17,7 +17,7 @@ install:
   - pip install -e .
 # command to run tests
 script:
-  -nosetests --with-coverage # or py.test for Python versions 3.5 and below
+  - nosetests --with-coverage # or py.test for Python versions 3.5 and below
 
 after_success:
   - codecov
