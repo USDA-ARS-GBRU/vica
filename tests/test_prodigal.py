@@ -21,16 +21,15 @@ def test_clr():
     composition =[1, 4, 7, 9, 10, 0, 1]
     result = [0.27108151858446849, 1.084326074337874, 1.8975706300912796,
               2.4397336672602168, 2.7108151858446852, 0.0, 0.27108151858446849]
-    for i in len(result):
-        nose.tools.assert_almost_equal(vica.prodigal.clr(composition)[i], result[i])
+    for i, val in enumerate(result):
+        nose.tools.assert_almost_equal(vica.prodigal.clr(composition)[i], val)
 
 def test_ilr():
     composition =[1, 4, 7, 9, 10, 0, 1]
     result = [-0.57505074013627433, -0.99601709884611478, -1.1738174079530661,
               -1.1516977356976139, 1.5342671140651829, 1.0457196607598642]
-    for i in len(result):
-        nose.tools.assert_almost_equal(vica.prodigal.ilr(composition)[i], result[i])
-
+    for i, val in enumerate(result):
+        nose.tools.assert_almost_equal(vica.prodigal.ilr(composition)[i], val)
 def test_call_genes():
     td = tempfile.mkdtemp()
     outfile1 = os.path.join(td,"genes.fasta")
