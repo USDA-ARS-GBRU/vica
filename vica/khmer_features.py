@@ -76,9 +76,10 @@ def write_kmers_as_csv(infile, outfile, ksize, kmers):
         logging.exception("Could not write kmer profiles to file")
 
 def run(infile, outfile, configpath=vica.CONFIG_PATH):
-    global config
-    config = yaml.load(configpath)
-    ksize = config["khmer_features"]["ksize"]
+    with open(configpath, "r") as cf:
+        global config
+        config = yaml.load(cf)
+    ksize = int(config["khmer_features"]["ksize"])
     kmers = iterate_kmer(ksize)
-    logging.info("identifing kmer features with a k of {}".format(ksize))
+    logging.info("identifying kmer features with a k of {}".format(ksize))
     write_kmers_as_csv(infile=infile, outfile=outfile, ksize=ksize, kmers=kmers)

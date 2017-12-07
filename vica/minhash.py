@@ -72,6 +72,8 @@ def _compare_sketch(infile, outfile, ref, blacklist, tree, taxfilter, taxfilterl
                "printunique=t",
                "printnohit=f",
                "printtaxid=t"]
+    if config["minhash"]["memory"]:
+        options.append(config["minhash"]["memory"])
     sendsketchout = subprocess.run(options, stderr=subprocess.PIPE)
     return sendsketchout.stderr.decode('utf-8')
     #return sendsketchout
@@ -164,7 +166,7 @@ def _dict_to_csv(sketchdict, taxlist, outfile):
     for key, item in sketchdict.items():
         newdict[key]= _raise_taxdict_level(taxdict=item, taxinstance=ncbi)
     with open(outfile, 'w') as csvhandle:
-        csv_writer_instance = csv.writer(csvhandle, lineterßminator='\n')
+        csv_writer_instance = csv.writer(csvhandle, lineterminator='\n')
         for key, item in newdict.items():
             line = []
             line.append(key)
@@ -182,18 +184,17 @@ def minhashlocal(dtemp, infile, outfile, configpath):
         config = yaml.load(cf)
     sketchfile = os.path.join(dtemp,"sketchout.txt")
     logging.info("Using BBtools Comparesketch.sh to identify matching taxa in the local database {}".format(str(config["minhash"]["refs"])))
-    refs = os.path.join(config["minhash"]["refs"], "*.sketch")
     cresult = _compare_sketch(infile=infile,
         outfile=sketchfile,
-        ref= refs,
+        ref= config["minhash"]["refs"],
         blacklist=config["minhash"]["blacklist"],
         tree=config["minhash"]["tree"],
-        taxfilter=["minhash"]["tree"]["taxfilter"],
-        taxfilterlevel=["minhash"]["tree"]["taxfilterlevel"])
+        taxfilter=config["minhash"]["taxfilter"],
+        taxfilterlevel=config["minhash"]["taxfilterlevel"])
     logging.info(cresult)
     logging.info("Parsing results file from BBtools Comparesketch.sh")
     sketchdict = _parse_sketchout(sketchfile)
-    taxlist = _get_feature_list(nodesdmpfile=config["minhash"]["nodesfile"], noncellular=config["minhash"]["noncellular"])
+    taxlist = _get_feature_list(nodesdmpfile=os.path.join(vica.DATA_PATH, config["minhash"]["nodesfile"]), noncellular=config["minhash"]["noncellular"])
     _dict_to_csv(sketchdict, taxlist=taxlist, outfile=outfile)
 
 def minhashremote(dtemp, infile, outfile, configpath):
@@ -206,5 +207,5 @@ def minhashremote(dtemp, infile, outfile, configpath):
     logging.info(sresult)
     logging.info("Parsing results file from BBtools Sendsketch.sh")
     sketchdict = _parse_sketchout(sketchfile)
-    taxlist = _get_feature_list(nodesdmpfile=config["minhash"]["nodesfile"], noncellular=config["minhash"]["noncellular"])
+    taxlist = _get_feature_list(nodesdmpfile=os.path.join(vica.DATA_PATH, config["minhash"]["nodesfile"]), noncellular=config["minhash"]["noncellular"])
     _dict_to_csv(sketchdict, taxlist=taxlist, outfile=outfile)

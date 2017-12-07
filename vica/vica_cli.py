@@ -9,6 +9,8 @@ import os
 import sys
 import logging
 
+import yaml
+
 import vica
 
 # Set config path for modules in the event that they are accesed directly and

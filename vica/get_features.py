@@ -17,7 +17,6 @@ import yaml
 import vica
 
 
-
 def run(input, output, label, minhashlocal=None, configpath=vica.CONFIG_PATH):
     """A command to run all the steps in thefeature selection selection workflow
     1. the selection of minhash features
@@ -34,9 +33,9 @@ def run(input, output, label, minhashlocal=None, configpath=vica.CONFIG_PATH):
         config = yaml.load(cf)
     # Set up temp directory
     if config["get_features"]["tempdir"]:
-        if not os.path.exists():
+        if not os.path.exists(config["get_features"]["tempdir"]):
             os.makedirs(config["get_features"]["tempdir"])
-        dtemp = tempdir
+        dtemp = config["get_features"]["tempdir"]
     else:
         dtemp = tempfile.mkdtemp()
     logging.info("temporary directory: {}".format(dtemp))
@@ -54,19 +53,9 @@ def run(input, output, label, minhashlocal=None, configpath=vica.CONFIG_PATH):
     if minhashlocal:
         logging.info("Extacting minhash signatures and identifing them locally")
         try:
-            # Create list of minhash files
-            reflist = glob.glob(os.path.join(config["minhash"]["refs"], "*.sketch"))
-            if reflist:
-                refs = ",".join(reflist)
             vica.minhash.minhashlocal(dtemp=dtemp,
                          infile=input,
                          outfile=minhashout,
-                         nodesfile=config["minhash"]["nodesfile"],
-                         refs=reflist,
-                         blacklist=config["minhash"]["blacklist"],
-                         tree=config["minhash"]["tree"],
-                         taxfilter= config["get_features"]["taxfilter"],
-                         taxfilterlevel=config["get_features"]["taxfilterlevel"],
                          configpath=configpath)
         except:
             logging.exception("vica get_features: during minhash feature selection the following exception occcured:")
