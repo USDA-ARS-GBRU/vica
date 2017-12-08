@@ -21,9 +21,6 @@ from collections import defaultdict
 
 import vica
 
-with open(vica.CONFIG_PATH) as cf:
-    config = yaml.load(cf)
-
 def clr(composition):
     """calcualtes a centered log ratio transformation from a list of values"""
     with np.errstate(divide='ignore', invalid='ignore'):
@@ -164,11 +161,8 @@ def count_codons(seqio_iterator, csv_writer_instance, codon_list):
     return lc
 
 
-def contigs_to_feature_file(infile, outfile, dtemp, configpath):
+def contigs_to_feature_file(infile, outfile, dtemp, codon_list):
     """for each contig in a file, count codons and write to csv"""
-    with open(configpath, "r") as cf:
-        global config
-        config = yaml.load(cf)
     genefile= os.path.join(dtemp, "genes.fasta")
     cgout = _call_genes(infile, genefile)
     logging.debug("From prodigal gene caller:")
@@ -176,7 +170,7 @@ def contigs_to_feature_file(infile, outfile, dtemp, configpath):
     seqs = SeqIO.parse(genefile, 'fasta')
     with open(outfile, 'w') as csvfile:
         csv_writer_instance = csv.writer(csvfile, lineterminator='\n')
-        lc = count_codons(seqio_iterator= seqs, csv_writer_instance=csv_writer_instance, codon_list= config["prodigal"]["codon_list"])
+        lc = count_codons(seqio_iterator= seqs, csv_writer_instance=csv_writer_instance, codon_list= codon_list)
         logging.info("Wrote {} examples to the temporary file".format(lc, outfile))
 
 

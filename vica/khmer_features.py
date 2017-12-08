@@ -14,10 +14,6 @@ from Bio.Seq import Seq
 import vica
 
 
-with open(vica.CONFIG_PATH) as cf:
-    config = yaml.load(cf)
-
-
 def iterate_kmer(k):
     try:
         """ get the list of tetramers"""
@@ -75,11 +71,7 @@ def write_kmers_as_csv(infile, outfile, ksize, kmers):
     except:
         logging.exception("Could not write kmer profiles to file")
 
-def run(infile, outfile, configpath=vica.CONFIG_PATH):
-    with open(configpath, "r") as cf:
-        global config
-        config = yaml.load(cf)
-    ksize = int(config["khmer_features"]["ksize"])
+def run(infile, outfile, ksize):
     kmers = iterate_kmer(ksize)
     logging.info("identifying kmer features with a k of {}".format(ksize))
     write_kmers_as_csv(infile=infile, outfile=outfile, ksize=ksize, kmers=kmers)

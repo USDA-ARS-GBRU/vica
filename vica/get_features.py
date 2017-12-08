@@ -17,7 +17,7 @@ import yaml
 import vica
 
 
-def run(input, output, label, minhashlocal=None, configpath=vica.CONFIG_PATH):
+def run(infile, output, label, minhashlocal=None, configpath=vica.CONFIG_PATH):
     """A command to run all the steps in thefeature selection selection workflow
     1. the selection of minhash features
     2. the selection of codon usage features
@@ -42,28 +42,42 @@ def run(input, output, label, minhashlocal=None, configpath=vica.CONFIG_PATH):
 
 
     # Set paths for temporary output files
-    segments = os.path.join(dtemp, "segments.fasta")
     minhashout = os.path.join(dtemp,"minhashout.txt")
     kmerout = os.path.join(dtemp,"kmerout.csv")
     codonout = os.path.join(dtemp, "codonout.csv")
-    # Shred gneomes into contigs
 
     # Extract minhash features
     s1 = time.perf_counter()
     if minhashlocal:
-        logging.info("Extacting minhash signatures and identifing them locally")
+        logging.info("Extacting minhash signatures and identifying them locally")
         try:
             vica.minhash.minhashlocal(dtemp=dtemp,
-                         infile=input,
-                         outfile=minhashout,
-                         configpath=configpath)
+                infile=infile,
+                outfile=minhashout,
+                ref=config["minhash"]["ref"],
+                blacklist=config["minhash"]["blacklist"],
+                tree=config["minhash"]["tree"],
+                taxfilter=config["minhash"]["taxfilter"],
+                taxfilterlevel=config["minhash"]["taxfilterlevel"],
+                memory=config["minhash"]["memory"],
+                nodesfile=config["minhash"]["nodesfile"],
+                noncellular=config["minhash"]["noncellular"])
         except:
-            logging.exception("vica get_features: during minhash feature selection the following exception occcured:")
+            logging.exception("vica get_features: during minhash local feature selection the following exception occcured:")
             raise SystemExit(1)
     else:
-        logging.info("Extacting minhash signatures and sending them to a server for identification")
-        vica.minhash.minhashremote(dtemp=dtemp, infile=segments,
-            outfile=minhashout,configpath=configpath)
+        try:
+            logging.info("Extacting minhash signatures and sending them to a server for identification")
+            vica.minhash.minhashremote(dtemp=dtemp,
+                infile=infile,
+                outfile=minhashout,
+                server_url=config["minhash"]["server_url"],
+                nodesfile=config["minhash"]["nodesfile"],
+                noncellular=config["minhash"]["noncellular"])
+        except:
+            logging.exception("vica get_features: during minhash remote feature selection the following exception occcured:")
+            raise SystemExit(1)
+
     s2 = time.perf_counter()
     t1 = s2-s1
     timestring1 =  str(datetime.timedelta(seconds=t1))
@@ -73,7 +87,11 @@ def run(input, output, label, minhashlocal=None, configpath=vica.CONFIG_PATH):
     # Extract kmer features
     logging.info("Calculating Kmer features")
     s5 = time.perf_counter()
-    vica.khmer_features.run(infile=segments, outfile=kmerout, configpath=configpath)
+    try:
+        vica.khmer_features.run(infile=infile, outfile=kmerout, ksize=config["khmer_features"]["ksize"])
+    except:
+        logging.exception("vica get_features: during kmer feature selection the following exception occcured:")
+        raise SystemExit(1)
 
     s6 = time.perf_counter()
     t3 = s6 - s5
@@ -83,7 +101,11 @@ def run(input, output, label, minhashlocal=None, configpath=vica.CONFIG_PATH):
     # Extract codons
     logging.info("Calculating Codon features")
     s3 = time.perf_counter()
-    vica.prodigal.contigs_to_feature_file(infile=segments, outfile=codonout, dtemp=dtemp)
+    try:
+        vica.prodigal.contigs_to_feature_file(infile=infile, outfile=codonout, dtemp=dtemp, codon_list=config["prodigal"]["codon_list"])
+    except:
+        logging.exception("vica get_features: during codon feature selection the following exception occcured:")
+        raise SystemExit(1)
     s4 = time.perf_counter()
     t2 = s4 - s3
     timestring2 =  str(datetime.timedelta(seconds=t2))
@@ -93,9 +115,13 @@ def run(input, output, label, minhashlocal=None, configpath=vica.CONFIG_PATH):
     # Combine data into a Tensorflow TF record file
     logging.info("Writing data to the TFrecord file {}".format(output))
     s7 = time.perf_counter()
-    vica.tfrecord_maker.convert_to_tfrecords(dtemp=dtemp, kmerfile=kmerout, codonfile=codonout,
-             minhashfile=minhashout, tfrecordfile=output,
-             label=str(label), sort=True)
+    try:
+        vica.tfrecord_maker.convert_to_tfrecords(dtemp=dtemp, kmerfile=kmerout, codonfile=codonout,
+                 minhashfile=minhashout, tfrecordfile=output,
+                 label=str(label), sort=True)
+    except:
+        logging.exception("vica get_features: While creating a TRfecord file the following exception occcured:")
+        raise SystemExit(1)
     s8 = time.perf_counter()
     t4 = s8-s7
     timestring4 =  str(datetime.timedelta(seconds=t4))
@@ -103,5 +129,5 @@ def run(input, output, label, minhashlocal=None, configpath=vica.CONFIG_PATH):
     tfinal = time.perf_counter()
     ttot = str(datetime.timedelta(seconds=(tfinal - t0)))
     logging.info("All features processed in: {}".format(ttot) )
-    if not tempdir:
+    if not config["get_features"]["tempdir"]:
         shutil.rmtree(dtemp)

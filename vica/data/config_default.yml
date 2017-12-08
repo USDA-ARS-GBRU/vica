@@ -31,7 +31,7 @@ minhash:
   # name of the file containing phylum levels, used to define features
   nodesfile: "phylum.txt"
   # refs: a directory containing a local minhash database.
-  refs: "/Users/rivers/Documents/sketchdata/taxa#.sketch"
+  ref: "/Users/rivers/Documents/sketchdata/taxa#.sketch"
   # A bbtools tree file, typically 'tree.taxtree.gz'
   tree: "/Users/rivers/Documents/taxonomy/tree.taxtree.gz"
   # blacklist: a file continaing the minhashes of kmers that are found in too
@@ -44,9 +44,9 @@ minhash:
 # paramters for the get_features module
   memory: "-Xmx14g"
 get_features:
-  tempdir: null
+  tempdir: "/Users/rivers/Desktop/gftd"
 # parameters for the classify module
-classifier: None
+classifier: null
 train_eval:
   codonlength: 177
   minhashlength: 267

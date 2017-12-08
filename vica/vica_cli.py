@@ -190,10 +190,20 @@ def main():
     """The main entry point for using Vica. it will parse agruments,
     set up logging and run selected subprogram
     """
-    args = parser()
-    with open(args.config) as cf:
-        global config
-        config = yaml.load(cf)
+    try:
+        args = parser()
+    except:
+        print("Could not parse command line arguments.")
+        raise SystemExit(1)
+
+    try:
+        with open(args.config) as cf:
+            global config
+            config = yaml.load(cf)
+    except:
+        print("Could not parse the configuration file.")
+        raise SystemExit(1)
+
     try:
         config_logging(args.logfile)
         logging.info("Configuration data loaded from {}:".format(args.config))
@@ -216,7 +226,7 @@ def main():
                 classes=eval(args.classes),
                 configpath = args.config)
         elif args.whichmethod == 'get_features':
-            vica.get_features.run(input=args.infile,
+            vica.get_features.run(infile=args.infile,
                 output=args.out,
                 label= args.label,
                 minhashlocal=args.minhashlocal,

@@ -23,7 +23,7 @@ def external_sort(infile, outfile, sep, key=1):
         logging.exception("Input files could not be sorterd")
 
 def join(kmerfile, codonfile, minhashfile, dtemp):
-    '''Externally join with built-in linux utilities in hte order label, kmers,codons,minhash'''
+    '''Externally join with built-in linux utilities in the order label, kmers,codons,minhash'''
     kcfile= os.path.join(dtemp, "kcfile.csv")
     mergefile = os.path.join(dtemp, "mergefile.csv")
     try:

@@ -25,7 +25,7 @@ def _send_sketch(infile, outfile, server_url):
                "out=" + outfile,
                "address=" + server_url,
                "mode=sequence",
-               "level=9",
+               "level=3",
                "color=f",
                "overwrite=t",
                "printani=f",
@@ -46,7 +46,7 @@ def _send_sketch(infile, outfile, server_url):
 
 
 
-def _compare_sketch(infile, outfile, ref, blacklist, tree, taxfilter, taxfilterlevel):
+def _compare_sketch(infile, outfile, ref, blacklist, tree, taxfilter, taxfilterlevel, memory):
     """Runs bbtools sendsketch.sh on a file of sequences returning a classification for each"""
     options = ["comparesketch.sh",
                "in=" + infile,
@@ -56,6 +56,7 @@ def _compare_sketch(infile, outfile, ref, blacklist, tree, taxfilter, taxfilterl
                "tree=" + tree,
                "taxfilter=" + taxfilter,
                "taxfilterlevel=" + taxfilterlevel,
+               "mode=sequence",
                "k=31,24",
                "level=3",
                "color=f",
@@ -71,9 +72,8 @@ def _compare_sketch(infile, outfile, ref, blacklist, tree, taxfilter, taxfilterl
                "printcontam=f",
                "printunique=t",
                "printnohit=f",
-               "printtaxid=t"]
-    if config["minhash"]["memory"]:
-        options.append(config["minhash"]["memory"])
+               "printtaxid=t",
+               memory]
     sendsketchout = subprocess.run(options, stderr=subprocess.PIPE)
     return sendsketchout.stderr.decode('utf-8')
     #return sendsketchout
@@ -146,10 +146,10 @@ def _raise_taxdict_level(taxdict, taxinstance):
 
 
 
-def _get_feature_list(nodesdmpfile, noncellular):
+def _get_feature_list(nodesfile, noncellular):
     """takes a NCBI taxonomy nodes.dmp file and a dict with high level
        noncellular categories and returns a list of taxids at the selected level"""
-    with open(nodesdmpfile, 'r') as nodes:
+    with open(nodesfile, 'r') as nodes:
         phylist =[0]
         for line in nodes:
             ll = line.strip().split()
@@ -178,34 +178,29 @@ def _dict_to_csv(sketchdict, taxlist, outfile):
             csv_writer_instance.writerow(line)
 
 
-def minhashlocal(dtemp, infile, outfile, configpath):
-    with open(configpath, "r") as cf:
-        global config
-        config = yaml.load(cf)
+def minhashlocal(dtemp, infile, outfile, ref, blacklist, tree, taxfilter, taxfilterlevel, memory, nodesfile, noncellular):
     sketchfile = os.path.join(dtemp,"sketchout.txt")
-    logging.info("Using BBtools Comparesketch.sh to identify matching taxa in the local database {}".format(str(config["minhash"]["refs"])))
+    logging.info("Using BBtools Comparesketch.sh to identify matching taxa in the local database {}".format(str(ref)))
     cresult = _compare_sketch(infile=infile,
         outfile=sketchfile,
-        ref= config["minhash"]["refs"],
-        blacklist=config["minhash"]["blacklist"],
-        tree=config["minhash"]["tree"],
-        taxfilter=config["minhash"]["taxfilter"],
-        taxfilterlevel=config["minhash"]["taxfilterlevel"])
+        ref= ref,
+        blacklist=blacklist,
+        tree=tree,
+        taxfilter=taxfilter,
+        taxfilterlevel=taxfilterlevel,
+        memory=memory)
     logging.info(cresult)
     logging.info("Parsing results file from BBtools Comparesketch.sh")
     sketchdict = _parse_sketchout(sketchfile)
-    taxlist = _get_feature_list(nodesdmpfile=os.path.join(vica.DATA_PATH, config["minhash"]["nodesfile"]), noncellular=config["minhash"]["noncellular"])
+    taxlist = _get_feature_list(nodesfile=os.path.join(vica.DATA_PATH, nodesfile), noncellular=noncellular)
     _dict_to_csv(sketchdict, taxlist=taxlist, outfile=outfile)
 
-def minhashremote(dtemp, infile, outfile, configpath):
-    with open(configpath, "r") as cf:
-        global config
-        config = yaml.load(cf)
+def minhashremote(dtemp, infile, outfile, server_url, nodesfile, noncellular):
     sketchfile = os.path.join(dtemp,"sketchout.txt")
-    logging.info("Using BBtools Sendsketch.sh to send minhash sketches to the server {}".format(str(config["minhash"]["server_url"])))
-    sresult = _send_sketch(infile=infile, outfile=sketchfile, server_url=config["minhash"]["server_url"])
+    logging.info("Using BBtools Sendsketch.sh to send minhash sketches to the server {}".format(server_url))
+    sresult = _send_sketch(infile=infile, outfile=sketchfile, server_url=server_url)
     logging.info(sresult)
     logging.info("Parsing results file from BBtools Sendsketch.sh")
     sketchdict = _parse_sketchout(sketchfile)
-    taxlist = _get_feature_list(nodesdmpfile=os.path.join(vica.DATA_PATH, config["minhash"]["nodesfile"]), noncellular=config["minhash"]["noncellular"])
+    taxlist = _get_feature_list(nodesfile=os.path.join(vica.DATA_PATH, nodesfile), noncellular=noncellular)
     _dict_to_csv(sketchdict, taxlist=taxlist, outfile=outfile)
