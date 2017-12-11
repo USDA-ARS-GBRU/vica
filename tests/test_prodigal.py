@@ -157,6 +157,6 @@ def test_contigs_to_feature_file():
     dt = tempfile.mkdtemp()
     outfile = os.path.join(dt, "codons.csv")
     expected =  'tests/test-data/codons.csv'
-    vica.prodigal.contigs_to_feature_file(infile=infile, outfile=outfile, dtemp=dt, configpath=vica.CONFIG_PATH)
+    vica.prodigal.contigs_to_feature_file(infile=infile, outfile=outfile, dtemp=dt, codon_list=codon_list)
     assert filecmp.cmp(expected, outfile, shallow=False)
     shutil.rmtree(dt)

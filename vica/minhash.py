@@ -68,7 +68,7 @@ def _compare_sketch(infile, outfile, ref, blacklist, tree, taxfilter, taxfilterl
                "printgsize=f",
                "printgseqs=f",
                "printtaxname=f",
-               "printname0=f",
+               "printname0=t",
                "printcontam=f",
                "printunique=t",
                "printnohit=f",
@@ -78,7 +78,7 @@ def _compare_sketch(infile, outfile, ref, blacklist, tree, taxfilter, taxfilterl
     return sendsketchout.stderr.decode('utf-8')
     #return sendsketchout
 
-def _parse_sketchout(file):
+def _parse_sendsketch(file):
     """parses bbtools sendsketch output returning python dictionary"""
     try:
         tempdf = {}
@@ -100,6 +100,30 @@ def _parse_sketchout(file):
         return tempdf
     except RuntimeError:
         logging.error("could not parse sketch file {}".format(file))
+
+def _parse_comparesketch(file):
+    """parses bbtools comparesketch output returning python dictionary"""
+    try:
+        tempdf = {}
+        with open(file, 'r') as f:
+            for line in f:
+                if line.strip() == '':
+                    next
+                elif line.startswith("Query:"):
+                    ll = line.strip().split("\t")
+                    key1 = ll[6].split(":")[1]
+                    tempdf[key1] = {}
+                elif line.startswith("WKID"):
+                    next
+                elif line.startswith("No hits."):
+                    tempdf[key1]['0'] = 0
+                else:
+                    ll2 = line.strip().split("\t")
+                    tempdf[key1][int(ll2[5])] = float(ll2[2])
+        return tempdf
+    except RuntimeError:
+        logging.error("could not parse sketch file {}".format(file))
+
 
 def _find_key(input_dict, value):
     return next((k for k, v in input_dict.items() if v == value), None)
@@ -191,7 +215,7 @@ def minhashlocal(dtemp, infile, outfile, ref, blacklist, tree, taxfilter, taxfil
         memory=memory)
     logging.info(cresult)
     logging.info("Parsing results file from BBtools Comparesketch.sh")
-    sketchdict = _parse_sketchout(sketchfile)
+    sketchdict = _parse_comparesketch(sketchfile)
     taxlist = _get_feature_list(nodesfile=os.path.join(vica.DATA_PATH, nodesfile), noncellular=noncellular)
     _dict_to_csv(sketchdict, taxlist=taxlist, outfile=outfile)
 
@@ -201,6 +225,6 @@ def minhashremote(dtemp, infile, outfile, server_url, nodesfile, noncellular):
     sresult = _send_sketch(infile=infile, outfile=sketchfile, server_url=server_url)
     logging.info(sresult)
     logging.info("Parsing results file from BBtools Sendsketch.sh")
-    sketchdict = _parse_sketchout(sketchfile)
+    sketchdict = _parse_sendsketch(sketchfile)
     taxlist = _get_feature_list(nodesfile=os.path.join(vica.DATA_PATH, nodesfile), noncellular=noncellular)
     _dict_to_csv(sketchdict, taxlist=taxlist, outfile=outfile)
