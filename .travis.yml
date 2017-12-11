@@ -4,8 +4,8 @@ python:
   - "3.6"
 # command to install dependencies
 before_install:
-  - wget https://sourceforge.net/projects/bbmap/files/BBMap_37.68.tar.gz -O /tmp/BBMap_37.68.tar.gz
-  - tar -xvf /tmp/BBMap_37.68.tar.gz
+  - wget https://sourceforge.net/projects/bbmap/files/BBMap_37.75.tar.gz -O /tmp/BBMap_37.75.tar.gz
+  - tar -xvf /tmp/BBMap_37.75.tar.gz
   - export PATH=$PATH:$PWD/bbmap
   - wget https://github.com/hyattpd/Prodigal/archive/v2.6.3.tar.gz -O /tmp/Prodigalv2.6.3.tar.gz
   - tar -xvf /tmp/Prodigalv2.6.3.tar.gz

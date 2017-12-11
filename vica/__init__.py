@@ -13,4 +13,4 @@ from .prodigal import *
 from .split_shred import *
 from .tfrecord_maker import *
 from .vica_cli import *
-# from .train_eval import *
+from .train_eval import *

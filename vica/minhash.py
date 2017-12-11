@@ -111,7 +111,7 @@ def _parse_comparesketch(file):
                     next
                 elif line.startswith("Query:"):
                     ll = line.strip().split("\t")
-                    key1 = ll[6].split(":")[1]
+                    key1 = ll[6].split(":")[1].strip()
                     tempdf[key1] = {}
                 elif line.startswith("WKID"):
                     next

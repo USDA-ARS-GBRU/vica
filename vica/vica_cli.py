@@ -244,7 +244,7 @@ def main():
                 n_classes= args.n_classes,
                 configpath= args.config)
     except:
-        logging.exception()
+        logging.exception("vica_cli.py: The following exception occured:")
         raise SystemExit(1)
 
 
