@@ -124,7 +124,8 @@ def parser():
         type=int)
     get_features.add_argument(
         '--minhashlocal', help="A flag to use a local version of a minhash \
-        database rather than a remote server. Default is false.",
+        database rather than a remote server. Default is false. relevant minhash \
+        paths in the config file sould be updated  before using --minhashlocal.",
         action="store_true")
     get_features.add_argument(
         '--logfile',help="A file to record the analysis. If the same log file \
