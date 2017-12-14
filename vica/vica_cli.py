@@ -5,7 +5,6 @@
     """
 
 import argparse
-import os
 import sys
 import logging
 import ast
@@ -204,7 +203,7 @@ def main():
 
     try:
         with open(args.config) as cf:
-            config = yaml.save_load(cf)
+            config = yaml.safe_load(cf)
     except:
         print("Could not parse the configuration file.")
         raise SystemExit(1)
