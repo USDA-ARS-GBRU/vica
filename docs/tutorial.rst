@@ -7,7 +7,8 @@ Installation
 
 Instructions for Genepool.nersc.gov (more to come):
 
-.. code-block::
+.. code-block:: python
+
    module unload python
    module load python/3.6-anaconda_4.3.0
    module load bbtools
