@@ -5,14 +5,13 @@ import csv
 import shutil
 
 import nose
-import numpy as np
 import yaml
 from Bio import SeqIO
 
 import vica
 
 with open(vica.CONFIG_PATH) as cf:
-    config = yaml.load(cf)
+    config = yaml.safe_load(cf)
 
 codon_list = config["prodigal"]["codon_list"]
 

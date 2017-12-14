@@ -6,14 +6,11 @@
 
 
 import os
-import urllib
 import tempfile
-from collections import Counter
 import functools
 import logging
 import shutil
 
-import json
 import yaml
 import numpy as np
 import tensorflow as tf
@@ -23,7 +20,7 @@ import csv
 import vica
 
 with open(vica.CONFIG_PATH) as cf:
-    config = yaml.load(cf)
+    config = yaml.safe_load(cf)
 
 def _featureshape(k=5, codonlength=177, minhashlength=267):
     """Determine the shape of the features for each feature type including
@@ -121,7 +118,7 @@ def train(infiles, out, modeldir, n_classes, configpath):
     try:
         logging.info("Beginning tensorflow model training. To see results in real-time run 'tensorboard --logdir={}'".format(modeldir))
         with open(configpath, "r") as cf:
-            config = yaml.load(cf)
+            config = yaml.safe_load(cf)
         kmerdim, kmer, codon, minhash = _featureshape(config["khmer_features"]["ksize"])
         input_fn = functools.partial(base_input_fn,
             codonlength=config["train_eval"]["codonlength"],
@@ -168,7 +165,7 @@ def eval(infiles, out, modeldir, n_classes, configpath):
     try:
         logging.info("Beginning tensorflow model evaluation. To see results in real-time run 'tensorboard --logdir={}'".format(modeldir))
         with open(configpath, "r") as cf:
-            config = yaml.load(cf)
+            config = yaml.safe_load(cf)
         kmerdim, kmer, codon, minhash = _featureshape(config["khmer_features"]["ksize"])
         input_fn = functools.partial(base_input_fn,
             codonlength=config["train_eval"]["codonlength"],
@@ -220,7 +217,7 @@ trainedmodeldir= "../vica_docs/testtrain1/out/1513025603"
 def classify(infile, out, modeldir, n_classes, configpath):
     logging.info("Beginning tensorflow classification")
     with open(configpath, "r") as cf:
-        config = yaml.load(cf)
+        config = yaml.safe_load(cf)
     try:
         if infile.endswith(("tfrecord", "TFrecord")):
             logging.info("Classifing data from TFRecord file.")

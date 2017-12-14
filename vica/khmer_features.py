@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 
-import argparse
+
 import itertools
 import csv
 import logging
-from itertools import chain
 
 import khmer
-import yaml
 from Bio import SeqIO
 from Bio.Seq import Seq
 
@@ -15,8 +13,8 @@ import vica
 
 
 def iterate_kmer(k):
+    """ get the list of tetramers"""
     try:
-        """ get the list of tetramers"""
         bases = ['A','C','T','G']
         kmers = [''.join(p) for p in itertools.product(bases, repeat=k)]
         core_kmer = []

@@ -3,11 +3,8 @@
 return a file of tab delimited classification data"""
 
 import subprocess
-import argparse
 import os
 import csv
-import tempfile
-import shutil
 
 import logging
 from ete3 import NCBITaxa
@@ -16,7 +13,7 @@ import yaml
 import vica
 
 with open(vica.CONFIG_PATH) as cf:
-    config = yaml.load(cf)
+    config = yaml.safe_load(cf)
 
 def _send_sketch(infile, outfile, server_url):
     """Runs bbtools sendsketch.sh on a file of sequences returning a classification for each"""
@@ -129,8 +126,8 @@ def _find_key(input_dict, value):
     return next((k for k, v in input_dict.items() if v == value), None)
 
 def _pick_higher_level(taxid, taxinstance):
+    """take a taxid and an ete3 taxonomy instance and returns a higher level taxid"""
     try:
-        """take a taxid and an ete3 taxonomy instance and returns a higher level taxid"""
         lineage = taxinstance.get_lineage(taxid)
         rank = taxinstance.get_rank(lineage)
         cellularlist = [2, 2157, 2759]
@@ -145,7 +142,7 @@ def _pick_higher_level(taxid, taxinstance):
             else:
                 hightax = 1
         elif set(lineage).intersection(noncellularlist): #is it virus or viroid?
-            for key, val in rank.items():
+            for key in rank:
                 if key in noncellular:
                     hightax = key
         else:

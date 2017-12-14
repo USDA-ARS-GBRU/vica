@@ -6,20 +6,14 @@ and transform into centered log ratio returning values as a CSV"""
 import subprocess
 import os
 import logging
-import tempfile
 import csv
-import shutil
-import argparse
-import math
 
-import yaml
 import numpy as np
 import scipy.linalg
 import scipy.stats
 from Bio import SeqIO
 from collections import defaultdict
 
-import vica
 
 def clr(composition):
     """calcualtes a centered log ratio transformation from a list of values"""
@@ -79,9 +73,9 @@ def _codon_to_dict(genestring, offset):
 
 
 
-def _parse_prodigal_id_from_biopython(id):
+def _parse_prodigal_id_from_biopython(idval):
     """strips off prodigal gene annotations and returns the id as it was in the contig file"""
-    return '_'.join(str(id).split('_')[:-1])
+    return '_'.join(str(idval).split('_')[:-1])
 
 def count_dict_to_clr_array(count_dict, codon_list):
     """Takes a dictionary of counts where the key is the upper case codon,
@@ -133,12 +127,12 @@ def count_codon_in_gene(record, cdict={}):
 def count_codons(seqio_iterator, csv_writer_instance, codon_list):
     """Count codons from sequences in a BioIO seq iterator, and write to a csv handle"""
 
-    def record_line(id, codon_dict, csv_writer_instance):
+    def record_line(idval, codon_dict, csv_writer_instance):
         """combine id and codon data from the three frames, writing to csv handle"""
         l0 = count_dict_to_ilr_array(codon_dict[0], codon_list)
         l1 = count_dict_to_ilr_array(codon_dict[1], codon_list)
         l2 = count_dict_to_ilr_array(codon_dict[2], codon_list)
-        id_and_data = [id]
+        id_and_data = [idval]
         id_and_data.extend(list(np.concatenate((l0, l1, l2))))
         csv_writer_instance.writerow(id_and_data)
 
@@ -151,12 +145,12 @@ def count_codons(seqio_iterator, csv_writer_instance, codon_list):
                 codon_dict = count_codon_in_gene(record=record, cdict=codon_dict)
         elif base_id is not last_base_id:
             if codon_dict != {}:
-                record_line(id=last_base_id, codon_dict=codon_dict, csv_writer_instance=csv_writer_instance)
+                record_line(idval=last_base_id, codon_dict=codon_dict, csv_writer_instance=csv_writer_instance)
                 lc +=1
             codon_dict =count_codon_in_gene(record=record, cdict={})
             last_base_id = base_id
     if codon_dict != {}:
-        record_line(id=base_id, codon_dict=codon_dict, csv_writer_instance=csv_writer_instance)
+        record_line(idval=base_id, codon_dict=codon_dict, csv_writer_instance=csv_writer_instance)
         lc += 1
     return lc
 
@@ -171,7 +165,7 @@ def contigs_to_feature_file(infile, outfile, dtemp, codon_list):
     with open(outfile, 'w') as csvfile:
         csv_writer_instance = csv.writer(csvfile, lineterminator='\n')
         lc = count_codons(seqio_iterator= seqs, csv_writer_instance=csv_writer_instance, codon_list= codon_list)
-        logging.info("Wrote {} examples to the temporary file".format(lc, outfile))
+        logging.info("Wrote {} examples to the temporary file".format(lc))
 
 
 # def main():

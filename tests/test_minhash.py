@@ -2,11 +2,10 @@ import vica.minhash
 import tempfile
 import os
 import filecmp
-import nose
 import yaml
 
 with open(vica.CONFIG_PATH) as cf:
-    config = yaml.load(cf)
+    config = yaml.safe_load(cf)
 
 def test_send_sketch():
     td = tempfile.mkdtemp()

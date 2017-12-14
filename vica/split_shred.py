@@ -9,8 +9,6 @@
     excludes the taxa in the test dataset.
 """
 
-
-import subprocess
 import os
 import logging
 import random
@@ -23,7 +21,7 @@ import yaml
 
 import vica
 
-config = yaml.load(vica.CONFIG_PATH)
+config = yaml.safe_load(vica.CONFIG_PATH)
 
 def _read_data(file):
     """read a fasta or bgzf fasta and optionally an equivelantly named faidx
@@ -37,21 +35,22 @@ def _shuffle_keys(ddict):
     keylist = []
     for key in ddict.keys():
         keylist.append(key)
-    kls = random.shuffle(keylist)
+    random.shuffle(keylist)
     return keylist
 
 
 def _profile_sequences(seqobj, ncbiobj, splitlevel, classes):
-    """collect data on all sequences in the reference db"""
-    taxlevels = ['species', 'genus', 'family', 'order','class',
-        'phylum', 'kingdom', ]
+    """Collect data on all sequences in the reference db.
+    Valid split levels are: 'species', 'genus', 'family', 'order','class',
+        'phylum', 'kingdom'.
+
+    """
     datadict = {}
     keylist = _shuffle_keys(seqobj)
     for key in keylist:
         try:
             rec = key.strip().split("|")
             tid = rec[1]
-            accession = rec[2]
             length = len(seqobj[key])
             revlinlist = ncbiobj.get_lineage(tid)[::-1]
             rankdict = ncbiobj.get_rank(revlinlist)
@@ -66,7 +65,6 @@ def _profile_sequences(seqobj, ncbiobj, splitlevel, classes):
                 datadict[key] = [tid, sltaxon, cltaxon, length]
         except Exception:
             logging.exception("An error occured while profiling the sequence {} in the reference database. Coninuing with the next sequence.".format(str(key)))
-            pass
     df = pandas.DataFrame.from_dict(datadict, orient="index", dtype='int64')
     df.columns = ["taxid", "taxlevelid", "classid", "length"]
     df.astype(dtype={"taxid":"int64","taxlevelid": "int64","classid":"int64","length":"int64"})
@@ -176,7 +174,6 @@ def _select_contigs(n_per_class, cd, outdir, length, df, seqobj):
     """select contigs for testing and training for each classifier class with
        even sampling in each taxon at the selected taxonomic level.
        Writes to the output directory."""
-    tot_written = 0
     # create output directory
     if not os.path.exists(outdir):
         os.makedirs(outdir)
@@ -206,7 +203,7 @@ def run(fastafile, outdir, length=5000, n_per_class=100000,
     """shred all sequences to the desired length"""
     try:
         global config
-        config = yaml.load(configpath)
+        config = yaml.safe_load(configpath)
         # Read data as pyfaidx object
         seqobj = _read_data(fastafile)
         ncbi = ete3.NCBITaxa()

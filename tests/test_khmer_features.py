@@ -1,12 +1,9 @@
-import vica.khmer_features
+import vica
 import khmer
 import tempfile
 import os
 import filecmp
-from Bio import SeqIO
-import csv
 import shutil
-import nose
 
 kmer_list = ['AAAA', 'AAAC', 'AAAT', 'AAAG', 'AACA', 'AACC', 'AACT', 'AACG',
  'AATA', 'AATC', 'AATT', 'AATG', 'AAGA', 'AAGC', 'AAGT', 'AAGG', 'ACAA',
@@ -59,6 +56,6 @@ def test_write_kmers_as_csv():
     expected = 'tests/test-data/4mers.csv'
     dtemp = tempfile.mkdtemp()
     outfile = os.path.join(dtemp,"outfile.csv")
-    result = vica.khmer_features.write_kmers_as_csv(infile=infile, outfile=outfile, ksize=4, kmers=kmer_list)
+    vica.khmer_features.write_kmers_as_csv(infile=infile, outfile=outfile, ksize=4, kmers=kmer_list)
     assert filecmp.cmp(outfile, expected)
     shutil.rmtree(dtemp)

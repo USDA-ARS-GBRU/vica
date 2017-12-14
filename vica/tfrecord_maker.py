@@ -2,11 +2,7 @@
 '''tfrecord_maker.py: a module to create tf record files'''
 
 import subprocess
-import itertools
-import tempfile
 import os
-import csv
-import argparse
 import logging
 
 import tensorflow as tf
@@ -17,7 +13,7 @@ def external_sort(infile, outfile, sep, key=1):
     '''Externally sort and make unique csv files using built-in linux utilities'''
     try:
         sortoptions = ['sort', '-t', sep, '-k', str(key), '-s','-u', '-o', outfile,  infile ]
-        p1 = subprocess.run(sortoptions, check=True,)
+        subprocess.run(sortoptions, check=True,)
         return outfile
     except:
         logging.exception("Input files could not be sorterd")
