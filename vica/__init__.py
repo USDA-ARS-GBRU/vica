@@ -5,7 +5,6 @@ import pkg_resources
 DATA_PATH = pkg_resources.resource_filename('vica', 'data/')
 CONFIG_PATH = pkg_resources.resource_filename('vica', 'data/config_default.yml')
 
-from .classify import *
 from .get_features import *
 from .khmer_features import *
 from .minhash import *
