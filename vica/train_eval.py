@@ -12,7 +12,6 @@ import logging
 import shutil
 
 import yaml
-import numpy as np
 import tensorflow as tf
 import csv
 # from google.protobuf.json_format import MessageToDict
@@ -157,7 +156,7 @@ def train(infiles, out, modeldir, n_classes, configpath):
         logging.exception("While exporting the model after tensorflow training the following exception occured:")
 
 
-def eval(infiles, out, modeldir, n_classes, configpath):
+def evaluate(infiles, out, modeldir, n_classes, configpath):
     """ Main evaluation function called by vica_cli. Load a model from a model directory
     returning a file of predictions. In the fiture it will have other evaluation datd.
 
@@ -197,10 +196,10 @@ def eval(infiles, out, modeldir, n_classes, configpath):
             os.mkdir(out)
         predictions = os.path.join(out, "modelpredictions.txt")
         idlist = _ids_from_tfrecords(infile)
-        header = ["ID", "Class", "Class_id"] + ["Prob_class_" + str(i) for i in range(int(n_classes))]
-        csv_writer_instance.writerow(header)
         with open(predictions, "w") as outfile:
             csv_writer_instance = csv.writer(outfile, lineterminator='\n')
+            header = ["ID", "Class", "Class_id"] + ["Prob_class_" + str(i) for i in range(int(n_classes))]
+            csv_writer_instance.writerow(header)
             for idrec, rec in zip(idlist,preds):
                 plist = rec['probabilities']
                 pliststr = [str(x) for x in plist]

@@ -1,5 +1,4 @@
 import vica
-import khmer
 import tempfile
 import os
 import filecmp

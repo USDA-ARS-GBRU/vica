@@ -2,16 +2,14 @@
 """prodigal.py: a module to call genes with prodigal then count codon usage
 and transform into centered log ratio returning values as a CSV"""
 
-import argparse
+
 import tempfile
 import os
-import glob
 import shutil
 import logging
 import time
 import datetime
 
-import pyfaidx
 import yaml
 
 import vica
@@ -30,7 +28,7 @@ def run(infile, output, label, minhashlocal=None, configpath=vica.CONFIG_PATH):
     t0 = time.perf_counter()
     # read config
     with open(configpath) as cf:
-        config = yaml.load(cf)
+        config = yaml.safe_load(cf)
     # Set up temp directory
     if config["get_features"]["tempdir"]:
         if not os.path.exists(config["get_features"]["tempdir"]):

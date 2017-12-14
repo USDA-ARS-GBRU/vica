@@ -8,6 +8,7 @@ import argparse
 import os
 import sys
 import logging
+import ast
 
 import yaml
 
@@ -204,7 +205,7 @@ def main():
     try:
         with open(args.config) as cf:
             global config
-            config = yaml.load(cf)
+            config = yaml.save_load(cf)
     except:
         print("Could not parse the configuration file.")
         raise SystemExit(1)
@@ -230,7 +231,7 @@ def main():
                 n_per_class=args.n_per_class,
                 testfrac =args.testfrac,
                 splitlevel=args.level,
-                classes=eval(args.classes),
+                classes=ast.literal_eval(args.classes),
                 configpath = args.config)
         elif args.whichmethod == 'get_features':
             vica.get_features.run(infile=args.infile,
@@ -245,7 +246,7 @@ def main():
                 n_classes= args.n_classes,
                 configpath= args.config)
         elif args.whichmethod == 'evaluate':
-            vica.train_eval.eval(infiles=args.infile,
+            vica.train_eval.evaluate(infiles=args.infile,
                 out= args.out,
                 modeldir= args.modeldir,
                 n_classes= args.n_classes,
