@@ -1,6 +1,27 @@
 Tutorial for using and training vica
 ====================================
 
+
+Installation
+------------
+
+Instructions for Genepool.nersc.gov (more to come):
+
+.. code-block::
+   module unload python
+   module load python/3.6-anaconda_4.3.0
+   module load bbtools
+   module load pigz
+   module load prodigal
+   conda create -n vicaenv python=3.6
+   source activate vicaenv
+   conda config --add channels bioconda
+   conda install pyfaidx
+   conda install khmer
+   git clone https://github.com/USDA-ARS-GBRU/vica.git
+   python setup.py build
+   pip install -e .
+
 Classifying sequences with vica
 -------------------------------
 To classify contigs using vica no additional data is needed except for the
