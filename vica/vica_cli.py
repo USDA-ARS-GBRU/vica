@@ -204,7 +204,6 @@ def main():
 
     try:
         with open(args.config) as cf:
-            global config
             config = yaml.save_load(cf)
     except:
         print("Could not parse the configuration file.")

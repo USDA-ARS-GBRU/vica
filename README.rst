@@ -10,7 +10,9 @@ Vica: Identify highly divergent RNA and RNA viruses in metagenomic and metatrans
 .. image:: https://readthedocs.org/projects/vica/badge/?version=latest
     :target: http://vica.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
-    
+.. image:: https://api.codacy.com/project/badge/Grade/f39e8359ea334739842bba35e596cfdc
+    :target: https://www.codacy.com/app/arivers/vica?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=USDA-ARS-GBRU/vica&amp;utm_campaign=Badge_Grade
+
 :Authors: Adam R. Rivers, US Department of Agriculture, Agricultural Research Service
 
           Qingpeng Zhang, US Department of Energy, Joint Genome Institute
