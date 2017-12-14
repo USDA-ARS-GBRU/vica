@@ -52,9 +52,6 @@ def parser():
     evaluate = subparsers.add_parser(
         'evaluate', help="Evaluate the classification performance of a \
         model from test data.")
-    evaluate = subparsers.add_parser(
-        'evaluate', help="Evaluate the classification performance of a \
-        model from test data.")
     # vica classify subparser
     classify.set_defaults(whichmethod='classify')
     classify.add_argument(
@@ -66,6 +63,13 @@ def parser():
     classify.add_argument(
         '--threshold', help="A probability value to call a contig viral.",
         type=float, default=0.5)
+    classify.add_argument(
+        '--modeldir', help="A directory contianing the Tensorflow model and \
+        evaluation data for analysis. If training has been done in this directory \
+        previously the results will be added", required=True)
+    classify.add_argument(
+        '--n_classes', help="the number of classes present in the training \
+        data, default 4", default=4)
     classify.add_argument(
         '--logfile',help="A file to record the analysis. If the same log file \
         is given for multiple vica commands all the setps in the workflow will \
@@ -214,9 +218,11 @@ def main():
         raise SystemExit(1)
     try:
         if args.whichmethod == 'classify':
-            print("Classification with the Tensorflow Serving API is not \
-                   currently implemented. Please use 'vica get_features' \
-                   then 'vica evaluate' with a model directory as a workaround.")
+            vica.train_eval.classify(infile=args.infile,
+                out= args.out,
+                modeldir= args.modeldir,
+                n_classes=args.n_classes,
+                configpath= args.config)
         elif args.whichmethod == 'split':
             vica.split_shred.run(fastafile=args.infile,
                 outdir=args.out,

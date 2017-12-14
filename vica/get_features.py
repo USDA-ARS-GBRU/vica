@@ -120,7 +120,7 @@ def run(infile, output, label, minhashlocal=None, configpath=vica.CONFIG_PATH):
                  minhashfile=minhashout, tfrecordfile=output,
                  label=str(label), sort=True)
     except:
-        logging.exception("vica get_features: While creating a TRfecord file the following exception occcured:")
+        logging.exception("vica get_features: While creating a TFrecord file the following exception occcured:")
         raise SystemExit(1)
     s8 = time.perf_counter()
     t4 = s8-s7

@@ -11,11 +11,14 @@ import tempfile
 from collections import Counter
 import functools
 import logging
+import shutil
 
+import json
 import yaml
 import numpy as np
 import tensorflow as tf
 import csv
+# from google.protobuf.json_format import MessageToDict
 
 import vica
 
@@ -31,12 +34,21 @@ def _featureshape(k=5, codonlength=177, minhashlength=267):
     minhash = tf.feature_column.numeric_column(key='minhash', shape=(minhashlength))
     return kmerdim, kmer, codon, minhash
 
-global modeldir, epochs, kmerdim, kmer, codon, minhash, n_classes, filenames
+def _ids_from_tfrecords(filename):
+    "takes a tfrecord filename and retuns a list with the labels in order "
+    idlist = []
+    for example in tf.python_io.tf_record_iterator(filename):
+        result = tf.train.Example.FromString(example)
+        idstr = result.features.feature["id"].bytes_list.value[0].decode()
+        idlist.append(idstr)
+    return idlist
+
+
 
 def base_input_fn(codonlength, minhashlength, kmerdim, shuffle, shuffle_buffer_size, batch, epochs, filenames):
     """the function for feeding and processing training data"""
     # filenames = tf.placeholder(tf.string, shape=[None])
-    dataset = tf.contrib.data.TFRecordDataset(filenames)
+    dataset = tf.data.TFRecordDataset(filenames)
     def parser(record):
         keys_to_features = {"id": tf.FixedLenFeature((), tf.string),
             "label": tf.FixedLenFeature((), tf.int64),
@@ -57,7 +69,7 @@ def base_input_fn(codonlength, minhashlength, kmerdim, shuffle, shuffle_buffer_s
 def test_input_fn():
     """the function for feeding and processing training data"""
     filenames = tf.placeholder(tf.string, shape=[None])
-    dataset = tf.contrib.data.TFRecordDataset(filenames)
+    dataset = tf.data.TFRecordDataset(filenames)
     def parser(record):
         keys_to_features = {"id": tf.FixedLenFeature((), tf.string),
             "label": tf.FixedLenFeature((), tf.int64),
@@ -187,15 +199,84 @@ def eval(infiles, out, modeldir, n_classes, configpath):
         if not os.path.exists(out):
             os.mkdir(out)
         predictions = os.path.join(out, "modelpredictions.txt")
+        idlist = _ids_from_tfrecords(infile)
+        header = ["ID", "Class", "Class_id"] + ["Prob_class_" + str(i) for i in range(int(n_classes))]
+        csv_writer_instance.writerow(header)
         with open(predictions, "w") as outfile:
             csv_writer_instance = csv.writer(outfile, lineterminator='\n')
-            for rec in preds:
+            for idrec, rec in zip(idlist,preds):
                 plist = rec['probabilities']
                 pliststr = [str(x) for x in plist]
-                ll = [rec['classes'][0].decode("utf-8"), str(rec['class_ids'][0])]
+                ll = [idrec, rec['classes'][0].decode("utf-8"), str(rec['class_ids'][0])]
                 ll.extend(pliststr)
                 csv_writer_instance.writerow(ll)
         for key in sorted(results):
             logging.info('{}: {}'.format(key, results[key]))
     except:
         logging.exception("During tensorflow model evaluation the following exception occured:")
+
+trainedmodeldir= "../vica_docs/testtrain1/out/1513025603"
+
+def classify(infile, out, modeldir, n_classes, configpath):
+    logging.info("Beginning tensorflow classification")
+    with open(configpath, "r") as cf:
+        config = yaml.load(cf)
+    try:
+        if infile.endswith(("tfrecord", "TFrecord")):
+            logging.info("Classifing data from TFRecord file.")
+            getfeat = False
+        elif infile.endswith(("fasta","fa","fna")):
+            logging.info("Classifing data from fasta file.")
+            getfeat =True
+    except:
+        logging.exception("Files with that suffix are not supported. Please use .fasta, .fna, or .fa files or .tfrecord files created by `vica get_features`")
+        raise SystemExit(1)
+    if getfeat:
+        dtemp = tempfile.mkdtemp()
+        tfrecfile = os.path.join(dtemp, "data.tfrecord")
+        logging.info("Extracting Features from the sequence data. For more control of options use `vica get_featues`")
+        vica.get_features.run(infile=infile,
+            output=tfrecfile,
+            label=0,
+            minhashlocal=None,
+            configpath=configpath)
+    else:
+        tfrecfile=infile
+    kmerdim, kmer, codon, minhash = _featureshape(config["khmer_features"]["ksize"])
+    input_fn = functools.partial(base_input_fn,
+        codonlength=config["train_eval"]["codonlength"],
+        minhashlength=config["train_eval"]["minhashlength"],
+        kmerdim=kmerdim,
+        shuffle=False,
+        shuffle_buffer_size=0,
+        batch=config["train_eval"]["eval_batch_size"],
+        epochs=1,
+        filenames=tfrecfile)
+    if config["train_eval"]["model"] == "DNN":
+        estimator = mk_dnn_estimator(modeldir=modeldir,
+            n_classes=int(n_classes),
+            kmer=kmer,
+            codon=codon)
+        preds = estimator.predict(input_fn=input_fn)
+        print(preds)
+    elif config["train_eval"]["model"] == "DNNLogistic":
+        estimator = mk_dnnlogistic_estimator(modeldir=modeldir,
+            n_classes=int(n_classes),
+            minhash=minhash,
+            kmer=kmer,
+            codon=codon)
+        preds = estimator.predict(input_fn=input_fn)
+    idlist = _ids_from_tfrecords(tfrecfile)
+    with open(out, "w") as outfile:
+        csv_writer_instance = csv.writer(outfile, lineterminator='\n')
+        header = ["ID", "Class", "Class_id"] + ["Prob_class_" + str(i) for i in range(int(n_classes))]
+        csv_writer_instance.writerow(header)
+        for recid, rec in zip(idlist, preds):
+
+            plist = rec['probabilities']
+            pliststr = [str(x) for x in plist]
+            ll = [recid, rec['classes'][0].decode("utf-8"), str(rec['class_ids'][0])]
+            ll.extend(pliststr)
+            csv_writer_instance.writerow(ll)
+    if getfeat:
+        shutil.rmtree(dtemp)
