@@ -1,4 +1,4 @@
-Vica: Software to identify of highly divergent DNA and RNA viruses and phages in microbiomes
+Vica: Software to identify highly divergent DNA and RNA viruses and phages in microbiomes
 ===============================================================================================
 .. image:: https://travis-ci.org/USDA-ARS-GBRU/vica.svg?branch=master
     :target: https://travis-ci.org/USDA-ARS-GBRU/vica
