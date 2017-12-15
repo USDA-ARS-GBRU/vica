@@ -166,16 +166,3 @@ def contigs_to_feature_file(infile, outfile, dtemp, codon_list):
         csv_writer_instance = csv.writer(csvfile, lineterminator='\n')
         lc = count_codons(seqio_iterator= seqs, csv_writer_instance=csv_writer_instance, codon_list= codon_list)
         logging.info("Wrote {} examples to the temporary file".format(lc))
-
-
-# def main():
-#
-#     parser = argparse.ArgumentParser(description='A script to generate codon use frequency from Prodigal')
-#     parser.add_argument('--input', help="A multi-sequence fasta file")
-#     parser.add_argument('--output', help= "An output file of the clr transformed codon usage for frames 1, 2, and 3, in csv format")
-#     args = parser.parse_args()
-#     dtemp = tempfile.tempdir()
-#     contigs_to_feature_file(infile=args.input, outfile=args.output, dtemp=dtemp)
-#
-# if __name__ == '__main__':
-#     main()

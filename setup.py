@@ -9,6 +9,7 @@ setup(
     classifiers=['Topic :: Scientific/Engineering :: Bio-Informatics',
                  'Topic :: Scientific/Engineering :: Artificial Intelligence',
                  'Programming Language :: Python :: 3.6',
+                 'Programming Language :: Python :: 3.5',
                  'Development Status :: 3 - Alpha'],
     keywords='virus classifier metagenome RNA DNA microbiome tensorflow',
     url='http://github.com/usda-ars-gbru/vica',
