@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='vica',
-    version='0.1.3',
+    version='0.1.4',
     packages=['vica'],
     license='Other/Proprietary License',
     description="find highly divergent DNA and RNA viruses in microbiomes",
