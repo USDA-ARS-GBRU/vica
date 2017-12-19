@@ -20,8 +20,11 @@ Instructions for Genepool.nersc.gov (more to come):
    conda install pyfaidx
    conda install khmer
    git clone https://github.com/USDA-ARS-GBRU/vica.git
+   cd vica
    python setup.py build
    pip install -e .
+   # pip install vica
+
 
 Classifying sequences with vica
 -------------------------------

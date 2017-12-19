@@ -1,4 +1,4 @@
 include README.rst
-include data/*
+include vica/data/*
 include pipelines/*
 include docs/*
