@@ -137,7 +137,7 @@ The overall process for training from scratch using the Refseq dataset is this:
 
   Currently we use 4 classes (Viruses, bacteria, archaea, eukaryotes). This will
   create a directory with test and train folders. Each folder will contain 1
-  folder per class, and a file contain the taxids to be excluded from RefSeq.
+  fasta file per class, and a file contain the taxids to be excluded from RefSeq.
 - Extract the features for each fasta using::
 
    vica get_features [options]
