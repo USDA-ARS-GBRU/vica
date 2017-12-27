@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-"""minhash.py: a module to run bbtools minhash function on a set of data and
+"""A module to run bbtools minhash functions sequencesdata and
 return a file of tab delimited classification data"""
 
 import subprocess
@@ -16,7 +15,25 @@ with open(vica.CONFIG_PATH) as cf:
     config = yaml.safe_load(cf)
 
 def _send_sketch(infile, outfile, server_url):
-    """Runs bbtools sendsketch.sh on a file of sequences returning a classification for each"""
+    """Runs bbtools sendsketch.sh on a file of sequences returning a
+        classification for each
+
+    Calculates minhash sketches if (k=24, 31) for each sequence in a fasta
+    sends the sketches to a server and returns the classification data to
+    a file.
+
+    Args:
+        infile (str): A multi-sequence fasta file for which to calulate
+            minhash taxonomy.
+        outfile (str): a path to write the file retuned from the minhash
+            server
+        server_url (str): a URL for the minhash server
+
+    Returns:
+        (str) The standard output from BBtools comparesketch.sh
+
+    """
+
     options = ["sendsketch.sh",
                "in=" + infile,
                "out=" + outfile,
@@ -44,7 +61,36 @@ def _send_sketch(infile, outfile, server_url):
 
 
 def _compare_sketch(infile, outfile, ref, blacklist, tree, taxfilter, taxfilterlevel, memory):
-    """Runs bbtools sendsketch.sh on a file of sequences returning a classification for each"""
+    """Runs bbtools compareketch.sh on a file of sequences returning a classification for each
+
+    Calculates minhash sketches if (k=24, 31) for each sequence in a fasta
+    and uses a local sketch database, then returns the classification data to
+    a file.
+
+    Args:
+        infile (str): A multi-sequence fasta file for which to calulate
+            minhash taxonomy.
+        outfile (str): a path to write the file retuned from the minhash
+            server
+        ref (str):  A directory containing the .sketch reference files
+        blacklist (str): A fle containing blacklisted sketchs which are to
+            common to be informative
+        tree (str): a path to a BBtools formatted taxonomy archive.
+        taxfilter (str): a path to a file contianing NCBI taxonomy IDs
+            (one ID per line) to exclude from use in classification.
+        taxfileter level (str): A taxonomic rank to use for taxonomic
+            filtering. For example if a the taxid 562 (E. coli) is in the
+            taxfiter file and the taxfilterlevel= 'genus' then all
+            references in the genus Escherichia will be excluded.
+
+            ["species", "genus", "family", "order", "class", "phylum", "kingdom"]
+        memory (str): a Java style specification of the memory available
+            for the process. for Example 16GB: "-Xmx16g"
+
+    Returns:
+        (str) The standard output from BBtools comparesketch.sh
+
+    """
     options = ["comparesketch.sh",
                "in=" + infile,
                "out=" + outfile,
@@ -76,7 +122,20 @@ def _compare_sketch(infile, outfile, ref, blacklist, tree, taxfilter, taxfilterl
     #return sendsketchout
 
 def _parse_sendsketch(file):
-    """parses bbtools sendsketch output returning python dictionary"""
+    """Parses bbtools sendsketch output returning python dictionary.
+
+    Args:
+        file (str): a text file created by BBtools sendsketch.sh or
+            comparesketch.sh
+
+    Returns:
+        (dict): A dictionary with the ID as a key and as a value, a dict
+        with taxid: score for each hit identified
+
+    See Also:
+        vica.minhash._parse_comparesketch
+
+    """
     try:
         tempdf = {}
         with open(file, 'r') as f:
@@ -99,7 +158,19 @@ def _parse_sendsketch(file):
         logging.error("could not parse sketch file {}".format(file))
 
 def _parse_comparesketch(file):
-    """parses bbtools comparesketch output returning python dictionary"""
+    """Parses bbtools comparesketch output returning python dictionary.
+
+    Args:
+        file (str): a text file created by BBtools sendsketch.sh or
+            comparesketch.sh
+
+    Returns:
+        (dict): A dictionary with the ID as a key and as a value, a dict
+        with taxid: score for each hit identified
+
+    See Also:
+        vica.minhash._parse_sendsketch
+    """
     try:
         tempdf = {}
         with open(file, 'r') as f:
@@ -123,10 +194,32 @@ def _parse_comparesketch(file):
 
 
 def _find_key(input_dict, value):
+    """Finds key in a dictionary given a value
+
+    Args:
+        input_dict (dict): A dictionary
+        value (str, int): a value to search for
+
+    Returns:
+        (str, int):  the key for the given entry
+
+    """
     return next((k for k, v in input_dict.items() if v == value), None)
 
 def _pick_higher_level(taxid, taxinstance):
-    """take a taxid and an ete3 taxonomy instance and returns a higher level taxid"""
+    """ Returns the high level taxonomy class that a taxid belongs to.
+
+    Takes a taxid and an ete3 taxonomy instance and returns a higher
+    level taxid.
+
+    Args:
+        taxid (str): An NCBI taxonomy id
+        taxinstance (obj): an ETE3  NCBI taxonomy object
+
+    Returns:
+        (int): The NCBI taxonomy id of the higher taxonomic rank
+
+    """
     try:
         lineage = taxinstance.get_lineage(taxid)
         rank = taxinstance.get_rank(lineage)
@@ -154,8 +247,11 @@ def _pick_higher_level(taxid, taxinstance):
 
 
 def _raise_taxdict_level(taxdict, taxinstance):
-    """takes a dict in the form {taxid1: score1, taxid2: score2, ...} and
-       returns dict with scores summed at the phylum level for cellular oganisms or top ICVT level for viruses"""
+    """Takes a dict in the form {taxid1: score1, taxid2: score2, ...} and
+       returns dict with scores summed at the phylum level for cellular
+       oganisms or top ICVT level for viruses.
+
+    """
     newdict ={}
     for key, item in taxdict.items():
         phyid = _pick_higher_level(taxid=key, taxinstance=taxinstance)
@@ -168,8 +264,10 @@ def _raise_taxdict_level(taxdict, taxinstance):
 
 
 def _get_feature_list(nodesfile, noncellular):
-    """takes a NCBI taxonomy nodes.dmp file and a dict with high level
-       noncellular categories and returns a list of taxids at the selected level"""
+    """Takes a NCBI taxonomy nodes.dmp file and a dict with high level
+       noncellular categories and returns a list of taxids at the selected level.
+
+    """
     with open(nodesfile, 'r') as nodes:
         phylist =[0]
         for line in nodes:
@@ -182,6 +280,10 @@ def _get_feature_list(nodesfile, noncellular):
 
 
 def _dict_to_csv(sketchdict, taxlist, outfile):
+    """Takes a dictionary of data parsed from a minhash sketch file and returns a
+    CSV file with the scores and each top level taxa category.
+
+    """
     newdict = {}
     ncbi = NCBITaxa()
     for key, item in sketchdict.items():
@@ -200,6 +302,60 @@ def _dict_to_csv(sketchdict, taxlist, outfile):
 
 
 def minhashlocal(dtemp, infile, outfile, ref, blacklist, tree, taxfilter, taxfilterlevel, memory, nodesfile, noncellular):
+    """Runs bbtools compareketch.sh on a file of sequences returning a
+        classification for each
+
+    Calculates minhash sketches if (k=24, 31) for each sequence in a fasta
+    and uses a local sketch database, then returns the classification data to
+    a file.
+
+    Args:
+        dtemp (str): a temporary to write intermediate files
+        infile (str): A multi-sequence fasta file for which to calulate
+            minhash taxonomy.
+        outfile (str): a path to write the file retuned from the minhash
+            server
+        ref (str):  A directory containing the .sketch reference files
+        blacklist (str): A fle containing blacklisted sketchs which are to
+            common to be informative
+        tree (str): a path to a BBtools formatted taxonomy archive.
+        taxfilter (str): a path to a file contianing NCBI taxonomy IDs
+            (one ID per line) to exclude from use in classification.
+        taxfileter level (str): A taxonomic rank to use for taxonomic
+            filtering. For example if a the taxid 562 (E. coli) is in the
+            taxfiter file and the taxfilterlevel= 'genus' then all
+            references in the genus Escherichia will be excluded.
+
+            ["species", "genus", "family", "order", "class", "phylum", "kingdom"]
+        memory (str): a Java style specification of the memory available
+            for the process. for Example 16GB: "-Xmx16g"
+        nodesfile (str): a file in NCBI 'taxdump' nodes format containing
+            the phyla super phyla and subphyla that should be used as
+            classification categories for cellular organims. A fltered
+            version of the nodes files is in the package's data directory.
+        noncellular (dict): a dictionary of taxid: names pairs containing
+            the high level classifications for viruses.
+
+    Returns:
+        (str): The standard output from BBtools comparesketch.sh
+
+    Notes:
+        Pefore running comparesketch.sh data must be prepared for bbtools
+        comparesketch.sh. Pipelines for downloading and preparing the data
+        are available in the pipeline directory. Refseq and NCBI taxonomy
+        data must be downloaded and processed before running.
+
+         the function `vica.minhash.minhashremote` creates the same
+        classification files slightly faster without requiring data
+        proprocessing.  The main reason to run run minhash locally is if
+        you need to pass taxfilter files to it. This is primarially used
+        for excluding training data when evaluating the performance of
+        a custom trained classifier.
+
+    See Also:
+        vica.minhash.minhashremote
+
+    """
     sketchfile = os.path.join(dtemp,"sketchout.txt")
     logging.info("Using BBtools Comparesketch.sh to identify matching taxa in the local database {}".format(str(ref)))
     cresult = _compare_sketch(infile=infile,
@@ -217,6 +373,39 @@ def minhashlocal(dtemp, infile, outfile, ref, blacklist, tree, taxfilter, taxfil
     _dict_to_csv(sketchdict, taxlist=taxlist, outfile=outfile)
 
 def minhashremote(dtemp, infile, outfile, server_url, nodesfile, noncellular):
+    """Runs bbtools sendeketch.sh on a file of sequences returning a
+        classification for each
+
+    Calculates minhash sketches if (k=24, 31) for each sequence in a fasta
+    and uses a remote server then returns the classification data to
+    a file.
+
+    Args:
+        dtemp (str): a temporary to write intermediate files
+        infile (str): A multi-sequence fasta file for which to calulate
+            minhash taxonomy.
+        outfile (str): a path to write the file retuned from the minhash
+            server
+        server_url (str): a URL for the minhash server
+        nodesfile (str): a file in NCBI 'taxdump' nodes format containing
+            the phyla super phyla and subphyla that should be used as
+            classification categories for cellular organims. A fltered
+            version of the nodes files is in the package's data directory.
+        noncellular (dict): a dictionary of taxid: names pairs containing
+            the high level classifications for viruses.
+
+    Returns:
+        (str): The standard output from BBtools sendsketch.sh
+
+    Notes:
+        This function is prefered over `vica.minhash.minhashlocal` unless
+        you need to sue taxfilter files to exclude training data when
+        evaluating the performance of a custom trained classifier.
+
+    See Also:
+        vica.minhash.minhashlocal
+
+    """
     sketchfile = os.path.join(dtemp,"sketchout.txt")
     logging.info("Using BBtools Sendsketch.sh to send minhash sketches to the server {}".format(server_url))
     sresult = _send_sketch(infile=infile, outfile=sketchfile, server_url=server_url)

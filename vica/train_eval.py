@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-"""train_eval.py: a module to train models and evaluate models from tfrecords
+"""A module to train and evaluate Vica models from tfrecords
    of features. It uses The Tensorflow 1.3+ datasets api and estimator api
 
 """
@@ -14,7 +13,6 @@ import shutil
 import yaml
 import tensorflow as tf
 import csv
-# from google.protobuf.json_format import MessageToDict
 
 import vica
 
@@ -23,7 +21,14 @@ with open(vica.CONFIG_PATH) as cf:
 
 def _featureshape(k=5, codonlength=177, minhashlength=267):
     """Determine the shape of the features for each feature type including
-    for kmers of different lengths."""
+    for kmers of different lengths.
+
+    Args:
+        k (int): kmer size 4-8
+        codonlegnth (int): length of codon feature vectors
+        minhashlength (int): length of minhash feature vector
+
+    """
     kmerdim = len(vica.khmer_features.iterate_kmer(k)) - 1
     kmer = tf.feature_column.numeric_column(key='kmer', shape=(kmerdim))
     codon = tf.feature_column.numeric_column(key='codon', shape=(codonlength))
@@ -31,7 +36,9 @@ def _featureshape(k=5, codonlength=177, minhashlength=267):
     return kmerdim, kmer, codon, minhash
 
 def _ids_from_tfrecords(filename):
-    "takes a tfrecord filename and retuns a list with the labels in order "
+    """Takes a tfrecord filename and retuns a list with the labels in order.
+
+    """
     idlist = []
     for example in tf.python_io.tf_record_iterator(filename):
         result = tf.train.Example.FromString(example)
@@ -42,8 +49,30 @@ def _ids_from_tfrecords(filename):
 
 
 def base_input_fn(codonlength, minhashlength, kmerdim, shuffle, shuffle_buffer_size, batch, epochs, filenames):
-    """the function for feeding and processing training data"""
-    # filenames = tf.placeholder(tf.string, shape=[None])
+    """The function for feeding and processing training data
+
+    Tensorflow estimators take a function that processes TFrecord Datasets
+    into an example iterator that returnes one processed example each time
+    it is needed. becasue an estimator takes a function without arguments
+    functools.partial is used to set the parameter values for each application
+    (train, evaluate, classify).
+
+    Args:
+        codonlength (int): the number of elements in the codon feature set
+        minhashlength (int)  the number of elements in the minhash feature set
+        kmerdim (int):  the number of elements in the kmer feature set
+        shuffle (bool):  Should valuse be shuffled? (True for trainn, false
+            for evaluate and classify)
+        shuffle_buffer_size (int): How large of a record buffer to load for shuffling
+        batch (int): the size of the training batch (~32 for training larger,
+             ~512 for classification )
+        epochs (int): Epochs (number of complete passes through the data)
+        filenames(list): List of input tfrecords filenames
+
+    Returns:
+        a input function for a Tensorflow estimator
+
+    """
     dataset = tf.data.TFRecordDataset(filenames)
     def parser(record):
         keys_to_features = {"id": tf.FixedLenFeature((), tf.string),
@@ -62,28 +91,21 @@ def base_input_fn(codonlength, minhashlength, kmerdim, shuffle, shuffle_buffer_s
     features, labels = iterator.get_next()
     return features, labels
 
-def test_input_fn():
-    """the function for feeding and processing training data"""
-    filenames = tf.placeholder(tf.string, shape=[None])
-    dataset = tf.data.TFRecordDataset(filenames)
-    def parser(record):
-        keys_to_features = {"id": tf.FixedLenFeature((), tf.string),
-            "label": tf.FixedLenFeature((), tf.int64),
-            "kmer": tf.FixedLenFeature([kmerdim], tf.float32),
-            "codon": tf.FixedLenFeature([config["train_eval"]["codonlength"]], tf.float32),
-            "minhash": tf.FixedLenFeature([config["train_eval"]["minhashlength"]], tf.float32)}
-        parsed = tf.parse_single_example(record, keys_to_features)
-        return {'kmer': parsed['kmer'], 'codon': parsed['codon'], 'minhash': parsed['minhash']}, parsed['label']
-    dataset = dataset.map(parser)
-    dataset = dataset.batch(512)
-    dataset = dataset.repeat(1)
-    iterator = dataset.make_one_shot_iterator()
-    features, labels = iterator.get_next()
-    return features, labels
-
-
 # Model definitions
 def mk_dnnlogistic_estimator(modeldir, n_classes, minhash, kmer, codon):
+    """Specification of Wide and Deep Neural Network model
+
+    Args:
+        modeldir (str): path to directory continaing model data
+        n_classes (int): number of classes in the model
+        minhash (obj): Tensorflow feature column object for minhash data
+        kmer (obj): Tensorflow feature column object for kmer data
+        codon (obj): Tensorflow feature column object for codon data
+
+    Returns:
+        (obj): Tensorflow.estimator.DNNLinearCombinedClassifier object
+
+    """
     dnnlogistic_estimator = tf.estimator.DNNLinearCombinedClassifier(
         model_dir = modeldir,
         n_classes=n_classes,
@@ -98,6 +120,18 @@ def mk_dnnlogistic_estimator(modeldir, n_classes, minhash, kmer, codon):
     return dnnlogistic_estimator
 
 def mk_dnn_estimator(modeldir, n_classes, kmer, codon):
+    """Specification of Deep Neural Network model
+
+    Args:
+        modeldir (str): path to directory continaing model data
+        n_classes (int): number of classes in the model
+        kmer (obj): Tensorflow feature column object for kmer data
+        codon (obj): Tensorflow feature column object for codon data
+
+    Returns:
+        (obj): Tensorflow.estimator.DNNCLassifier object
+
+    """
     dnn_estimator = tf.estimator.DNNClassifier(
         model_dir = modeldir,
         n_classes=n_classes,
@@ -110,8 +144,29 @@ def mk_dnn_estimator(modeldir, n_classes, kmer, codon):
     return dnn_estimator
 
 def train(infiles, out, modeldir, n_classes, configpath):
-    """Main training function called by vica_cli trains a Tensorflow model
-    returning a modeldir and TFmodel file used by  the tensorflow serving api
+    """Train a Tensorflow model with training data returning a modeldir.
+
+    Trains a tensorflow model for the number of epoch specified in config file.
+    calling the function on the same modeldir resumes training at the last
+    checkpoint. The modeldir can be used.
+
+    Args:
+        infiles (list): A list with paths to TFrecords file(s) containing labeled test sequences.
+        out (str): file where TF Saved model file will be written (Future)
+        modeldir (str): a model directory continaing a trained model to use
+        for evaluation.
+        n_classes (int): the number of classes in the model (default 4)
+        configpath (str): path to yaml config files
+
+    Returns:
+        None
+
+    Todo:
+        Convert the model type to Tensorflow SavedModel format and TF serving
+        API once the Tensorflow API supports using SavedModels with Python 3.
+
+    Note: the parameter `out` has no effect currently but been reservved
+        for use once the SavedModel API is better supported by Tensorflow.
 
     """
     try:
@@ -157,8 +212,31 @@ def train(infiles, out, modeldir, n_classes, configpath):
 
 
 def evaluate(infiles, out, modeldir, n_classes, configpath):
-    """ Main evaluation function called by vica_cli. Load a model from a model directory
-    returning a file of predictions. In the fiture it will have other evaluation datd.
+    """Evaluate a trained model using test data, returning a file of
+        predictions and training metrics.
+
+
+    Classify fasta files or TFrecords containing contigs to identify viral
+    contigs. The classifier takes contigs and extractes features then makes
+    predictions. It returns a text file of prediction probabilities for each
+    model class. This file can be used to filter out viral contigs for analysis.
+
+    Args:
+        infiles (list): A list with paths to TFrecords file(s) containing labeled test sequences.
+        out (str): a directory where model predictions will be writen
+        modeldir (str): a model directory continaing a trained model to use
+        for evaluation.
+        n_classes (int): the number of classes in the model (default 4)
+        configpath (str): path to yaml config files
+
+    Returns:
+        None
+
+    Todo:
+        Convert the model type to Tensorflow SavedModel format and TF serving
+        API once the Tensorflow API supports using SavedModels with Python 3.
+
+        Add additional evaluation files: Precision recall plots, confusion matrix.
 
     """
     try:
@@ -211,10 +289,34 @@ def evaluate(infiles, out, modeldir, n_classes, configpath):
     except:
         logging.exception("During tensorflow model evaluation the following exception occured:")
 
-trainedmodeldir= "../vica_docs/testtrain1/out/1513025603"
 
 def classify(infile, out, modeldir, n_classes, configpath):
-    logging.info("Beginning tensorflow classification")
+    """Classify fasta sequences or TRrecords data to identify viral sequences
+
+    Classify fasta files or TFrecords containing contigs to identify viral
+    contigs. The classifier takes contigs and extractes features then makes
+    predictions. It returns a text file of prediction probabilities for each
+    model class. This file can be used to filter out viral contigs for analysis.
+
+    Args:
+        infile (str): the path to a fasta file of contigs (2 kb or longer is
+            recomended) or TFrecords to be classified.
+        out (str): a file with contig modelpredictions
+        modeldir (str): a model directory continaing a trained model to use
+        for classification.
+        n_classes (int): the number of classes in the model (default 4)
+        configpath (str): path to yaml config files
+
+    Returns:
+        None
+
+    Todo:
+        Convert the model type to Tensorflow SavedModel format and TF serving
+        API once the Tensorflow API supports using SavedModels with Python 3.
+
+
+    """
+    logging.info("Beginning Tensorflow classification")
     with open(configpath, "r") as cf:
         config = yaml.safe_load(cf)
     try:
@@ -225,12 +327,15 @@ def classify(infile, out, modeldir, n_classes, configpath):
             logging.info("Classifing data from fasta file.")
             getfeat =True
     except:
-        logging.exception("Files with that suffix are not supported. Please use .fasta, .fna, or .fa files or .tfrecord files created by `vica get_features`")
+        logging.exception("Files with that suffix are not supported. Please \
+            use .fasta, .fna, or .fa files or .tfrecord files created by \
+            `vica get_features`")
         raise SystemExit(1)
     if getfeat:
         dtemp = tempfile.mkdtemp()
         tfrecfile = os.path.join(dtemp, "data.tfrecord")
-        logging.info("Extracting Features from the sequence data. For more control of options use `vica get_featues`")
+        logging.info("Extracting Features from the sequence data. For more \
+            control of options use `vica get_featues`")
         vica.get_features.run(infile=infile,
             output=tfrecfile,
             label=0,

@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-
+"""A module with functions to calculate kmer frequency for short kmers and
+    trasnform those into isometric log ratio compositions"""
 
 import itertools
 import csv
@@ -14,7 +14,19 @@ import vica
 __all__ = ["iterate_kmer", "get_composition", "run"]
 
 def iterate_kmer(k):
-    """ get the list of tetramers"""
+    """Create a list of Kmers.
+
+    Creates a list of kmers that have only the first kmer in the reverse
+    complement pair. For example, in a list of 3-mers 'ATG' would be present
+    but its reverse complment 'CAT' would not.
+
+    Args:
+        k (int): the kmer size between 4-8
+
+    Returns:
+        list: A list with lexographically sorted kmers
+
+    """
     try:
         bases = ['A','C','T','G']
         kmers = [''.join(p) for p in itertools.product(bases, repeat=k)]
@@ -27,7 +39,22 @@ def iterate_kmer(k):
         logging.exception("Could not calculate the list of kmers for k = {}".format(k))
 
 def get_composition(ksize, seq, kmers, norm):
-    """ get the composition profile and return a list of kmer counts or normalized kmer counts"""
+    """Calculate the kmer compsosition from a sequence.
+
+    Count the kmers in a sequence and return a list of kmer counts or
+    normalized kmer counts
+
+    Args:
+        ksize (int): Kmer size between 4-8
+        seq (str): a string representing a DNA sequence
+        kmers (list): a list of lexographically sorted kmers
+        norm (bool): Should values be normalized by diividing by total
+
+    Returns:
+        list: A list of float values with the counts or proportions for
+            each kmer in the list 'kmers'.
+
+        """
     try:
         nkmers = 4**ksize
         tablesize = nkmers + 100
@@ -43,12 +70,34 @@ def get_composition(ksize, seq, kmers, norm):
                 else:
                     nc.append(float(item)/float(total))
                 composition = nc
-        return composition
+        return [float(x) for x in composition]
     except:
         logging.exception("Could not calculate composition using khmer")
 
 
-def write_kmers_as_csv(infile, outfile, ksize, kmers):
+def _write_kmers_as_csv(infile, outfile, ksize, kmers):
+    """Calculate ilr transformed kmer compositions for sequences in a fasta
+       file.
+
+   Takes multisequence fasta file and a list of kmers and calculates the
+   isometric log-ratio transformed kmer composition for each sequence
+   writing a CSV file with the data.
+
+   Args:
+       infile (str): a Fasta file
+       outfile (str): a path to a CSV output file
+       ksize (int): the kmer size, 4-8
+       kmers (list): A list of the kmers to count
+
+   Returns:
+       None
+
+   References:
+       Aitchison, J. (John), 2003. The statistical analysis of
+       compositional data. Blackburn Press.
+
+    """
+
     try:
         with open(infile, 'r') as f1:
             with open(outfile, 'w') as csvfile:
@@ -71,6 +120,27 @@ def write_kmers_as_csv(infile, outfile, ksize, kmers):
         logging.exception("Could not write kmer profiles to file")
 
 def run(infile, outfile, ksize):
+    """Calculate the ilr transformed kmer composition for each sequence
+        in a fasta file.
+
+   Takes multisequence fasta file and a kmer size and calculates the
+   isometric log-ratio (ilr) transformed kmer composition for each sequence,
+   writing a CSV file with the data.
+
+   Args:
+       infile (str): a Fasta file
+       outfile (str): a path to a CSV output file
+       ksize (int): the kmer size, 4-8
+
+   Returns:
+       None
+
+   References:
+       Aitchison, J. (John), 2003. The statistical analysis of
+       compositional data. Blackburn Press.
+
+    """
+
     kmers = iterate_kmer(ksize)
     logging.info("identifying kmer features with a k of {}".format(ksize))
-    write_kmers_as_csv(infile=infile, outfile=outfile, ksize=ksize, kmers=kmers)
+    _write_kmers_as_csv(infile=infile, outfile=outfile, ksize=ksize, kmers=kmers)

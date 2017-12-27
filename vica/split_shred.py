@@ -1,8 +1,7 @@
-#!/usr/bin/env python3
-"""split_shred.py: a module to process genomic training and test data formatted
+"""A module to process genomic training and test data formatted
     by BBtools.
 
-    The module splits data into testing and training datasets at a desired
+    The module contains functions to split data into testing and training datasets at a desired
     taxonomic split level (family, order, etc.). It then selects a user-specified
     number of random contigs a desired lengt from the data.  It also
     returns a file of test taxids that are used to build a minhash database that
@@ -25,13 +24,25 @@ config = yaml.safe_load(vica.CONFIG_PATH)
 
 def _read_data(file):
     """read a fasta or bgzf fasta and optionally an equivelantly named faidx
-        and return a pyfaidx handle"""
+        and return a pyfaidx handle.
+
+    Args:
+        file (str):A fasta file or blocked gzip format fasta file with names
+            in the format "tid|<NCBI taxonomy ID>|<optional accession>"".
+            Example: "tid|1026970|NW_008342263.1"
+
+    Returns:
+        (obj): A pyfaidx Fasta file object
+
+    """
     seqobj = pyfaidx.Fasta(file, read_ahead=10000)#, read_long_names=True)
     return seqobj
 
 
 def _shuffle_keys(ddict):
-    """take the pyfaidx file and return a suffled list of the keys"""
+    """take the pyfaidx file and return a suffled list of the keys.
+
+    """
     keylist = []
     for key in ddict.keys():
         keylist.append(key)
@@ -173,7 +184,9 @@ def _process_examples(exampletype, n_per_class, cd, outdir, length, df, seqobj):
 def _select_contigs(n_per_class, cd, outdir, length, df, seqobj):
     """select contigs for testing and training for each classifier class with
        even sampling in each taxon at the selected taxonomic level.
-       Writes to the output directory."""
+       Writes to the output directory.
+
+    """
     # create output directory
     if not os.path.exists(outdir):
         os.makedirs(outdir)
@@ -199,8 +212,34 @@ def run(fastafile, outdir, length=5000, n_per_class=100000,
                        2157: "Archaea",
                        2759: "Eukaryota",
                        10239: "Viruses"},
-                       configpath=vica.CONFIG_PATH):
-    """shred all sequences to the desired length"""
+              configpath=vica.CONFIG_PATH):
+    """Select randomly sampled sequence fragments for each class put them into test and train data sets.
+
+    This selects a target number of sequences for each model training class.
+    The length of the sequence fragments and the taxonomic level at which to
+    split the test and train data can be selected.
+
+    Args:
+        fastafile (str): A fasta file or blocked gzip format fasta file with
+            names in the format "tid|<NCBI taxonomy ID>|<optional accession>".
+            Example: "tid|1026970|NW_008342263.1"
+        outdir (str): A directory to write the output data
+        length (int): the length of the sequence fragments sampled
+        n_per_class (int): the number ot test and train sequences to sample.
+            Sampling is probabilistic so this is a target not a gaurantee.
+        testfrac (float): The fraction of the data to be in the test set
+        splitlevel (str): the taxonomic level to split at:
+
+            [“species”, “genus”, “family”, “order”, “class”, “phylum”, “kingdom”]
+
+        classes (dict):  A dictionary of the classes to train the model on in
+            the format  {taxid1: taxname1, taxid2: name2}
+        configpath (str): A yaml configuration file
+
+    Returns:
+        None
+
+    """
     try:
         global config
         config = yaml.safe_load(configpath)

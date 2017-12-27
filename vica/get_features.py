@@ -1,6 +1,5 @@
-#!/usr/bin/env python3
-"""prodigal.py: a module to call genes with prodigal then count codon usage
-and transform into centered log ratio returning values as a CSV"""
+"""A module with functions to run all the steps in the feature
+    selection workflow for vica"""
 
 
 import tempfile
@@ -16,11 +15,28 @@ import vica
 
 
 def run(infile, output, label, minhashlocal=None, configpath=vica.CONFIG_PATH):
-    """A command to run all the steps in thefeature selection selection workflow
-    1. the selection of minhash features
-    2. the selection of codon usage features
-    3. the selection of kmer features
-    4. writing features to a tfrecord file
+    """Run all the steps in thefeature selection selection workflow.
+
+    This command: 1) selects minhash features, 2) codon usage features, 3)
+    kmer features and 4) writes features to a tfrecord file.
+
+    Args:
+        infile (str): a fasta file with names in the format
+            "tid|<NCBI taxonomy ID>|<optional accession>"".
+            Example: "tid|1026970|NW_008342263.1"
+        output (str): a name for the TFrecrods file to be generated. It should
+            end in ".tfrecords".
+        label (int): This is an integer for the taxonomic class used by the
+            classifier.  It should be -1 if the true class is unknown or,
+            if the class is known it should  begin with 0 and
+            increase sequentially for each training class.
+        minhashlocal (bool): If True the functiion uses a local instance of
+            the bbtools minhash database and taxonomy files. Locations of
+            the reference files should be set in the configuration file.
+        configpath (str): path to the yaml configuration  file.
+
+    Returns:
+        None
 
 
     """

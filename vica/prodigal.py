@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
-"""prodigal.py: a module to call genes with prodigal then count codon usage
-and transform into centered log ratio returning values as a CSV"""
+"""prodigal.py:  a module with functions to call genes with Prodigal,
+   count codon usage, calculate centered log ratio and isometric log ration
+   transformations and return values as a CSV."""
 
 
 import subprocess
@@ -16,7 +16,20 @@ from collections import defaultdict
 
 
 def clr(composition):
-    """calcualtes a centered log ratio transformation from a list of values"""
+    """Calculates a centered log-ratio transformation from a list of values.
+
+    Args:
+        composition (list): a list of integers of floats continaing the
+            compositional data
+
+    Returns:
+        a list with the centered log-ratio transformed values
+
+    References:
+        Aitchison, J. (John), 2003. The statistical analysis of
+        compositional data. Blackburn Press.
+
+    """
     with np.errstate(divide='ignore', invalid='ignore'):
         a = np.array(composition)
         am =np.ma.masked_equal(a, 0)
@@ -27,7 +40,21 @@ def clr(composition):
 
 
 def ilr(composition):
-    """claculates isometric log ratio transformation from list of values"""
+    """Calculates a isometric log-ratio transformation from a list of values.
+
+    Args:
+        composition (list): a list of integers of floats continaing the
+            compositional data
+
+    Returns:
+        a list with the isometric log-ratio transformed values. The
+        length is len(composition - 1).
+
+    References:
+        Aitchison, J. (John), 2003. The statistical analysis of
+        compositional data. Blackburn Press.
+
+    """
     with np.errstate(divide='ignore', invalid='ignore'):
         clrlen= len(composition)
         clrarray = clr(composition)
@@ -37,7 +64,27 @@ def ilr(composition):
 
 
 def _call_genes(infile, outfile):
-    """Runs prodigal calling genes"""
+    """Runs Prodigal, calling genes.
+
+    The function runs Prodigal, prokaryotic gene calling software, in
+       metagenomic mode, saving its output.
+
+    Args:
+         infile (str): a multi-sequence fasta to call genes on.
+         outfile (str): a Fasta file contianing the called genestring
+
+    Returns:
+         (str): the Standard output of Prodigal
+
+    References:
+        Hyatt, D., Chen, G.-L., Locascio, P.F., Land, M.L., Larimer, F.W.,
+        Hauser, L.J., 2010. Prodigal: prokaryotic gene recognition and
+        translation initiation site identification.
+        BMC Bioinformatics 11, 119. doi:10.1186/1471-2105-11-119
+
+        https://github.com/hyattpd/Prodigal
+
+    """
     options = ["prodigal",
                "-i", infile,
                "-p", "meta",
@@ -47,7 +94,15 @@ def _call_genes(infile, outfile):
 
 
 def _gene_to_codon(genestring):
-    """Converts a DNA sequence string to a list of codons"""
+    """Converts a DNA sequence string to a list of codons
+
+    Args:
+        genestring (str): A DNA sequence
+
+    Returns:
+        (list): A list containing the codons of the sequence
+
+    """
     try:
         if len(genestring)>=3:
             f1 = [genestring[i:i+3] for i in range(0, len(genestring), 3)]
@@ -60,7 +115,18 @@ def _gene_to_codon(genestring):
 
 def _codon_to_dict(genestring, offset):
     """counts codons in a gene string, with a reading frame offest returning
-       codon counts as a dict."""
+       codon counts as a dict.
+
+    Args:
+        genestring (str): A DNA sequence
+        offset (int):  the starting point of the sequence, used to shift
+            the reading framen
+
+    Returns:
+        (list): A list containing the codons of the sequence in the
+            selected reading frame
+
+    """
     assert offset in [0,1,2], "Offset must be 0, 1, or 2"
     framen = _gene_to_codon(genestring[offset:])
     cdict = {}
@@ -74,12 +140,34 @@ def _codon_to_dict(genestring, offset):
 
 
 def _parse_prodigal_id_from_biopython(idval):
-    """strips off prodigal gene annotations and returns the id as it was in the contig file"""
+    """strips off prodigal gene annotations and returns the ID as it was in
+        the contig file
+
+    Args:
+        idval (str): the IDa value returned by prodigal
+
+    Returns: The ID value as fed to Prodigal
+
+    """
     return '_'.join(str(idval).split('_')[:-1])
 
 def count_dict_to_clr_array(count_dict, codon_list):
-    """Takes a dictionary of counts where the key is the upper case codon,
-       orders them by codon, and performs a clr transformation returning a list"""
+    """ Converts a count dictionary to a CLR list
+
+    Takes a dictionary of counts where the key is the upper case codon,
+    orders them by codon, and performs a centered log-ratio transformation
+    returning a list.
+
+    Args:
+        count_dict (dict): a dictionary wihere codon is the key and the
+            value is the count
+        codon_list (list): A lexographically sorted list of codons
+
+    Returns:
+        (list):  A vector of centered, log-ratio transformed values in
+            ordered by the lexographically sorted codons they corespond to.
+
+    """
     output_list = []
     for i in codon_list:
         if i in count_dict:
@@ -89,8 +177,23 @@ def count_dict_to_clr_array(count_dict, codon_list):
     return clr(output_list)
 
 def count_dict_to_ilr_array(count_dict, codon_list):
-    """Takes a dictionary of counts where the key is the upper case codon,
-       orders them by codon, and performs a ilr transformation returning a list"""
+    """ Converts a count dictionary to a ILR list
+
+    Takes a dictionary of counts where the key is the upper case codon,
+    orders them by codon, and performs a isometric log-ratio transformation
+    returning a list.
+
+    Args:
+        count_dict (dict): a dictionary wihere codon is the key and the
+            value is the count
+        codon_list (list): A lexographically sorted list of codons
+
+    Returns:
+        (list):  A vector of isometric log-ratio transformed values in
+            ordered by the lexographically sorted codons they corespond to.
+            The length is len(codon_list - 1).
+
+    """
     output_list = []
     for i in codon_list:
         if i in count_dict:
@@ -100,7 +203,15 @@ def count_dict_to_ilr_array(count_dict, codon_list):
     return ilr(output_list)
 
 def dsum(*dicts):
-    """add up values in two dicts returning their sum"""
+    """Add up values in multiple dicts returning their sum.
+
+    Args:
+        *dicts (*awks): Dictionaries to summed
+
+    Returns:
+        (dict): a Dict with the summed values
+
+    """
     ret = defaultdict(int)
     for d in dicts:
         for k, v in d.items():
@@ -108,9 +219,21 @@ def dsum(*dicts):
     return dict(ret)
 
 def count_codon_in_gene(record, cdict={}):
-    """takes a biopython sequence record and optionally a defaultdict and
-       returns a defaultdict with the counts for the three codon frames adding
-       them to the existing default dict if one was supplied."""
+    """Counts codons for all three frames in a gene.
+
+   Takes a biopython sequence record and optionally a dict and
+   returns a dict with the counts for the three codon frames adding
+   them to the existing cdict if one was supplied.
+
+   Args:
+       record (obj): A biopython sequnce record object
+       cdict (dict): A dictionary containing count data to be added to
+
+   Returns:
+       (dict): Counts of codons for the record, added to the optionally
+           supplied count dictionary
+
+    """
     seq = str(record.seq)
     d1 = {}
     d2 = {}
@@ -125,10 +248,25 @@ def count_codon_in_gene(record, cdict={}):
 
 
 def count_codons(seqio_iterator, csv_writer_instance, codon_list):
-    """Count codons from sequences in a BioIO seq iterator, and write to a csv handle"""
+    """Count codons from sequences in a BioIO seq iterator and
+           write to a csv handle.
+
+    Args:
+        seqio_iterator (obj): A Biopython SeqIO iterator object
+        csv_writer_instance (obj): A csv module file handle
+        codon_list (list): a lexographically sorted list of codons
+
+    Returns:
+        (int): the number of records writen
+
+    """
 
     def record_line(idval, codon_dict, csv_writer_instance):
-        """combine id and codon data from the three frames, writing to csv handle"""
+        """Combine ID and codon data from the three frames, writing to csv handle
+
+        Args:
+
+        """
         l0 = count_dict_to_ilr_array(codon_dict[0], codon_list)
         l1 = count_dict_to_ilr_array(codon_dict[1], codon_list)
         l2 = count_dict_to_ilr_array(codon_dict[2], codon_list)

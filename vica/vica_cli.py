@@ -133,9 +133,9 @@ def parser():
         5-mer features", required=True)
     get_features.add_argument(
         '--label', help="An integer label for the classifcation class of \
-        training or evaluation data. Needed to for training and test data \
-        but not for data to be classified",
-        type=int)
+        training or evaluation data. Needed to for training and test data. \
+        for data to be classified use -1.",
+        type=int, required=true)
     get_features.add_argument(
         '--minhashlocal', help="A flag to use a local version of a minhash \
         database rather than a remote server. Default is false. relevant minhash \
