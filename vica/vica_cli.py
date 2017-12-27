@@ -17,7 +17,17 @@ import vica
 # not from the vica-cli
 
 def config_logging(logfile, level=logging.DEBUG):
-    """Set up logging"""
+    """Set up logging
+    Set up logging for vica_cli.py
+
+    Args:
+        logfile (str): the path to the log file
+        level (str): the level of logging to record
+
+    Returns:
+        None
+
+    """
     logging.basicConfig(filename=logfile,
                         level=level,
                         format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',

@@ -11,6 +11,7 @@ from Bio.Seq import Seq
 
 import vica
 
+__all__ = ["iterate_kmer", "get_composition", "run"]
 
 def iterate_kmer(k):
     """ get the list of tetramers"""
