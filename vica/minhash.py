@@ -99,8 +99,6 @@ def _compare_sketch(infile, outfile, ref, blacklist, tree, taxfilter, taxfilterl
                "ref=" + ref,
                "blacklist=" + blacklist,
                "tree=" + tree,
-               "taxfilter=" + taxfilter,
-               "taxfilterlevel=" + taxfilterlevel,
                "mode=sequence",
                "k=31,24",
                "level=3",
@@ -121,6 +119,10 @@ def _compare_sketch(infile, outfile, ref, blacklist, tree, taxfilter, taxfilterl
                ]
     if memory:
         options.append(memory)
+    if taxfilter:
+        options.append("taxfilter=" + taxfilter)
+    if taxfilterlevel:
+        options.append("taxfilterlevel=" + taxfilterlevel)
     sendsketchout = subprocess.run(options, stderr=subprocess.PIPE)
     return sendsketchout.stderr.decode('utf-8')
     #return sendsketchout
@@ -129,8 +131,7 @@ def _parse_sendsketch(file):
     """Parses bbtools sendsketch output returning python dictionary.
 
     Args:
-        file (str): a text file created by BBtools sendsketch.sh or
-            comparesketch.sh
+        file (str): a text file created by BBtools sendsketch.sh
 
     Returns:
         (dict): A dictionary with the ID as a key and as a value, a dict
@@ -165,8 +166,7 @@ def _parse_comparesketch(file):
     """Parses bbtools comparesketch output returning python dictionary.
 
     Args:
-        file (str): a text file created by BBtools sendsketch.sh or
-            comparesketch.sh
+        file (str): a text file created by BBtools comparesketch.sh
 
     Returns:
         (dict): A dictionary with the ID as a key and as a value, a dict
@@ -183,7 +183,7 @@ def _parse_comparesketch(file):
                     next
                 elif line.startswith("Query:"):
                     ll = line.strip().split("\t")
-                    key1 = ll[6].split(":")[1].strip()
+                    key1 = ll[0].split(":")[1].split()[0]
                     tempdf[key1] = {}
                 elif line.startswith("WKID"):
                     next
@@ -333,7 +333,7 @@ def minhashlocal(dtemp, infile, outfile, ref, blacklist, tree, taxfilter, taxfil
             ["species", "genus", "family", "order", "class", "phylum", "kingdom"]
         memory (str): a Java style specification of the memory available
             for the process. for Example 16GB: "-Xmx16g". If None, BBtools
-            will autodetect. 
+            will autodetect.
         nodesfile (str): a file in NCBI 'taxdump' nodes format containing
             the phyla super phyla and subphyla that should be used as
             classification categories for cellular organims. A fltered
