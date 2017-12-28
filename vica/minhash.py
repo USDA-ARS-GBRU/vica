@@ -338,6 +338,8 @@ def minhashlocal(dtemp, infile, outfile, ref, blacklist, tree, taxfilter, taxfil
             the phyla super phyla and subphyla that should be used as
             classification categories for cellular organims. A fltered
             version of the nodes files is in the package's data directory.
+            This is the name of the file in the data directory not the path
+            to the file.
         noncellular (dict): a dictionary of taxid: names pairs containing
             the high level classifications for viruses.
 

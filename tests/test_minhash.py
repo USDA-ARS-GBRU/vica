@@ -37,25 +37,25 @@ def test_compare_sketch():
                               taxfilterlevel=None,
                               memory="-Xmx1g")
 
-def test_compare_sketch_with_taxfilter():
-    td = tempfile.mkdtemp()
-    #test comparesketch without any filtering
-    outfile3 = os.path.join(td,"comparesketchout3.txt")
-    vica.minhash._compare_sketch(infile="tests/test-data/2testseqs.fasta",
-                              outfile=outfile3,
-                              ref="tests/test-data/2testseqs_ref.sketch",
-                              blacklist= "tests/test-data/blacklist_refseq_species_300.sketch",
-                              tree="tests/test-data/tree.taxtree.gz",
-                              taxfilter="246200",
-                              taxfilterlevel="species",
-                              memory="-Xmx1g")
-    with open(outfile3, "r") as a:
-        with open("tests/test-data/testsketch3.txt", 'r') as b:
-            al = a.readlines()
-            bl = b.readlines()
-            cd = cd = difflib.context_diff(al, bl)
-    sys.stdout.writelines(cd)
-    ok_(filecmp.cmp("tests/test-data/testsketch3.txt", outfile3, shallow=True))
+# def test_compare_sketch_with_taxfilter():
+#     td = tempfile.mkdtemp()
+#     #test comparesketch without any filtering
+#     outfile3 = os.path.join(td,"comparesketchout3.txt")
+#     vica.minhash._compare_sketch(infile="tests/test-data/2testseqs.fasta",
+#                               outfile=outfile3,
+#                               ref="tests/test-data/2testseqs_ref.sketch",
+#                               blacklist= "tests/test-data/blacklist_refseq_species_300.sketch",
+#                               tree="tests/test-data/tree.taxtree.gz",
+#                               taxfilter="246200",
+#                               taxfilterlevel="species",
+#                               memory="-Xmx1g")
+#     with open(outfile3, "r") as a:
+#         with open("tests/test-data/testsketch3.txt", 'r') as b:
+#             al = a.readlines()
+#             bl = b.readlines()
+#             cd = cd = difflib.context_diff(al, bl)
+#     sys.stdout.writelines(cd)
+#     ok_(filecmp.cmp("tests/test-data/testsketch3.txt", outfile3, shallow=True))
 
 
 def test_parse_sendsketch():
@@ -97,14 +97,18 @@ def test_dict_to_csv():
     vica.minhash._dict_to_csv(testdict, vallist, outfile)
     ok_(filecmp.cmp("tests/test-data/minhashcsvtest.csv", outfile, shallow=False))
 
-# def test_minhashlocal():
-#         pass
-#         outfile3 = os.path.join(td,"comparesketchout3.txt")
-#         vica.minhash._compare_sketch(infile="tests/test-data/2testseqs.fasta",
-#                                   outfile=outfile3,
-#                                   ref="tests/test-data/2testseqs_ref.sketch",
-#                                   blacklist= "tests/test-data/blacklist_refseq_species_300.sketch",
-#                                   tree="tests/test-data/tree.taxtree.gz",
-#                                   taxfilter="246200",
-#                                   taxfilterlevel="species",
-#                                   memory="-Xmx1g")
+def test_minhashlocal():
+        td = tempfile.mkdtemp()
+        outfile = os.path.join(td,"minhashlocal.csv")
+        vica.minhash.minhashlocal(dtemp= td,
+                                  infile="tests/test-data/2testseqs.fasta",
+                                  outfile=outfile,
+                                  ref="tests/test-data/2testseqs_ref.sketch",
+                                  blacklist= "tests/test-data/blacklist_refseq_species_300.sketch",
+                                  tree="tests/test-data/tree.taxtree.gz",
+                                  taxfilter="246200",
+                                  taxfilterlevel="species",
+                                  memory="-Xmx1g",
+                                  nodesfile="phylum.txt",
+                                  noncellular=vica.minhash.config["minhash"]["noncellular"])
+        ok_(filecmp.cmp("tests/test-data/minhashlocal.csv", outfile, shallow=False))
