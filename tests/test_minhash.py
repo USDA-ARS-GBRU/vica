@@ -112,3 +112,14 @@ def test_minhashlocal():
                                   nodesfile="phylum.txt",
                                   noncellular=vica.minhash.config["minhash"]["noncellular"])
         ok_(filecmp.cmp("tests/test-data/minhashlocal.csv", outfile, shallow=False))
+
+def test_minhashremote():
+        td = tempfile.mkdtemp()
+        outfile = os.path.join(td,"minhashremote.csv")
+        vica.minhash.minhashremote(dtemp= td,
+                                  infile="tests/test-data/2testseqs.fasta",
+                                  outfile=outfile,
+                                  server_url=vica.minhash.config["minhash"]["server_url"],
+                                  nodesfile="phylum.txt",
+                                  noncellular=vica.minhash.config["minhash"]["noncellular"])
+        ok_(filecmp.cmp("tests/test-data/minhashremote.csv", outfile, shallow=False))
