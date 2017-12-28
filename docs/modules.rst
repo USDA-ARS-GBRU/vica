@@ -1,7 +1,7 @@
-docs
+vica
 ====
 
 .. toctree::
    :maxdepth: 4
 
-   conf
+   vica

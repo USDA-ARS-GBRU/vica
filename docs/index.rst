@@ -13,6 +13,7 @@ Welcome to vica's documentation!
    introduction
    tutorial
    trainingguide
+   modules
 
 
 
