@@ -84,8 +84,10 @@ def _compare_sketch(infile, outfile, ref, blacklist, tree, taxfilter, taxfilterl
             references in the genus Escherichia will be excluded.
 
             ["species", "genus", "family", "order", "class", "phylum", "kingdom"]
+
         memory (str): a Java style specification of the memory available
-            for the process. for Example 16GB: "-Xmx16g"
+            for the process. for Example 16GB: "-Xmx16g". If not specified
+            BBtools will autodetect.
 
     Returns:
         (str) The standard output from BBtools comparesketch.sh
@@ -116,7 +118,9 @@ def _compare_sketch(infile, outfile, ref, blacklist, tree, taxfilter, taxfilterl
                "printunique=t",
                "printnohit=f",
                "printtaxid=t",
-               memory]
+               ]
+    if memory:
+        options.append(memory)
     sendsketchout = subprocess.run(options, stderr=subprocess.PIPE)
     return sendsketchout.stderr.decode('utf-8')
     #return sendsketchout
@@ -328,7 +332,8 @@ def minhashlocal(dtemp, infile, outfile, ref, blacklist, tree, taxfilter, taxfil
 
             ["species", "genus", "family", "order", "class", "phylum", "kingdom"]
         memory (str): a Java style specification of the memory available
-            for the process. for Example 16GB: "-Xmx16g"
+            for the process. for Example 16GB: "-Xmx16g". If None, BBtools
+            will autodetect. 
         nodesfile (str): a file in NCBI 'taxdump' nodes format containing
             the phyla super phyla and subphyla that should be used as
             classification categories for cellular organims. A fltered
