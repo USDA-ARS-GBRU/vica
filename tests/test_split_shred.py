@@ -1,18 +1,17 @@
-import vica.split_shred
 import tempfile
 import os
 import filecmp
-import yaml
-from nose.tools import ok_, eq_
-import difflib
-import sys
-import pyfaidx
 import random
-import pandas
-import numpy
 import shutil
 
+import pandas
+import numpy
+import pyfaidx
+from nose.tools import ok_, eq_
 from ete3 import NCBITaxa
+
+import vica.split_shred
+
 
 classes = {2: "Bacteria",
          2157: "Archaea",

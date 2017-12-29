@@ -1,11 +1,13 @@
-import vica.tfrecord_maker
+
+import sys
 import tempfile
 import os
 import filecmp
-import yaml
+
 from nose.tools import ok_, eq_
-import difflib
-import sys
+
+import vica.tfrecord_maker
+
 
 def test_external_sort():
     td = tempfile.mkdtemp()
@@ -31,7 +33,6 @@ def test_count_features():
                                        j3="tests/test-data/join_3.csv")
     eq_(outdict, {"j1":2, "j2":3, "j3":3})
 
-### Stopping point
 def test_csv_to_tfrecords():
     td = tempfile.mkdtemp()
     print(td)

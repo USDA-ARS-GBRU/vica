@@ -4,8 +4,7 @@ import os
 import filecmp
 import yaml
 from nose.tools import ok_, eq_
-import difflib
-import sys
+
 
 from ete3 import NCBITaxa
 
