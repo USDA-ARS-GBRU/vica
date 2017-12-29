@@ -43,7 +43,6 @@ def test_profile_sequences():
     seqobj = vica.split_shred._read_data("tests/test-data/bbtools-taxheader.fa")
     ncbiobj = NCBITaxa()
     splitlevel = 'genus'
-
     random.seed(a=123456)
     df = vica.split_shred._profile_sequences(seqobj=seqobj,
         ncbiobj=ncbiobj,
@@ -58,11 +57,12 @@ def test_split_levels():
     numpy.random.seed(seed=123456)
     cd = vica.split_shred._split_levels(testfrac=testfrac, df=df, classes=classes)
     print(cd)
-    expected = {2: {'test': {1378, 212743, 114248, 54066, 92793, 946234,
+    expected = {2: {'test': {1378, 212743, 114248, 1765682, 92793, 946234,
                 190972, 160798}, 'train': {1017280, 33986, 28067, 1484898,
-                28905, 467084, 1765682, 1938003, 702}, 'total': 17},
-                2759: {'test': {1955842, 5931, 12967},
+                467084, 54066, 1938003, 702}, 'total': 16}, 2759: {'test':
+                {1955842, 5931, 12967},
                 'train': {1633384, 4783, 148959}, 'total': 6}}
+
     eq_(cd, expected)
 
 def test_writeseq():
@@ -109,3 +109,14 @@ def test_select_random_segment_short():
         tries=10,
         ns= 0.1)
     eq_(seq, None)
+
+def _read_taxid_from_fasta():
+    td = tempfile.mkdtemp()
+    # copy file so that pyfaidx must generate a new index
+    outdir=os.path.join(td, 'ex_test_train_split_dir')
+    outfile= os.path.join(outdir,'test','test_taxids.txt')
+    resultsfile = ("tests/test-data/ex_test_train_split_dir/test/test_taxids.txt")
+    shutil.copytree("tests/test-data/ex_test_train_split_dir", outdir)
+    recs = vica.split_shred._read_taxid_from_fasta(outdir)
+    ok_(filecmp.cmp(outfile, resultsfile))
+    eq_(recs, 62)
