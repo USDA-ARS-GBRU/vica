@@ -1,11 +1,11 @@
 """A module to process genomic training and test data formatted
     by BBtools.
 
-    The module contains functions to split data into testing and training datasets at a desired
-    taxonomic split level (family, order, etc.). It then selects a user-specified
-    number of random contigs a desired lengt from the data.  It also
-    returns a file of test taxids that are used to build a minhash database that
-    excludes the taxa in the test dataset.
+    The module contains functions to split data into testing and training
+    datasets at a desired taxonomic split level (family, order, etc.).
+    It then selects a user-specified number of random contigs a desired length
+    from the data.  It also returns a file of test taxids that are used to
+    build a minhash database that excludes the taxa in the test dataset.
 """
 
 import os
@@ -86,13 +86,16 @@ def _split_levels(testfrac, df, classes):
     cd = {}
     for taxid in classes:
          dff = df[df.classid==taxid]
-         classids =set(dff['taxlevelid'])
-         clength = len(classids)
-         test = round(clength*testfrac)
-         testids = set(numpy.random.choice(a=list(classids), size = test,
-             replace=False))
-         trainids = set(classids) - testids
-         cd[taxid]={'test':testids,'train': trainids, 'total':clength}
+         if len(dff)>0:
+             classids =set(dff['taxlevelid'])
+             clength = len(classids)
+             test = round(clength*testfrac)
+             testids = set(numpy.random.choice(a=list(classids), size = test,
+                 replace=False))
+             trainids = set(classids) - testids
+             cd[taxid]={'test':testids,'train': trainids, 'total':clength}
+         else:
+             logging.warning("the class {} was not present in the sequence file being rocessed".format(classes[taxid]))
     return cd
 
 def _writeseq(record, pos, length, handle):
@@ -107,7 +110,7 @@ def _writeseq(record, pos, length, handle):
     handle.write(label)
     handle.writelines(seqlist)
 
-def _select_random_segment(seqobj,name, length, tries=10, ns= 0.1):
+def _select_random_segment(seqobj, name, length, tries=10, ns= 0.1):
     """Select a random fragment from sequence checking for short length and N's"""
     seq_length = len(seqobj[name])
     # verify the contig is long enough
