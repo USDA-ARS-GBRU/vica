@@ -124,3 +124,5 @@ def _read_taxid_from_fasta():
     recs = vica.split_shred._read_taxid_from_fasta(outdir)
     ok_(filecmp.cmp(outfile, resultsfile))
     eq_(recs, 62)
+
+def _process_samples():

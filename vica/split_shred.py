@@ -42,6 +42,12 @@ def _read_data(file):
 def _shuffle_keys(ddict):
     """take the pyfaidx file and return a suffled list of the keys.
 
+    Args:
+        ddict (dict):A dictionary or dictionary-like object
+
+    Returns:
+        (list): a list of randomly ordered keys
+
     """
     keylist = []
     for key in ddict.keys():
@@ -82,7 +88,9 @@ def _profile_sequences(seqobj, ncbiobj, splitlevel, classes):
     return df
 
 def _split_levels(testfrac, df, classes):
-    """Split the taxa at the selected level into test and train"""
+    """Split the taxa at the selected level into test and train
+
+    """
     cd = {}
     for taxid in classes:
          dff = df[df.classid==taxid]
@@ -100,7 +108,9 @@ def _split_levels(testfrac, df, classes):
 
 def _writeseq(record, pos, length, handle):
     """writes a fasta sequence to a file, adding position information
-        to the id"""
+        to the id.
+
+    """
     seqlist = []
     label = (">" + record.name + "|pos|" + str(pos) + ".." +
         str(pos + length) + "\n")
@@ -111,7 +121,9 @@ def _writeseq(record, pos, length, handle):
     handle.writelines(seqlist)
 
 def _select_random_segment(seqobj, name, length, tries=10, ns= 0.1):
-    """Select a random fragment from sequence checking for short length and N's"""
+    """Select a random fragment from sequence checking for short length and N's.
+
+    """
     seq_length = len(seqobj[name])
     # verify the contig is long enough
     if seq_length > length:
@@ -128,7 +140,9 @@ def _select_random_segment(seqobj, name, length, tries=10, ns= 0.1):
     return None
 
 def _read_taxid_from_fasta(outdir):
-    """read taxids from completed fastas and write a file with the taxids"""
+    """Read taxids from completed fastas and write a file with the taxids.
+
+    """
     species_set = set()
     indir = os.path.join(outdir,"test")
     for testfile in os.listdir(indir):
@@ -145,10 +159,28 @@ def _read_taxid_from_fasta(outdir):
 
 
 def _process_examples(exampletype, n_per_class, cd, outdir, length, df, seqobj):
-    """Sample genomes from the test/train split in each class, writing the
+    """Process samples for all class_id's of test or train type
+
+    Sample genomes from the test/train split in each class, writing the
         desired number of fragments out to a directory.
 
+    Args:
+        exampletype (str): is the type 'test' or 'train'
+        n_per_class (int): the target amount of sequences to aquire
+        cd (dict): A dictionary in the form
+
+        {class_ids: {'test':set(taxids), 'train': set(taxids)}}
+
+        outdir (str): directory for creating subdirectories and fasta files
+        length (int): desired length of the sammpled sequences
+        df (obj): A pandas dataframe on sequences in the reference DB
+        seqobj: a pfaidx.Fasta class object for the reference DB
+
+    Returns:
+        (int): The total number or records processed
+
     """
+
     tot_recs = 0
     for classid in cd:
         outfile = os.path.join(outdir, exampletype, str(classid) + ".fasta")
@@ -185,9 +217,27 @@ def _process_examples(exampletype, n_per_class, cd, outdir, length, df, seqobj):
 
 # >>> Left off here<<<
 def _select_contigs(n_per_class, cd, outdir, length, df, seqobj):
-    """select contigs for testing and training for each classifier class with
-       even sampling in each taxon at the selected taxonomic level.
-       Writes to the output directory.
+    """Select contigs for testing and training
+
+    Select contigs for testing and training for each classifier class with
+    even sampling in each taxon at the selected taxonomic level.
+    Writes to the output directory.
+
+    Args:
+
+        n_per_class (int): the target amount of sequences to aquire
+        cd (dict): A dictionary in the form
+
+        {class_ids: {'test':set(taxids), 'train': set(taxids)}}
+
+        outdir (str): directory for creating subdirectories and fasta files
+        length (int): desired length of the sammpled sequences
+        df (obj): A pandas dataframe on sequences in the reference DB
+        seqobj: a pfaidx.Fasta class object for the reference DB
+
+    Returns:
+        None
+
 
     """
     # create output directory
