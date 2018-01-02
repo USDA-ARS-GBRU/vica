@@ -1,5 +1,3 @@
-
-import sys
 import tempfile
 import os
 import filecmp
