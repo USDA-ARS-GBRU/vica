@@ -47,6 +47,17 @@ def _ids_from_tfrecords(filename):
     return idlist
 
 
+def _ids_from_tfrecords_files(file_names):
+    """ input: list of tfrecord file names
+        output: list with the labels
+    """
+    id_list = []
+    for filename in file_names:
+        id_list = id_list + _ids_from_tfrecords(filename)
+
+    return id_list
+
+
 
 def base_input_fn(codonlength, minhashlength, kmerdim, shuffle, shuffle_buffer_size, batch, epochs, filenames):
     """The function for feeding and processing training data
@@ -273,7 +284,7 @@ def evaluate(infiles, out, modeldir, n_classes, configpath):
         if not os.path.exists(out):
             os.mkdir(out)
         predictions = os.path.join(out, "modelpredictions.txt")
-        idlist = _ids_from_tfrecords(infile)
+        idlist = _ids_from_tfrecords_files(infiles)
         with open(predictions, "w") as outfile:
             csv_writer_instance = csv.writer(outfile, lineterminator='\n')
             header = ["ID", "Class", "Class_id"] + ["Prob_class_" + str(i) for i in range(int(n_classes))]
