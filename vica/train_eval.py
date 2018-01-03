@@ -36,7 +36,7 @@ def _featureshape(k=5, codonlength=177, minhashlength=267):
     return kmerdim, kmer, codon, minhash
 
 def _ids_from_tfrecords(filename):
-    """Takes a tfrecord filename and retuns a list with the labels in order.
+    """Takes a tfrecord filename and returns a list with the labels in order.
 
     """
     idlist = []
@@ -53,7 +53,7 @@ def base_input_fn(codonlength, minhashlength, kmerdim, shuffle, shuffle_buffer_s
 
     Tensorflow estimators take a function that processes TFrecord Datasets
     into an example iterator that returnes one processed example each time
-    it is needed. becasue an estimator takes a function without arguments
+    it is needed. because an estimator takes a function without arguments
     functools.partial is used to set the parameter values for each application
     (train, evaluate, classify).
 
@@ -61,7 +61,7 @@ def base_input_fn(codonlength, minhashlength, kmerdim, shuffle, shuffle_buffer_s
         codonlength (int): the number of elements in the codon feature set
         minhashlength (int)  the number of elements in the minhash feature set
         kmerdim (int):  the number of elements in the kmer feature set
-        shuffle (bool):  Should valuse be shuffled? (True for trainn, false
+        shuffle (bool):  Should values be shuffled? (True for train, false
             for evaluate and classify)
         shuffle_buffer_size (int): How large of a record buffer to load for shuffling
         batch (int): the size of the training batch (~32 for training larger,
@@ -96,7 +96,7 @@ def mk_dnnlogistic_estimator(modeldir, n_classes, minhash, kmer, codon):
     """Specification of Wide and Deep Neural Network model
 
     Args:
-        modeldir (str): path to directory continaing model data
+        modeldir (str): path to directory containing model data
         n_classes (int): number of classes in the model
         minhash (obj): Tensorflow feature column object for minhash data
         kmer (obj): Tensorflow feature column object for kmer data
@@ -123,7 +123,7 @@ def mk_dnn_estimator(modeldir, n_classes, kmer, codon):
     """Specification of Deep Neural Network model
 
     Args:
-        modeldir (str): path to directory continaing model data
+        modeldir (str): path to directory containing model data
         n_classes (int): number of classes in the model
         kmer (obj): Tensorflow feature column object for kmer data
         codon (obj): Tensorflow feature column object for codon data
@@ -153,7 +153,7 @@ def train(infiles, out, modeldir, n_classes, configpath):
     Args:
         infiles (list): A list with paths to TFrecords file(s) containing labeled test sequences.
         out (str): file where TF Saved model file will be written (Future)
-        modeldir (str): a model directory continaing a trained model to use
+        modeldir (str): a model directory containing a trained model to use
         for evaluation.
         n_classes (int): the number of classes in the model (default 4)
         configpath (str): path to yaml config files
@@ -165,7 +165,7 @@ def train(infiles, out, modeldir, n_classes, configpath):
         Convert the model type to Tensorflow SavedModel format and TF serving
         API once the Tensorflow API supports using SavedModels with Python 3.
 
-    Note: the parameter `out` has no effect currently but been reservved
+    Note: the parameter `out` has no effect currently but been reserved
         for use once the SavedModel API is better supported by Tensorflow.
 
     """
@@ -197,7 +197,7 @@ def train(infiles, out, modeldir, n_classes, configpath):
                 codon=codon)
             estimator.train(input_fn=input_fn)
     except:
-        logging.exception("During tensorflow model training the following exception occured:")
+        logging.exception("During tensorflow model training the following exception occurred:")
         raise SystemExit(1)
     try:
         # Save results if successful
@@ -217,14 +217,14 @@ def evaluate(infiles, out, modeldir, n_classes, configpath):
 
 
     Classify fasta files or TFrecords containing contigs to identify viral
-    contigs. The classifier takes contigs and extractes features then makes
+    contigs. The classifier takes contigs and extracts features then makes
     predictions. It returns a text file of prediction probabilities for each
     model class. This file can be used to filter out viral contigs for analysis.
 
     Args:
         infiles (list): A list with paths to TFrecords file(s) containing labeled test sequences.
         out (str): a directory where model predictions will be writen
-        modeldir (str): a model directory continaing a trained model to use
+        modeldir (str): a model directory containing a trained model to use
         for evaluation.
         n_classes (int): the number of classes in the model (default 4)
         configpath (str): path to yaml config files
@@ -294,7 +294,7 @@ def classify(infile, out, modeldir, n_classes, configpath):
     """Classify fasta sequences or TRrecords data to identify viral sequences
 
     Classify fasta files or TFrecords containing contigs to identify viral
-    contigs. The classifier takes contigs and extractes features then makes
+    contigs. The classifier takes contigs and extracts features then makes
     predictions. It returns a text file of prediction probabilities for each
     model class. This file can be used to filter out viral contigs for analysis.
 
@@ -302,7 +302,7 @@ def classify(infile, out, modeldir, n_classes, configpath):
         infile (str): the path to a fasta file of contigs (2 kb or longer is
             recomended) or TFrecords to be classified.
         out (str): a file with contig modelpredictions
-        modeldir (str): a model directory continaing a trained model to use
+        modeldir (str): a model directory containing a trained model to use
         for classification.
         n_classes (int): the number of classes in the model (default 4)
         configpath (str): path to yaml config files
