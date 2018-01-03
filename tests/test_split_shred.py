@@ -125,4 +125,4 @@ def _read_taxid_from_fasta():
     ok_(filecmp.cmp(outfile, resultsfile))
     eq_(recs, 62)
 
-def _process_samples():
+# def _process_samples():
