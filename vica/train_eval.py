@@ -16,6 +16,11 @@ import csv
 
 import vica
 
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import precision_recall_curve
+from sklearn.metrics import f1_score
+
 with open(vica.CONFIG_PATH) as cf:
     config = yaml.safe_load(cf)
 
@@ -300,7 +305,20 @@ def evaluate(infiles, out, modeldir, n_classes, configpath):
         if not os.path.exists(out):
             os.mkdir(out)
         predictions = os.path.join(out, "modelpredictions.txt")
+
+        evaluation_result = os.path.join(out, "evaluation_result.txt")
+        prc_file = os.path.join(out, "precision_recall_curve.txt")
+
         id_label_list = _ids_labels_from_tfrecords_files(infiles)
+
+        y_true = []
+        y_pred = []
+
+        virus_true = []
+        virus_prob = []
+        virus_pred = []
+
+
         with open(predictions, "w") as outfile:
             csv_writer_instance = csv.writer(outfile, lineterminator='\n')
             header = ["ID", "Label", "Class", "Class_id"] + ["Prob_class_" + str(i) for i in range(int(n_classes))]
@@ -308,9 +326,51 @@ def evaluate(infiles, out, modeldir, n_classes, configpath):
             for idrec, rec in zip(id_label_list, preds):
                 plist = rec['probabilities']
                 pliststr = [str(x) for x in plist]
+                y_true.append(idrec[1])
+                y_pred.append(rec['class_ids'][0])
+
+                if idrec[1] == 1:
+                    virus_true.append(1)
+                else:
+                    virus_true.append(0)
+
+                if rec['class_ids'][0] == 1:
+                    virus_pred.append(1)
+                else:
+                    virus_pred.append(0)
+
+
+                virus_prob.append(plist[1])
+
+
                 ll = [idrec[0], idrec[1], rec['classes'][0].decode("utf-8"), str(rec['class_ids'][0])]
                 ll.extend(pliststr)
                 csv_writer_instance.writerow(ll)
+
+        evaluation_result_obj = open(evaluation_result, 'w')
+        prc_file_obj = open(prc_file, 'w')
+
+        evaluation_result_obj.write("accuracy:"+str(accuracy_score(y_true, y_pred))+'\n')
+        confusion_matrix_list = confusion_matrix(y_true, y_pred)
+        evaluation_result_obj.write('Confusion_matrix:\n')
+        for row in confusion_matrix_list:
+            line = ','.join([str(num) for num in row])
+            evaluation_result_obj.write(line+'\n')
+
+        evaluation_result_obj.write(
+            "virus_f1_score:" + str(f1_score(virus_true, virus_pred))+'\n')
+
+        precision, recall, thresholds = precision_recall_curve(virus_true, virus_prob)
+        #print(precision)
+        #print(recall)
+
+        for c in range(len(precision)-1):
+            prc_file_obj.write(str(precision[c])+','+str(recall[c]) + ',' + str(thresholds[c])+'\n')
+
+        evaluation_result_obj.close()
+        prc_file_obj.close()
+
+
         for key in sorted(results):
             logging.info('{}: {}'.format(key, results[key]))
     except:
