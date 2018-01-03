@@ -2,6 +2,8 @@ import vica.minhash
 import tempfile
 import os
 import filecmp
+import difflib
+import sys
 import yaml
 from nose.tools import ok_, eq_
 
@@ -35,26 +37,34 @@ def test_compare_sketch():
                               taxfilter=None,
                               taxfilterlevel=None,
                               memory="-Xmx1g")
+    ok_(filecmp.cmp("tests/test-data/testsketch2.txt", outfile2, shallow=False))
 
-# def test_compare_sketch_with_taxfilter():
-#     td = tempfile.mkdtemp()
-#     #test comparesketch without any filtering
-#     outfile3 = os.path.join(td,"comparesketchout3.txt")
-#     vica.minhash._compare_sketch(infile="tests/test-data/2testseqs.fasta",
-#                               outfile=outfile3,
-#                               ref="tests/test-data/2testseqs_ref.sketch",
-#                               blacklist= "tests/test-data/blacklist_refseq_species_300.sketch",
-#                               tree="tests/test-data/tree.taxtree.gz",
-#                               taxfilter="246200",
-#                               taxfilterlevel="species",
-#                               memory="-Xmx1g")
-#     with open(outfile3, "r") as a:
-#         with open("tests/test-data/testsketch3.txt", 'r') as b:
-#             al = a.readlines()
-#             bl = b.readlines()
-#             cd = cd = difflib.context_diff(al, bl)
-#     sys.stdout.writelines(cd)
-#     ok_(filecmp.cmp("tests/test-data/testsketch3.txt", outfile3, shallow=True))
+def test_compare_sketch_with_taxfilter():
+    td = tempfile.mkdtemp()
+    print(td)
+    #test comparesketch without any filtering
+    outfile3 = os.path.join(td,"comparesketchout3.txt")
+    vica.minhash._compare_sketch(infile="tests/test-data/2testseqs.fasta",
+                              outfile=outfile3,
+                              ref="tests/test-data/2testseqs_ref.sketch",
+                              blacklist= "tests/test-data/blacklist_refseq_species_300.sketch",
+                              tree="tests/test-data/tree.taxtree.gz",
+                              taxfilter="246200",
+                              taxfilterlevel="species",
+                              memory="-Xmx1g")
+    with open(outfile3, "r") as a:
+        with open("tests/test-data/testsketch3.txt", 'r') as b:
+            al = a.readlines()
+            bl = b.readlines()
+            ab = []
+            bb = []
+            for val in al:
+                if val != "\n":
+                    ab.append(val)
+            for val in bl:
+                if val != "\n":
+                    bb.append(val)
+    eq_(ab,bb)
 
 
 def test_parse_sendsketch():
