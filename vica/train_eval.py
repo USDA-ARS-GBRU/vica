@@ -35,8 +35,9 @@ def _featureshape(k=5, codonlength=177, minhashlength=267):
     minhash = tf.feature_column.numeric_column(key='minhash', shape=(minhashlength))
     return kmerdim, kmer, codon, minhash
 
+
 def _ids_from_tfrecords(filename):
-    """Takes a tfrecord filename and returns a list with the labels in order.
+    """Takes a tfrecord filename and returns a list with the ids in order.
 
     """
     idlist = []
@@ -47,15 +48,30 @@ def _ids_from_tfrecords(filename):
     return idlist
 
 
-def _ids_from_tfrecords_files(file_names):
-    """ input: list of tfrecord file names
-        output: list with the labels
-    """
-    id_list = []
-    for filename in file_names:
-        id_list = id_list + _ids_from_tfrecords(filename)
+def _ids_labels_from_tfrecords(filename):
+    """Takes a tfrecord filename and returns a list with the ids and labels in order.
 
-    return id_list
+    """
+    id_label_list = []
+    for example in tf.python_io.tf_record_iterator(filename):
+        result = tf.train.Example.FromString(example)
+        idstr = result.features.feature["id"].bytes_list.value[0].decode()
+        # print(result.features.feature["id"])
+        # print(result.features.feature["label"])
+        label_str = result.features.feature["label"].int64_list.value[0]
+        id_label_list.append((idstr, label_str))
+    return id_label_list
+
+
+def _ids_labels_from_tfrecords_files(file_names):
+    """ input: list of tfrecord file names
+        output: list with the ids and labels
+    """
+    id_label_list = []
+    for filename in file_names:
+        id_label_list = id_label_list + _ids_labels_from_tfrecords(filename)
+
+    return id_label_list
 
 
 
@@ -284,15 +300,15 @@ def evaluate(infiles, out, modeldir, n_classes, configpath):
         if not os.path.exists(out):
             os.mkdir(out)
         predictions = os.path.join(out, "modelpredictions.txt")
-        idlist = _ids_from_tfrecords_files(infiles)
+        id_label_list = _ids_labels_from_tfrecords_files(infiles)
         with open(predictions, "w") as outfile:
             csv_writer_instance = csv.writer(outfile, lineterminator='\n')
-            header = ["ID", "Class", "Class_id"] + ["Prob_class_" + str(i) for i in range(int(n_classes))]
+            header = ["ID", "Label", "Class", "Class_id"] + ["Prob_class_" + str(i) for i in range(int(n_classes))]
             csv_writer_instance.writerow(header)
-            for idrec, rec in zip(idlist,preds):
+            for idrec, rec in zip(id_label_list, preds):
                 plist = rec['probabilities']
                 pliststr = [str(x) for x in plist]
-                ll = [idrec, rec['classes'][0].decode("utf-8"), str(rec['class_ids'][0])]
+                ll = [idrec[0], idrec[1], rec['classes'][0].decode("utf-8"), str(rec['class_ids'][0])]
                 ll.extend(pliststr)
                 csv_writer_instance.writerow(ll)
         for key in sorted(results):
