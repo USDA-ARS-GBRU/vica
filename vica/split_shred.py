@@ -23,8 +23,7 @@ import vica
 config = yaml.safe_load(vica.CONFIG_PATH)
 
 def _read_data(file):
-    """read a fasta or bgzf fasta and optionally an equivelantly named faidx
-        and return a pyfaidx handle.
+    """read a fasta or bgzf fasta and return a pyfaidx Fasta object handle.
 
     Args:
         file (str):A fasta file or blocked gzip format fasta file with names
@@ -40,7 +39,7 @@ def _read_data(file):
 
 
 def _shuffle_keys(ddict):
-    """take the pyfaidx file and return a suffled list of the keys.
+    """take the pyfaidx file and return a shuffled list of the keys.
 
     Args:
         ddict (dict):A dictionary or dictionary-like object
@@ -81,7 +80,7 @@ def _profile_sequences(seqobj, ncbiobj, splitlevel, classes):
             if sltaxon and cltaxon:
                 datadict[key] = [tid, sltaxon, cltaxon, length]
         except Exception:
-            logging.exception("An error occured while profiling the sequence {} in the reference database. Coninuing with the next sequence.".format(str(key)))
+            logging.exception("An error occurred while profiling the sequence {} in the reference database. Continuing with the next sequence.".format(str(key)))
     df = pandas.DataFrame.from_dict(datadict, orient="index", dtype='int64')
     df.columns = ["taxid", "taxlevelid", "classid", "length"]
     df.astype(dtype={"taxid":"int64","taxlevelid": "int64","classid":"int64","length":"int64"})
@@ -103,7 +102,7 @@ def _split_levels(testfrac, df, classes):
              trainids = set(classids) - testids
              cd[taxid]={'test':testids,'train': trainids, 'total':clength}
          else:
-             logging.warning("the class {} was not present in the sequence file being rocessed".format(classes[taxid]))
+             logging.warning("the class {} was not present in the sequence file being processed".format(classes[taxid]))
     return cd
 
 def _writeseq(record, pos, length, handle):
@@ -166,14 +165,14 @@ def _process_examples(exampletype, n_per_class, cd, outdir, length, df, seqobj):
 
     Args:
         exampletype (str): is the type 'test' or 'train'
-        n_per_class (int): the target amount of sequences to aquire
+        n_per_class (int): the target amount of sequences to acquire
         cd (dict): A dictionary in the form
 
         {class_ids: {'test':set(taxids), 'train': set(taxids)}}
 
         outdir (str): directory for creating subdirectories and fasta files
-        length (int): desired length of the sammpled sequences
-        df (obj): A pandas dataframe on sequences in the reference DB
+        length (int): desired length of the sampled sequences
+        df (obj): A pandas data frame on sequences in the reference DB
         seqobj: a pfaidx.Fasta class object for the reference DB
 
     Returns:
@@ -225,14 +224,14 @@ def _select_contigs(n_per_class, cd, outdir, length, df, seqobj):
 
     Args:
 
-        n_per_class (int): the target amount of sequences to aquire
+        n_per_class (int): the target amount of sequences to acquire
         cd (dict): A dictionary in the form
 
         {class_ids: {'test':set(taxids), 'train': set(taxids)}}
 
         outdir (str): directory for creating subdirectories and fasta files
-        length (int): desired length of the sammpled sequences
-        df (obj): A pandas dataframe on sequences in the reference DB
+        length (int): desired length of the sampled sequences
+        df (obj): A pandas data frame on sequences in the reference DB
         seqobj: a pfaidx.Fasta class object for the reference DB
 
     Returns:
@@ -278,8 +277,8 @@ def run(fastafile, outdir, length=5000, n_per_class=100000,
             Example: "tid|1026970|NW_008342263.1"
         outdir (str): A directory to write the output data
         length (int): the length of the sequence fragments sampled
-        n_per_class (int): the number ot test and train sequences to sample.
-            Sampling is probabilistic so this is a target not a gaurantee.
+        n_per_class (int): the number to test and train sequences to sample.
+            Sampling is probabilistic so this is a target not a guarantee.
         testfrac (float): The fraction of the data to be in the test set
         splitlevel (str): the taxonomic level to split at:
 

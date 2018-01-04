@@ -30,7 +30,7 @@ def run(infile, output, label, minhashlocal=None, configpath=vica.CONFIG_PATH):
             classifier.  It should be -1 if the true class is unknown or,
             if the class is known it should  begin with 0 and
             increase sequentially for each training class.
-        minhashlocal (bool): If True the functiion uses a local instance of
+        minhashlocal (bool): If True the function uses a local instance of
             the bbtools minhash database and taxonomy files. Locations of
             the reference files should be set in the configuration file.
         configpath (str): path to the yaml configuration  file.
@@ -77,7 +77,7 @@ def run(infile, output, label, minhashlocal=None, configpath=vica.CONFIG_PATH):
                 nodesfile=config["minhash"]["nodesfile"],
                 noncellular=config["minhash"]["noncellular"])
         except:
-            logging.exception("vica get_features: during minhash local feature selection the following exception occcured:")
+            logging.exception("vica get_features: during minhash local feature selection the following exception occurred:")
             raise SystemExit(1)
     else:
         try:
@@ -89,7 +89,7 @@ def run(infile, output, label, minhashlocal=None, configpath=vica.CONFIG_PATH):
                 nodesfile=config["minhash"]["nodesfile"],
                 noncellular=config["minhash"]["noncellular"])
         except:
-            logging.exception("vica get_features: during minhash remote feature selection the following exception occcured:")
+            logging.exception("vica get_features: during minhash remote feature selection the following exception occurred:")
             raise SystemExit(1)
 
     s2 = time.perf_counter()
@@ -104,7 +104,7 @@ def run(infile, output, label, minhashlocal=None, configpath=vica.CONFIG_PATH):
     try:
         vica.khmer_features.run(infile=infile, outfile=kmerout, ksize=config["khmer_features"]["ksize"])
     except:
-        logging.exception("vica get_features: during kmer feature selection the following exception occcured:")
+        logging.exception("vica get_features: during kmer feature selection the following exception occurred:")
         raise SystemExit(1)
 
     s6 = time.perf_counter()
@@ -118,7 +118,7 @@ def run(infile, output, label, minhashlocal=None, configpath=vica.CONFIG_PATH):
     try:
         vica.prodigal.contigs_to_feature_file(infile=infile, outfile=codonout, dtemp=dtemp, codon_list=config["prodigal"]["codon_list"])
     except:
-        logging.exception("vica get_features: during codon feature selection the following exception occcured:")
+        logging.exception("vica get_features: during codon feature selection the following exception occurred:")
         raise SystemExit(1)
     s4 = time.perf_counter()
     t2 = s4 - s3
@@ -134,7 +134,7 @@ def run(infile, output, label, minhashlocal=None, configpath=vica.CONFIG_PATH):
                  minhashfile=minhashout, tfrecordfile=output,
                  label=str(label), sort=True)
     except:
-        logging.exception("vica get_features: While creating a TFrecord file the following exception occcured:")
+        logging.exception("vica get_features: While creating a TFrecord file the following exception occurred:")
         raise SystemExit(1)
     s8 = time.perf_counter()
     t4 = s8-s7

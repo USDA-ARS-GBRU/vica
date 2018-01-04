@@ -1,5 +1,5 @@
 """A module with functions to calculate kmer frequency for short kmers and
-    trasnform those into isometric log ratio compositions"""
+    transform those into isometric log ratio compositions"""
 
 import itertools
 import csv
@@ -18,7 +18,7 @@ def iterate_kmer(k):
 
     Creates a list of kmers that have only the first kmer in the reverse
     complement pair. For example, in a list of 3-mers 'ATG' would be present
-    but its reverse complment 'CAT' would not.
+    but its reverse complement 'CAT' would not.
 
     Args:
         k (int): the kmer size between 4-8
@@ -48,7 +48,7 @@ def get_composition(ksize, seq, kmers, norm):
         ksize (int): Kmer size between 4-8
         seq (str): a string representing a DNA sequence
         kmers (list): a list of lexographically sorted kmers
-        norm (bool): Should values be normalized by diividing by total
+        norm (bool): Should values be normalized by dividing by total
 
     Returns:
         list: A list of float values with the counts or proportions for
@@ -79,8 +79,8 @@ def _write_kmers_as_csv(infile, outfile, ksize, kmers):
     """Calculate ilr transformed kmer compositions for sequences in a fasta
        file.
 
-   Takes multisequence fasta file and a list of kmers and calculates the
-   isometric log-ratio transformed kmer composition for each sequence
+   Takes a multi-sequence fasta file and a list of kmers and calculates the
+   isometric log-ratio transformed kmer composition for each sequence,
    writing a CSV file with the data.
 
    Args:
@@ -123,7 +123,7 @@ def run(infile, outfile, ksize):
     """Calculate the ilr transformed kmer composition for each sequence
         in a fasta file.
 
-   Takes multisequence fasta file and a kmer size and calculates the
+   Takes a multi-sequence fasta file and a kmer size and calculates the
    isometric log-ratio (ilr) transformed kmer composition for each sequence,
    writing a CSV file with the data.
 

@@ -19,7 +19,7 @@ def clr(composition):
     """Calculates a centered log-ratio transformation from a list of values.
 
     Args:
-        composition (list): a list of integers of floats continaing the
+        composition (list): a list of integers of floats containing the
             compositional data
 
     Returns:
@@ -43,7 +43,7 @@ def ilr(composition):
     """Calculates a isometric log-ratio transformation from a list of values.
 
     Args:
-        composition (list): a list of integers of floats continaing the
+        composition (list): a list of integers of floats containing the
             compositional data
 
     Returns:
@@ -71,7 +71,7 @@ def _call_genes(infile, outfile):
 
     Args:
          infile (str): a multi-sequence fasta to call genes on.
-         outfile (str): a Fasta file contianing the called genestring
+         outfile (str): a Fasta file containing the called genestring
 
     Returns:
          (str): the Standard output of Prodigal
@@ -120,7 +120,7 @@ def _codon_to_dict(genestring, offset):
     Args:
         genestring (str): A DNA sequence
         offset (int):  the starting point of the sequence, used to shift
-            the reading framen
+            the reading frame
 
     Returns:
         (list): A list containing the codons of the sequence in the
@@ -144,7 +144,7 @@ def _parse_prodigal_id_from_biopython(idval):
         the contig file
 
     Args:
-        idval (str): the IDa value returned by prodigal
+        idval (str): the ID value returned by Prodigal
 
     Returns: The ID value as fed to Prodigal
 
@@ -159,13 +159,13 @@ def count_dict_to_clr_array(count_dict, codon_list):
     returning a list.
 
     Args:
-        count_dict (dict): a dictionary wihere codon is the key and the
+        count_dict (dict): a dictionary where codon is the key and the
             value is the count
-        codon_list (list): A lexographically sorted list of codons
+        codon_list (list): A lexicographically sorted list of codons
 
     Returns:
         (list):  A vector of centered, log-ratio transformed values in
-            ordered by the lexographically sorted codons they corespond to.
+            ordered by the lexicographically sorted codons they correspond to.
 
     """
     output_list = []
@@ -184,13 +184,13 @@ def count_dict_to_ilr_array(count_dict, codon_list):
     returning a list.
 
     Args:
-        count_dict (dict): a dictionary wihere codon is the key and the
+        count_dict (dict): a dictionary where codon is the key and the
             value is the count
-        codon_list (list): A lexographically sorted list of codons
+        codon_list (list): A lexicographically sorted list of codons
 
     Returns:
         (list):  A vector of isometric log-ratio transformed values in
-            ordered by the lexographically sorted codons they corespond to.
+            ordered by the lexicographically sorted codons they correspond to.
             The length is len(codon_list - 1).
 
     """
@@ -226,7 +226,7 @@ def count_codon_in_gene(record, cdict={}):
    them to the existing cdict if one was supplied.
 
    Args:
-       record (obj): A biopython sequnce record object
+       record (obj): A Biopython sequence record object
        cdict (dict): A dictionary containing count data to be added to
 
    Returns:
@@ -254,7 +254,7 @@ def count_codons(seqio_iterator, csv_writer_instance, codon_list):
     Args:
         seqio_iterator (obj): A Biopython SeqIO iterator object
         csv_writer_instance (obj): A csv module file handle
-        codon_list (list): a lexographically sorted list of codons
+        codon_list (list): a lexicographically sorted list of codons
 
     Returns:
         (int): the number of records writen

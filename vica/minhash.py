@@ -1,5 +1,7 @@
-"""A module to run bbtools minhash functions sequencesdata and
-return a file of tab delimited classification data"""
+"""A module to run bbtools minhash functions sequences data and
+return a file of tab delimited classification data
+
+"""
 
 import subprocess
 import os
@@ -68,15 +70,15 @@ def _compare_sketch(infile, outfile, ref, blacklist, tree, taxfilter, taxfilterl
     a file.
 
     Args:
-        infile (str): A multi-sequence fasta file for which to calulate
+        infile (str): A multi-sequence fasta file for which to calculate
             minhash taxonomy.
         outfile (str): a path to write the file retuned from the minhash
             server
         ref (str):  A directory containing the .sketch reference files
-        blacklist (str): A fle containing blacklisted sketchs which are to
+        blacklist (str): A file containing blacklisted sketches which are to
             common to be informative
         tree (str): a path to a BBtools formatted taxonomy archive.
-        taxfilter (str): a path to a file contianing NCBI taxonomy IDs
+        taxfilter (str): a path to a file containing NCBI taxonomy IDs
             (one ID per line) to exclude from use in classification.
         taxfileter level (str): A taxonomic rank to use for taxonomic
             filtering. For example if a the taxid 562 (E. coli) is in the
@@ -315,15 +317,15 @@ def minhashlocal(dtemp, infile, outfile, ref, blacklist, tree, taxfilter, taxfil
 
     Args:
         dtemp (str): a temporary to write intermediate files
-        infile (str): A multi-sequence fasta file for which to calulate
+        infile (str): A multi-sequence fasta file for which to calculate
             minhash taxonomy.
         outfile (str): a path to write the file retuned from the minhash
             server
         ref (str):  A directory containing the .sketch reference files
-        blacklist (str): A fle containing blacklisted sketchs which are to
+        blacklist (str): A file containing blacklisted sketches which are to
             common to be informative
         tree (str): a path to a BBtools formatted taxonomy archive.
-        taxfilter (str): a path to a file contianing NCBI taxonomy IDs
+        taxfilter (str): a path to a file containing NCBI taxonomy IDs
             (one ID per line) to exclude from use in classification.
         taxfileter level (str): A taxonomic rank to use for taxonomic
             filtering. For example if a the taxid 562 (E. coli) is in the
@@ -336,7 +338,7 @@ def minhashlocal(dtemp, infile, outfile, ref, blacklist, tree, taxfilter, taxfil
             will autodetect.
         nodesfile (str): a file in NCBI 'taxdump' nodes format containing
             the phyla super phyla and subphyla that should be used as
-            classification categories for cellular organims. A fltered
+            classification categories for cellular organisms. A filtered
             version of the nodes files is in the package's data directory.
             This is the name of the file in the data directory not the path
             to the file.
@@ -347,7 +349,7 @@ def minhashlocal(dtemp, infile, outfile, ref, blacklist, tree, taxfilter, taxfil
         (str): The standard output from BBtools comparesketch.sh
 
     Notes:
-        Pefore running comparesketch.sh data must be prepared for bbtools
+        Before running comparesketch.sh data must be prepared for bbtools
         comparesketch.sh. Pipelines for downloading and preparing the data
         are available in the pipeline directory. Refseq and NCBI taxonomy
         data must be downloaded and processed before running.
@@ -355,7 +357,7 @@ def minhashlocal(dtemp, infile, outfile, ref, blacklist, tree, taxfilter, taxfil
          the function `vica.minhash.minhashremote` creates the same
         classification files slightly faster without requiring data
         proprocessing.  The main reason to run run minhash locally is if
-        you need to pass taxfilter files to it. This is primarially used
+        you need to pass taxfilter files to it. This is primarily used
         for excluding training data when evaluating the performance of
         a custom trained classifier.
 
@@ -396,7 +398,7 @@ def minhashremote(dtemp, infile, outfile, server_url, nodesfile, noncellular):
         server_url (str): a URL for the minhash server
         nodesfile (str): a file in NCBI 'taxdump' nodes format containing
             the phyla super phyla and subphyla that should be used as
-            classification categories for cellular organims. A fltered
+            classification categories for cellular organisms. A filtered
             version of the nodes files is in the package's data directory.
         noncellular (dict): a dictionary of taxid: names pairs containing
             the high level classifications for viruses.

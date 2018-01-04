@@ -84,7 +84,7 @@ def base_input_fn(codonlength, minhashlength, kmerdim, shuffle, shuffle_buffer_s
     """The function for feeding and processing training data
 
     Tensorflow estimators take a function that processes TFrecord Datasets
-    into an example iterator that returnes one processed example each time
+    into an example iterator that returns one processed example each time
     it is needed. because an estimator takes a function without arguments
     functools.partial is used to set the parameter values for each application
     (train, evaluate, classify).
@@ -240,7 +240,7 @@ def train(infiles, out, modeldir, n_classes, configpath):
         serving_input_receiver_fn = tf.estimator.export.build_parsing_serving_input_receiver_fn(feature_spec)
         estimator.export_savedmodel(out, serving_input_receiver_fn)
     except:
-        logging.exception("While exporting the model after tensorflow training the following exception occured:")
+        logging.exception("While exporting the model after tensorflow training the following exception occurred:")
 
 
 def evaluate(infiles, out, modeldir, n_classes, configpath):
@@ -255,7 +255,7 @@ def evaluate(infiles, out, modeldir, n_classes, configpath):
 
     Args:
         infiles (list): A list with paths to TFrecords file(s) containing labeled test sequences.
-        out (str): a directory where model predictions will be writen
+        out (str): a directory where model predictions will be written
         modeldir (str): a model directory containing a trained model to use
         for evaluation.
         n_classes (int): the number of classes in the model (default 4)
@@ -408,10 +408,10 @@ def classify(infile, out, modeldir, n_classes, configpath):
         config = yaml.safe_load(cf)
     try:
         if infile.endswith(("tfrecord", "TFrecord")):
-            logging.info("Classifing data from TFRecord file.")
+            logging.info("Classifying data from TFRecord file.")
             getfeat = False
         elif infile.endswith(("fasta","fa","fna")):
-            logging.info("Classifing data from fasta file.")
+            logging.info("Classifying data from fasta file.")
             getfeat =True
     except:
         logging.exception("Files with that suffix are not supported. Please \
