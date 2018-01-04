@@ -7,12 +7,13 @@ before_install:
   - wget https://sourceforge.net/projects/bbmap/files/BBMap_37.75.tar.gz -O /tmp/BBMap_37.75.tar.gz
   - tar -xvf /tmp/BBMap_37.75.tar.gz
   - export PATH=$PATH:$PWD/bbmap
+  - echo $PWD
   # - wget https://github.com/hyattpd/Prodigal/archive/v2.6.3.tar.gz -O /tmp/Prodigalv2.6.3.tar.gz
   # - tar -xvf /tmp/Prodigalv2.6.3.tar.gz
   # - cd Prodigal-2.6.3 && make && cd ..
   - wget https://github.com/hyattpd/Prodigal/releases/download/v2.6.3/prodigal.linux -O /tmp/prodigal
   - chmod 755 /tmp/prodigal
-  - export PATH=$PATH:$PWD/prodigal
+  - export PATH=$PATH:$PWD
 
 install:
   - pip install codecov
