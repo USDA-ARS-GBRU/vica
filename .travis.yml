@@ -11,9 +11,10 @@ before_install:
   # - wget https://github.com/hyattpd/Prodigal/archive/v2.6.3.tar.gz -O /tmp/Prodigalv2.6.3.tar.gz
   # - tar -xvf /tmp/Prodigalv2.6.3.tar.gz
   # - cd Prodigal-2.6.3 && make && cd ..
-  - wget https://github.com/hyattpd/Prodigal/releases/download/v2.6.3/prodigal.linux -O /tmp/prodigal
-  - chmod 755 /tmp/prodigal
-  - export PATH=$PATH:$PWD
+  - mkdir /home/travis/build/prodigal
+  - wget https://github.com/hyattpd/Prodigal/releases/download/v2.6.3/prodigal.linux -O /home/travis/build/prodigal/prodigal
+  - chmod 755 /home/travis/build/prodigal/prodigal
+  - export PATH=$PATH:/home/travis/build/prodigal
 
 install:
   - pip install codecov
