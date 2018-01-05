@@ -15,16 +15,16 @@ import vica
 
 
 def run(infile, output, label, minhashlocal=None, configpath=vica.CONFIG_PATH):
-    """Run all the steps in thefeature selection selection workflow.
+    """Run all the steps in the feature selection selection workflow.
 
     This command: 1) selects minhash features, 2) codon usage features, 3)
     kmer features and 4) writes features to a tfrecord file.
 
     Args:
         infile (str): a fasta file with names in the format
-            "tid|<NCBI taxonomy ID>|<optional accession>"".
-            Example: "tid|1026970|NW_008342263.1"
-        output (str): a name for the TFrecrods file to be generated. It should
+            "tid|<NCBI taxonomy ID>|<optional accession>".
+            Example: "tid|1026970|NW_008342263.1
+        output (str): a name for the TFrecords file to be generated. It should
             end in ".tfrecords".
         label (int): This is an integer for the taxonomic class used by the
             classifier.  It should be -1 if the true class is unknown or,
@@ -33,7 +33,7 @@ def run(infile, output, label, minhashlocal=None, configpath=vica.CONFIG_PATH):
         minhashlocal (bool): If True the function uses a local instance of
             the bbtools minhash database and taxonomy files. Locations of
             the reference files should be set in the configuration file.
-        configpath (str): path to the yaml configuration  file.
+        configpath (str): path to the yaml configuration file.
 
     Returns:
         None

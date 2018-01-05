@@ -211,7 +211,7 @@ def train(infiles, out, modeldir, n_classes, configpath):
             minhashlength=config["train_eval"]["minhashlength"],
             kmerdim=kmerdim,
             shuffle=True,
-            shuffle_buffer_size=10000,
+            shuffle_buffer_size=200000,
             batch=config["train_eval"]["train_batch_size"],
             epochs=config["train_eval"]["epochs"],
             filenames=infiles)

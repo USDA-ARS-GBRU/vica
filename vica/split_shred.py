@@ -272,7 +272,7 @@ def run(fastafile, outdir, length=5000, n_per_class=100000,
     split the test and train data can be selected.
 
     Args:
-        fastafile (str): A fasta file or blocked gzip format fasta file with
+        fastafile (str): A fasta file or with
             names in the format "tid|<NCBI taxonomy ID>|<optional accession>".
             Example: "tid|1026970|NW_008342263.1"
         outdir (str): A directory to write the output data
@@ -302,6 +302,6 @@ def run(fastafile, outdir, length=5000, n_per_class=100000,
         cd = _split_levels(testfrac=testfrac, df=df, classes=classes)
         _select_contigs(n_per_class=n_per_class, cd=cd, outdir=outdir,length=length,df=df, seqobj=seqobj)
         testtaxa = _read_taxid_from_fasta(outdir=outdir)
-        logging.info("Wrote {} NCBI taxomomy ids to the file 'test_taxids.txt'. This file isused to exclude test taxa from minhash during training".format(testtaxa))
+        logging.info("Wrote {} NCBI taxomomy ids to the file 'test_taxids.txt'. This file is used to exclude test taxa from minhash during training".format(testtaxa))
     except:
         logging.exception("vica.split_train logged the following exception:")

@@ -13,7 +13,7 @@ import yaml
 
 import vica
 
-# Set config path for modules in the event that they are accesed directly and
+# Set config path for modules in the event that they are accessed directly and
 # not from the vica-cli
 
 def config_logging(logfile, level=logging.DEBUG):
