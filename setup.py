@@ -4,7 +4,7 @@ setup(
     name='vica',
     version='0.1.4',
     packages=['vica'],
-    license='Other/Proprietary License',
+    license='License :: OSI Approved :: BSD License',
     description="find highly divergent DNA and RNA viruses in microbiomes",
     long_description=open('README.rst').read(),
     classifiers=['Topic :: Scientific/Engineering :: Bio-Informatics',
