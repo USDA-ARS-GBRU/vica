@@ -96,8 +96,8 @@ class Split:
         the training set so we do not oversample them.
         """
         seqidlist = []
-        mito = ftp://ftp.ncbi.nlm.nih.gov/refseq/release/mitochondrion/*.1.genomic.fna.gz
-        plast = ftp://ftp.ncbi.nlm.nih.gov/refseq/release/plastid/*.1.genomic.fna.gz
+        mito = 'ftp://ftp.ncbi.nlm.nih.gov/refseq/release/mitochondrion/*.1.genomic.fna.gz'
+        plast = 'ftp://ftp.ncbi.nlm.nih.gov/refseq/release/plastid/*.1.genomic.fna.gz'
         dtemp = tempfile.mkdtemp()
         r = urllib.request.urlopen()
         for item in [mito, plastid]:
