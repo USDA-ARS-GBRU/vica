@@ -13,7 +13,9 @@ import logging
 import random
 import collections
 import shutil
-
+import tempfile
+import urllib
+import gzip
 import pandas
 import numpy
 import pyfaidx
@@ -73,7 +75,7 @@ class Split:
         self.rand_key_list = []
         for  key in self.pyfaidx_obj:
             self.rand_key_list.append(key)
-            random.shuffle(self.self.rand_key_list)
+            random.shuffle(self.rand_key_list)
         if profile_file:
             self.profile = set_profile(profile_file)
         else:
@@ -88,36 +90,66 @@ class Split:
         self.testfrac = None
 
 
+    def _find_organelles():
+        """ There are approximately twice as many organelle only genomes as complete
+        eukaryotic genomes in refseq. we need to exclude these when building
+        the training set so we do not oversample them.
+        """
+        seqidlist = []
+        mito = ftp://ftp.ncbi.nlm.nih.gov/refseq/release/mitochondrion/*.1.genomic.fna.gz
+        plast = ftp://ftp.ncbi.nlm.nih.gov/refseq/release/plastid/*.1.genomic.fna.gz
+        dtemp = tempfile.mkdtemp()
+        r = urllib.request.urlopen()
+        for item in [mito, plastid]:
+            options = ["wget", item, "-P", dtemp,]
+        wgetout = subprocess.run(options, stderr=subprocess.PIPE)
+        for seqfile in os.listdir(dtemp):
+            with gzip.open(seqfile, 'rb') as f:
+                for line in f:
+                    if line.startswith(">"):
+                        ll = line.split(" ")[0]
+                        seqid = ll[1:]
+                        seqidlist.append(seqid)
+        shutil.rmtree(dtemp)
+        return set(seqidlist)
+
+        #return sendsketchout
+
+
+
+
     def set_profile(self, profile_file=None):
         """load the profile from a file or create it from the fasta file
 
         Args:
-            profile (str): the string to a three column tab delimited file with
+            profile_file (str): the string to a three column tab delimited file with
                 key, taxonomy id and length for each contig in the reference fasta
 
         Returns:
             profile (dict): Format: {tax_id: {seq_id: seq_length}, ...}
         """
         pdict = {}
-        if profile_file:
-            try:
-                with open(profile_file) as f:
-                    for line in f:
-                        ll = f.strip().split('\t')
-                        seq_id = ll[0]
-                        tax_id = ll[1]
-                        length = ll[2]
-                        pdict[tax_id][seq_id] = length
-                self.profile = pdict
-            except:
-                next
-        else:
+        try:
+            with open(profile_file, 'r') as f:
+                for line in f:
+                    ll = f.strip().split('\t')
+                    seq_id = ll[0]
+                    tax_id = ll[1]
+                    length = ll[2]
+                    pdict[tax_id][seq_id] = length
+            self.profile = pdict
+        except:
+            seqidset = _find_organelles()
             for seq_id in self.pyfaidx_obj:
                 try:
                     rec = seq_id.strip().split("|")
                     tax_id = rec[1]
+                    accession = rec[3]
                     length = len(self.pyfaidx_obj[seq_id])
-                    pdict[tax_id][seq_id] = length
+                    with open(profile_file, 'w') as f:
+                        if accession not in seqidset:
+                            pdict[tax_id][seq_id] = length
+                            f.writeline([seq_id, tax_id, length ])
                 except Exception:
                     logging.exception("An error occurred while profiling the sequence {} in the reference database. Continuing with the next sequence.".format(str(key)))
                 self.profile = pdict
@@ -265,6 +297,7 @@ class Split:
                 _propagate_samples_feature_from_nodes_to_leaves(node)
 
 
+
     def _writeseq(record, pos, length, handle):
         """writes a fasta sequence to a file, adding position information
             to the id.
@@ -332,6 +365,17 @@ class Split:
                             outfile=outfile)
 
     def write_sequence_data(directory, overwrite=False, seq_length=5000):
+        """Write the training and test data to a directory
+
+        Args:
+            directory (str): The directory to write the training and test data
+            overwrite (bool): Sould the directory be overwritten if it exists
+            seq_length (int): the length to sample the training space
+
+        Returns:
+            None, a directory is written
+
+        """
         if self.test_leaves or self.train_leaves == None:
             raise Exception("Please run the method 'split_test_train_nodes() before writing sequence data")
         if os.path.exists(directory) and overwrite == False:

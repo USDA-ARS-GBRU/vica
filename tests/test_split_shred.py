@@ -13,10 +13,10 @@ from ete3 import NCBITaxa
 import vica.split_shred
 
 
-classes = {2: "Bacteria",
-         2157: "Archaea",
-         2759: "Eukaryota",
-         10239: "Viruses"}
+classes = {2: 1000,
+         2157: 1000,
+         2759:1000,
+         10239: 1000}
 
 def test_read_data_fasta():
     pyfaidx_obj = vica.split_shred._read_data("tests/test-data/2testseqs.fasta")
