@@ -14,8 +14,11 @@ import random
 import collections
 import shutil
 import tempfile
-import urllib
 import gzip
+import subprocess
+import io
+import json
+
 import pandas
 import numpy
 import pyfaidx
@@ -24,7 +27,8 @@ import yaml
 
 import vica
 
-
+with open(vica.CONFIG_PATH) as cf:
+        config = yaml.safe_load(cf)
 
 class Split:
     """A class to create taxonomically distributed training data.
@@ -52,23 +56,25 @@ class Split:
 
     """
 
-    def __init__(self, fasta_file, profile_file, split_depth, classes, testfrac):
+    def __init__(self, fasta_file, split_depth, classes, testfrac, use_profile_file=None, save_profile_file=None):
         """Initialization of the Split class
 
         Args:
             fasta_file (str): the path to the reference fasta file to use
-            profile (str): the path to the summary data for the reference
-                file (optional)
             split_depth (int): the tree depth at which to split data between
                 test and train.
             classes (dict): a dict of NCBI Taxonomy ids as keys and the number of
                 samples to sample for each class
             testfrac (float): The proportion of the data to use for testing the model
+            use_profile_file (str): the path to the summary data for the reference
+                            file (optional)
+            save_profile_file (str): the path to write summary data for the reference
+                            file (optional)
 
         Returns:
             None
         """
-
+        logging.info("Initializing vica.split_shred.Split object")
         self.pyfaidx_obj =pyfaidx.Fasta(fasta_file, read_ahead=100)
         self.tax_instance = ete3.NCBITaxa()
         self.pruned_tree = None
@@ -76,10 +82,7 @@ class Split:
         for  key in self.pyfaidx_obj:
             self.rand_key_list.append(key)
             random.shuffle(self.rand_key_list)
-        if profile_file:
-            self.profile = set_profile(profile_file)
-        else:
-            self.profile = set_profile()
+        self.profile = self.set_profile(use_profile_file, save_profile_file)
         self.test_subtrees = None
         self.train_subtrees = None
         self.test_leaves = None
@@ -90,71 +93,75 @@ class Split:
         self.testfrac = None
 
 
-    def _find_organelles():
+    def _find_organelles(self):
         """ There are approximately twice as many organelle only genomes as complete
         eukaryotic genomes in refseq. we need to exclude these when building
         the training set so we do not oversample them.
         """
-        seqidlist = []
-        mito = 'ftp://ftp.ncbi.nlm.nih.gov/refseq/release/mitochondrion/*.1.genomic.fna.gz'
-        plast = 'ftp://ftp.ncbi.nlm.nih.gov/refseq/release/plastid/*.1.genomic.fna.gz'
-        dtemp = tempfile.mkdtemp()
-        r = urllib.request.urlopen()
-        for item in [mito, plastid]:
-            options = ["wget", item, "-P", dtemp,]
-        wgetout = subprocess.run(options, stderr=subprocess.PIPE)
-        for seqfile in os.listdir(dtemp):
-            with gzip.open(seqfile, 'rb') as f:
-                for line in f:
-                    if line.startswith(">"):
-                        ll = line.split(" ")[0]
-                        seqid = ll[1:]
-                        seqidlist.append(seqid)
-        shutil.rmtree(dtemp)
+        organellepath = os.path.join(vica.DATA_PATH, config['split_shred']['organellefile'])
+        with open(organellepath, 'r') as data_file:
+            seqidlist = json.load(data_file)
+        logging.info("{} organelle sequence accessions loaded".format(len(seqidlist)))
         return set(seqidlist)
 
-        #return sendsketchout
 
 
-
-
-    def set_profile(self, profile_file=None):
+    def set_profile(self, use_profile_file=None, save_profile_file=None):
         """load the profile from a file or create it from the fasta file
 
         Args:
-            profile_file (str): the string to a three column tab delimited file with
+            use_profile_file (str): the string to a three column tab delimited file with
                 key, taxonomy id and length for each contig in the reference fasta
-
+            save_profile_file (str): location to save the  contig in the r
+                reference data for faster profiling in the future
         Returns:
             profile (dict): Format: {tax_id: {seq_id: seq_length}, ...}
         """
         pdict = {}
-        try:
-            with open(profile_file, 'r') as f:
+        if use_profile_file:
+            logging.info("Loading sequence profile data from {}".format(use_profile_file))
+            with open(use_profile_file, 'r') as f:
                 for line in f:
-                    ll = f.strip().split('\t')
+                    ll = line.strip().split('\t')
                     seq_id = ll[0]
                     tax_id = ll[1]
                     length = ll[2]
-                    pdict[tax_id][seq_id] = length
-            self.profile = pdict
-        except:
-            seqidset = _find_organelles()
-            for seq_id in self.pyfaidx_obj:
-                try:
-                    rec = seq_id.strip().split("|")
-                    tax_id = rec[1]
-                    accession = rec[3]
-                    length = len(self.pyfaidx_obj[seq_id])
-                    with open(profile_file, 'w') as f:
-                        if accession not in seqidset:
-                            pdict[tax_id][seq_id] = length
-                            f.writeline([seq_id, tax_id, length ])
-                except Exception:
-                    logging.exception("An error occurred while profiling the sequence {} in the reference database. Continuing with the next sequence.".format(str(key)))
-                self.profile = pdict
+                    if tax_id in pdict:
+                        pdict[tax_id][seq_id] = length
+                    else:
+                        pdict[tax_id]={}
+                        pdict[tax_id][seq_id] = length
+                return pdict
+        # if profile not given, create profile
+        logging.info("Profiling reference fasta file")
+        seqidset = self._find_organelles()
+        for n, seq_id in enumerate(self.pyfaidx_obj):
+            try:
+                rec = seq_id.name.strip().split("|")
+                tax_id = rec[1]
+                accession = rec[2]
+                length = len(seq_id)
+                if accession not in seqidset:
+                    if tax_id in pdict:
+                        pdict[tax_id][seq_id.name] = length
+                    else:
+                        pdict[tax_id]={}
+                        pdict[tax_id][seq_id.name] = length
+            except Exception:
+                    logging.exception("An error occurred while profiling the \
+                        sequence {} in the reference database. Continuing with \
+                        the next sequence.".format(str(seq_id.name)))
+        logging.info("Profiled {} sequences".format(str(n)))
+        if save_profile_file:
+            with open(save_profile_file, 'w') as f:
+                logging.info("Writing sequence profile to {}".format(save_profile_file))
+                for tax_key, tax_dict in pdict.items():
+                    for seq_key, length in tax_dict.items():
+                        #print(type(tax_key))
+                        f.write("\t".join([seq_key, str(tax_key), str(length)]) + "\n")
+        return pdict
 
-    def _test_or_train(tree):
+    def _test_or_train(self, tree):
         """Split internal nodes at the selected path into test and train given a subtree.
 
         Args:
@@ -179,7 +186,7 @@ class Split:
         return test_subtrees, train_subtrees
 
 
-    def _assign_samples_attribute(n, nodelist):
+    def _assign_samples_attribute(self, n, nodelist):
         """for each node in nodelist, set split n samples evenly among them,
             randomly assigning modulo. Add a 'samples' attribute to each
             recording their own n.
@@ -203,7 +210,7 @@ class Split:
             for node in nodelist:
                 node.add_feature(samples=whole_samples)
 
-    def _add_samples_feature_to_test_train_nodes(n, test_subtrees, train_subtrees):
+    def _add_samples_feature_to_test_train_nodes(self, n, test_subtrees, train_subtrees):
         """split n samples up evenly among the test and train subtrees
 
         Args:
@@ -214,11 +221,11 @@ class Split:
         """
         testn = round(n * self.testfrac)
         trainn = n - testn
-        _assign_samples_attribute(testn, test_subtrees)
-        _assign_samples_attribute(trainn, train_subtrees)
+        self._assign_samples_attribute(testn, test_subtrees)
+        self._assign_samples_attribute(trainn, train_subtrees)
 
 
-    def _add_samples_feature_to_children(node):
+    def _add_samples_feature_to_children(self, node):
         """for node with the 'samples' attribute add a 'samples' attribute to each
             child the number of samples evenly between them and randomly assigning
             modulo.
@@ -228,18 +235,18 @@ class Split:
 
         """
         children = node.get_children()
-        _assign_samples_attribute(node.samples, children)
+        self._assign_samples_attribute(node.samples, children)
 
 
-    def _propagate_samples_feature_from_nodes_to_leaves(node):
+    def _propagate_samples_feature_from_nodes_to_leaves(self, node):
         """Given a node at a split N samples across all subnodes down to the leaves
 
         """
         for node in tree.traverse():
             if not node.is_leaf():
-                _add_samples_feature_to_children(node)
+                self._add_samples_feature_to_children(node)
 
-    def _calculate_tax_composition(taxalist):
+    def _calculate_tax_composition(self, taxalist):
         """Take a list of taxa nodes and return a tally of the
             taxonomic rank of the nodes.
 
@@ -250,10 +257,10 @@ class Split:
         """
         rankdict = collections.Counter()
         for node in taxalist:
-            rank = self.tax_instance.get_rank([a.name])
-            currank = rank[int(a.name)]
+            rank = self.tax_instance.get_rank([node.name])
+            currank = rank[int(node.name)]
             if currank == 'no_rank':
-                lineage_list = self.tax_instance.get_lineage(int(a.name))[::-1]
+                lineage_list = self.tax_instance.get_lineage(int(node.name))[::-1]
                 full_rank_dict = self.tax_instance.get_rank(lineage_list)
                 for i in lineage_list:
                     uprank = full_rank_dict[i]
@@ -265,7 +272,7 @@ class Split:
         return rankdict
 
 
-    def split_test_train_nodes():
+    def split_test_train_nodes(self):
         """Split nodes into a test set and train set at the selected node
             height. Assign the number of samples to take to each node. Record
             the taxonomic level distribution for the selected height.
@@ -276,29 +283,29 @@ class Split:
         self.train_subtrees = {}
         self.test_leaves = {}
         self.train_leaves = {}
-        self.composition = Counter()
+        self.composition = collections.Counter()
         # Prune the NCBI taxonomy tree to the leaves in the training dataset
         leaves = []
         for tax_id in self.profile:
             leaves.append(tax_id)
-        self.pruned_tree = self.tax_instance.get_topology(Set(leaves)) # create ncbi topology tree
+        self.pruned_tree = self.tax_instance.get_topology(list(set(leaves))) # create ncbi topology tree
         # For each classification class process the data
         for key in self.classes:
             subtree = self.pruned_tree&str(key)
             # Split subtrees into test and train sets
-            self.test_subtrees[key], self.train_subtrees[key] = _test_or_train(subtree)
+            self.test_subtrees[key], self.train_subtrees[key] = self._test_or_train(subtree)
             n = self.classes[key]
             # split the samples among the subtrees
-            _add_samples_feature_to_test_train_nodes(n, self.test_subtrees[key], self.train_subtrees[key])
+            self._add_samples_feature_to_test_train_nodes(n, self.test_subtrees[key], self.train_subtrees[key])
             # record the taxonomic levels the sampling occurred at
-            self.composition + _calculate_tax_composition(self.test_subtrees[key] + self.train_subtrees[key])
+            self.composition + self._calculate_tax_composition(self.test_subtrees[key] + self.train_subtrees[key])
             # propagate the samples down to the leaves
             for node in self.test_subtrees[key] + self.train_subtrees[key]:
-                _propagate_samples_feature_from_nodes_to_leaves(node)
+                self._propagate_samples_feature_from_nodes_to_leaves(node)
 
 
 
-    def _writeseq(record, pos, length, handle):
+    def _writeseq(self, record, pos, length, handle):
         """writes a fasta sequence to a file, adding position information
             to the id.
 
@@ -312,7 +319,7 @@ class Split:
         handle.write(label)
         handle.writelines(seqlist)
 
-    def _select_random_segment(seqobj, name, length, tries=10, ns= 0.1):
+    def _select_random_segment(self, seqobj, name, length, tries=10, ns= 0.1):
         """Select a random fragment from sequence checking for short length and N's.
 
         """
@@ -331,7 +338,7 @@ class Split:
                 i += 1
         return None
 
-    def _select_fragments_and_write(basedir, seq_length, test=True):
+    def _select_fragments_and_write(self, basedir, seq_length, test=True):
         """Select the random fragments and fasta files to a directory.
         """
         if test:
@@ -364,7 +371,7 @@ class Split:
                             length=seq_length,
                             outfile=outfile)
 
-    def write_sequence_data(directory, overwrite=False, seq_length=5000):
+    def write_sequence_data(self, directory, overwrite=False, seq_length=5000):
         """Write the training and test data to a directory
 
         Args:

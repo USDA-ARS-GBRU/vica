@@ -1,5 +1,7 @@
 # This file contains a default configuration file for vica in YAML 1.2 format
 # parameters for the minhash module
+split_shred:
+  organellefile: "organelles.json"
 minhash:
   # location of remote server to send minhash sketches to
   server_url: "https://refseq-sketch.jgi-psf.org/sketch"
