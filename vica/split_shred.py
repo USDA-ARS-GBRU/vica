@@ -138,7 +138,7 @@ class Split:
         for n, seq_id in enumerate(self.pyfaidx_obj):
             try:
                 if n % 100000 ==0:
-                    print("{} sequences profiled".format{n})
+                    print("{} sequences profiled".format(n))
                 rec = seq_id.name.strip().split("|")
                 tax_id = rec[1]
                 accession = rec[2]
