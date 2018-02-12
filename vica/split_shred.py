@@ -56,7 +56,7 @@ class Split:
 
     """
 
-    def __init__(self, fasta_file, split_depth, classes, testfrac, use_profile_file=None, save_profile_file=None):
+    def __init__(self, fasta_file, split_depth, classes, testfrac):
         """Initialization of the Split class
 
         Args:
@@ -66,23 +66,23 @@ class Split:
             classes (dict): a dict of NCBI Taxonomy ids as keys and the number of
                 samples to sample for each class
             testfrac (float): The proportion of the data to use for testing the model
-            use_profile_file (str): the path to the summary data for the reference
-                            file (optional)
-            save_profile_file (str): the path to write summary data for the reference
-                            file (optional)
 
         Returns:
             None
         """
         logging.info("Initializing vica.split_shred.Split object")
+        logging.info("loading pyfaidx index, or creating index if not present")
         self.pyfaidx_obj =pyfaidx.Fasta(fasta_file, read_ahead=100)
+        logging.info("Loading ete3 NCBI taxonomy data object")
         self.tax_instance = ete3.NCBITaxa()
         self.pruned_tree = None
+        logging.info("Creating a random ordering of ids")
         self.rand_key_list = []
         for  key in self.pyfaidx_obj:
             self.rand_key_list.append(key)
             random.shuffle(self.rand_key_list)
-        self.profile = self.set_profile(use_profile_file, save_profile_file)
+        logging.info("Profiling sequences taxonomically")
+        self.profile = self.set_profile(fasta_file)
         self.test_subtrees = None
         self.train_subtrees = None
         self.test_leaves = None
@@ -106,10 +106,11 @@ class Split:
 
 
 
-    def set_profile(self, use_profile_file=None, save_profile_file=None):
+    def set_profile(self, fasta_file):
         """load the profile from a file or create it from the fasta file
 
         Args:
+            fasta_file
             use_profile_file (str): the string to a three column tab delimited file with
                 key, taxonomy id and length for each contig in the reference fasta
             save_profile_file (str): location to save the  contig in the r
@@ -118,50 +119,34 @@ class Split:
             profile (dict): Format: {tax_id: {seq_id: seq_length}, ...}
         """
         pdict = {}
-        if use_profile_file:
-            logging.info("Loading sequence profile data from {}".format(use_profile_file))
-            with open(use_profile_file, 'r') as f:
-                for line in f:
-                    ll = line.strip().split('\t')
-                    seq_id = ll[0]
-                    tax_id = ll[1]
-                    length = ll[2]
-                    if tax_id in pdict:
-                        pdict[tax_id][seq_id] = length
-                    else:
-                        pdict[tax_id]={}
-                        pdict[tax_id][seq_id] = length
-                return pdict
+        index_file = fasta_file + ".fai"
         # if profile not given, create profile
         logging.info("Profiling reference fasta file")
-        seqidset = self._find_organelles()
-        for n, seq_id in enumerate(self.pyfaidx_obj):
-            try:
-                if n % 100000 ==0:
-                    print("{} sequences profiled".format(n))
-                rec = seq_id.name.strip().split("|")
-                tax_id = rec[1]
-                accession = rec[2]
-                length = len(seq_id)
-                if accession not in seqidset:
-                    if tax_id in pdict:
-                        pdict[tax_id][seq_id.name] = length
-                    else:
-                        pdict[tax_id]={}
-                        pdict[tax_id][seq_id.name] = length
-            except Exception:
-                    logging.exception("An error occurred while profiling the \
-                        sequence {} in the reference database. Continuing with \
-                        the next sequence.".format(str(seq_id.name)))
-        logging.info("Profiled {} sequences".format(str(n)))
-        if save_profile_file:
-            with open(save_profile_file, 'w') as f:
-                logging.info("Writing sequence profile to {}".format(save_profile_file))
-                for tax_key, tax_dict in pdict.items():
-                    for seq_key, length in tax_dict.items():
-                        #print(type(tax_key))
-                        f.write("\t".join([seq_key, str(tax_key), str(length)]) + "\n")
+        organelles = self._find_organelles()
+        errorcount = 0
+        with open(index_file, 'r') as f:
+            for n, line in enumerate(f):
+                try:
+                    if n % 1000000 == 0:
+                        logging.info("processed {:,d} records".format(n))
+                    rec = line.strip().split("\t")
+                    namelist = rec[0].split("|")
+                    seq_id = namelist[2]
+                    tax_id = namelist[1]
+                    length = rec[1]
+                    if seq_id not in organelles:
+                        if tax_id in pdict:
+                            pdict[tax_id][seq_id] = length
+                        else:
+                            pdict[tax_id]={}
+                            pdict[tax_id][seq_id] = length
+                except:
+                    errorcount += 1
+                    continue
+        if errorcount > 0:
+            logging.info("{:,d} sequence entries out of {:,d} had errors".format(errorcount, n))
         return pdict
+
 
     def _test_or_train(self, tree):
         """Split internal nodes at the selected path into test and train given a subtree.
