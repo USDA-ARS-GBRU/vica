@@ -78,9 +78,9 @@ class Split:
         self.pruned_tree = None
         logging.info("Creating a random ordering of ids")
         self.rand_key_list = []
-        for  key in self.pyfaidx_obj:
-            self.rand_key_list.append(key)
-            random.shuffle(self.rand_key_list)
+        #for  key in self.pyfaidx_obj:
+        #    self.rand_key_list.append(key)
+        #    random.shuffle(self.rand_key_list)
         logging.info("Profiling sequences taxonomically")
         self.profile = self.set_profile(fasta_file)
         self.test_subtrees = None
