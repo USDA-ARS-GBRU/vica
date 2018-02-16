@@ -90,7 +90,7 @@ class Split:
         self.depth = split_depth
         self.composition = {}
         self.classes = classes
-        self.testfrac = None
+        self.testfrac = testfrac
 
 
     def _find_organelles(self):

@@ -6,3 +6,4 @@ WKID	KID	Score	Matches	Unique	TaxID	seqName
 Query: NC_005072.1 Prochlorococcus marinus MED4 first 7000nt	SketchLen: 191	Seqs: 1 	Bases: 7000	gSize: 6970
 WKID	KID	Score	Matches	Unique	TaxID	seqName
 100.00%	0.37%	259.9	29	29	59919	tid|59919|NC_005072.1 Prochlorococcus marinus MED4 complete genome
+

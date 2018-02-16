@@ -55,6 +55,7 @@ def test_write_kmers_as_csv():
     infile = 'tests/test-data/2testseqs.fasta'
     expected = 'tests/test-data/4mers.csv'
     dtemp = tempfile.mkdtemp()
+    print(dtemp)
     outfile = os.path.join(dtemp,"outfile.csv")
     vica.khmer_features._write_kmers_as_csv(infile=infile, outfile=outfile, ksize=4, kmers=kmer_list)
     ok_(filecmp.cmp(outfile, expected))

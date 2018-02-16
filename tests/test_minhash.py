@@ -27,6 +27,7 @@ def test_send_sketch():
 
 def test_compare_sketch():
     td = tempfile.mkdtemp()
+    print(td)
     #test comparesketch without any filtering
     outfile2 = os.path.join(td,"comparesketchout.txt")
     vica.minhash._compare_sketch(infile="tests/test-data/2testseqs.fasta",

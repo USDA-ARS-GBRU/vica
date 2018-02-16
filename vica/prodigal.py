@@ -7,6 +7,7 @@ import subprocess
 import os
 import logging
 import csv
+import yaml
 
 import numpy as np
 import scipy.linalg
