@@ -1,5 +1,5 @@
 Vica: Software to identify highly divergent DNA and RNA viruses and phages in microbiomes
-===============================================================================================
+=========================================================================================
 .. image:: https://travis-ci.org/USDA-ARS-GBRU/vica.svg?branch=master
     :target: https://travis-ci.org/USDA-ARS-GBRU/vica
 
@@ -76,8 +76,6 @@ Documentation
 Documentation for the package is at http://vica.readthedocs.io/en/latest/
 
 Package availability
-
-
 --------------------
 - PyPi: https://pypi.python.org/pypi/vica
 - Github: https://github.com/USDA-ARS-GBRU/vica
