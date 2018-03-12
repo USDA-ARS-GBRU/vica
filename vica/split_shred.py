@@ -42,12 +42,10 @@ class Split:
             fasta file
         tax_instance (obj): An instance of the ETE NCBITaxa class
         rand_key_list (list): the keys in the Pyfaidx reference, randomized
-        profile (dict): a dict with the yfaidx key as its key and the taxid
+        profile (dict): a dict with the pyfaidx key as its key and the taxid
             and length as values
         test_subtree (dict): a dict of class with value list of subtree ids
         train_subtree (dict): a list of class with value list of subtree ids
-        test_leaves (dict): a dict of class with value list of leaf ids
-        train_leaves (dict): a list of class with value list of leaf ids
         depth (int): the depth of the NCBI taxonomy tree at which to sample
         composition (dict): a summary of the number of samples taken at each
             taxonomic level for a selected sampling split_depth
@@ -85,8 +83,6 @@ class Split:
         self.profile = self.set_profile(fasta_file)
         self.test_subtrees = None
         self.train_subtrees = None
-        self.test_leaves = None
-        self.train_leaves = None
         self.depth = split_depth
         self.composition = {}
         self.classes = classes
@@ -133,7 +129,7 @@ class Split:
                     namelist = rec[0].split("|")
                     seq_id = namelist[2]
                     tax_id = namelist[1]
-                    length = rec[1]
+                    length = int(rec[1])
                     if seq_id not in organelles:
                         if tax_id in pdict:
                             pdict[tax_id][seq_id] = length
@@ -160,16 +156,14 @@ class Split:
 
         """
         top_nodes = []
-        top_test_nodes =  []
-        top_train_nodes = []
         for node in tree.traverse():
             cn, depth = node.get_farthest_leaf()
             if depth == self.depth:
                 top_nodes.append(node)
         testn = round(len(top_nodes) * self.testfrac)
-        test_subtrees = numpy.random.choice(a=top_nodes, size = testn,
-            replace=False)
-        train_subtrees = list(set(top_nodes) - set(top_test_nodes))
+        test_subtrees = list(numpy.random.choice(a=top_nodes, size = testn,
+            replace=False))
+        train_subtrees = list(set(top_nodes) - set(test_subtrees))
         return test_subtrees, train_subtrees
 
 
@@ -189,13 +183,13 @@ class Split:
             nodes_with_extra_sample  = numpy.random.choice(a=nodelist, size = modulo,
                 replace=False)
             for node in  nodes_with_extra_sample:
-                node.add_feature(samples=whole_samples + 1)
-            normal_nodes = list(set(children)- set(nodes_with_extra_sample))
+                node.add_features(samples=whole_samples + 1)
+            normal_nodes = list(set(nodelist)- set(nodes_with_extra_sample))
             for node in normal_nodes:
-                node.add_feature(samples=whole_samples)
+                node.add_features(samples=whole_samples)
         else:
             for node in nodelist:
-                node.add_feature(samples=whole_samples)
+                node.add_features(samples=whole_samples)
 
     def _add_samples_feature_to_test_train_nodes(self, n, test_subtrees, train_subtrees):
         """split n samples up evenly among the test and train subtrees
@@ -222,16 +216,18 @@ class Split:
 
         """
         children = node.get_children()
-        self._assign_samples_attribute(node.samples, children)
+        if len(children) > 0:
+            self._assign_samples_attribute(node.samples, children)
 
 
     def _propagate_samples_feature_from_nodes_to_leaves(self, node):
         """Given a node at a split N samples across all subnodes down to the leaves
 
         """
-        for node in tree.traverse():
-            if not node.is_leaf():
+        for node in node.traverse():
                 self._add_samples_feature_to_children(node)
+
+
 
     def _calculate_tax_composition(self, taxalist):
         """Take a list of taxa nodes and return a tally of the
@@ -244,18 +240,22 @@ class Split:
         """
         rankdict = collections.Counter()
         for node in taxalist:
-            rank = self.tax_instance.get_rank([node.name])
-            currank = rank[int(node.name)]
-            if currank == 'no_rank':
-                lineage_list = self.tax_instance.get_lineage(int(node.name))[::-1]
-                full_rank_dict = self.tax_instance.get_rank(lineage_list)
-                for i in lineage_list:
-                    uprank = full_rank_dict[i]
-                    if uprank != 'no_rank':
-                        rankdict['below_' + uprank] += 1
-                        break
-            else:
-                rankdict[currank] += 1
+            try:
+                rank = self.tax_instance.get_rank([int(node.name)])
+                currank = rank[int(node.name)]
+                if currank == 'no_rank':
+                    lineage_list = self.tax_instance.get_lineage(int(node.name))[::-1]
+                    full_rank_dict = self.tax_instance.get_rank(lineage_list)
+                    for i in lineage_list:
+                        uprank = full_rank_dict[i]
+                        if uprank != 'no_rank':
+                            rankdict['below_' + uprank] += 1
+                            break
+                else:
+                    rankdict[currank] += 1
+            except ValueError:
+                logging.exception("there is no node name for this node {}, skipping".format(node))
+                continue
         return rankdict
 
 
@@ -268,14 +268,12 @@ class Split:
         # Reset values
         self.test_subtrees = {}
         self.train_subtrees = {}
-        self.test_leaves = {}
-        self.train_leaves = {}
         self.composition = collections.Counter()
         # Prune the NCBI taxonomy tree to the leaves in the training dataset
         leaves = []
         for tax_id in self.profile:
             leaves.append(tax_id)
-        self.pruned_tree = self.tax_instance.get_topology(list(set(leaves))) # create ncbi topology tree
+        self.pruned_tree = self.tax_instance.get_topology(list(set(leaves)),intermediate_nodes=True) # create ncbi topology tree
         # For each classification class process the data
         for key in self.classes:
             subtree = self.pruned_tree&str(key)
@@ -285,10 +283,12 @@ class Split:
             # split the samples among the subtrees
             self._add_samples_feature_to_test_train_nodes(n, self.test_subtrees[key], self.train_subtrees[key])
             # record the taxonomic levels the sampling occurred at
-            self.composition + self._calculate_tax_composition(self.test_subtrees[key] + self.train_subtrees[key])
+            comp_counter = self._calculate_tax_composition(self.test_subtrees[key] + self.train_subtrees[key])
+            self.composition = self.composition + comp_counter
             # propagate the samples down to the leaves
             for node in self.test_subtrees[key] + self.train_subtrees[key]:
                 self._propagate_samples_feature_from_nodes_to_leaves(node)
+
 
 
 
@@ -329,51 +329,58 @@ class Split:
         """Select the random fragments and fasta files to a directory.
         """
         if test:
-            leaf_list =self.test_leaves
-            subdir = os.path.join(basedir,"test")
+            subtrees =self.test_subtrees
+            subdir = os.path.join(basedir, "test")
         else:
-            leaf_list = self.train_leaves
-            subdir = os.path.join(basedir,"train")
+            subtrees = self.train_subtrees
+            subdir = os.path.join(basedir, "train")
+        if not os.path.exists(subdir):
+            os.makedirs(subdir)
         for key in self.classes:
-            r_leaf_list= random.shuffle(leaf_list[key])
-            with open(os.path.join(subdir, str(key)), 'w') as outfile:
-                for node in r_leaf_list:
-                    # make a list of seq_ids for the taxon
-                    seq_ids=list(self.profile[node.name].keys())
-                    # make an array of lengths for the contigs
-                    length_array=array(list(self.profile[node.name].values()))
-                    # select the contigs to sample based on their length.
-                    sampling_list = numpy.random.choice(a=seq_ids,
-                                        size=node.samples,
-                                        replace=True,
-                                        p=length_array/sum(length_array)  )
-                    for i in sampling_list:
-                        pos = _select_random_segment(seqobj=self.pyfaidx_obj,
-                                name=i,
-                                length=seq_length,
-                                tries=10,
-                                ns= 0.1)
-                        _writeseq(self.pyfaidx_obj,
-                            pos=pos,
-                            length=seq_length,
-                            outfile=outfile)
+            subtree = subtrees[key]
+            writefile = os.path.join(subdir, str(key) + ".fasta")
+            with open(writefile, 'w') as outfile:
+                for item in subtree:
+                    for leaf in item.iter_leaves():
+                        # make a list of seq_ids for the taxon
+                        seq_ids=list(self.profile[leaf.name].keys())
+                        full_seq_ids = ["tid|" + leaf.name + "|" + i for i in seq_ids]
+                        # make an array of lengths for the contigs
+                        length_array=numpy.array(list(self.profile[leaf.name].values()))
+                        # select the contigs to sample based on their length.
+                        sampling_list = numpy.random.choice(a=full_seq_ids,
+                                            size=leaf.samples,
+                                            replace=True,
+                                            p=length_array/sum(length_array))
+                        for i in sampling_list:
+                            pos = self._select_random_segment(seqobj=self.pyfaidx_obj,
+                                    name=i,
+                                    length=seq_length,
+                                    tries=10,
+                                    ns= 0.1)
+                            print("pos: {}".format(pos))
+                            if pos:
+                                self._writeseq(self.pyfaidx_obj[i],
+                                    pos=pos,
+                                    length=seq_length,
+                                    handle=outfile)
 
     def write_sequence_data(self, directory, overwrite=False, seq_length=5000):
         """Write the training and test data to a directory
 
         Args:
             directory (str): The directory to write the training and test data
-            overwrite (bool): Sould the directory be overwritten if it exists
+            overwrite (bool): Should the directory be overwritten if it exists
             seq_length (int): the length to sample the training space
 
         Returns:
             None, a directory is written
 
         """
-        if self.test_leaves or self.train_leaves == None:
-            raise Exception("Please run the method 'split_test_train_nodes() before writing sequence data")
+        # if not self.test_subtrees and self.train_subtrees:
+        #     raise Exception("Please run the method 'split_test_train_nodes() before writing sequence data")
         if os.path.exists(directory) and overwrite == False:
-            raise Exception("file or directory {} exists and overwrite is set to False".format(directory))
+            raise Exception("File or directory {} exists and overwrite is set to False".format(directory))
         if os.path.exists(directory) and overwrite == True:
             if os.path.isfile(directory):
                 os.remove(directory)
@@ -384,5 +391,5 @@ class Split:
         else:
             os.makedirs(os.path.join(directory, "train"))
             os.makedirs(os.path.join(directory, "test"))
-        _select_fragments_and_write(basedir=directory, seq_length=seq_length, test=True )
-        _select_fragments_and_write(basedir=directory, seq_length=seq_length, test=False)
+        self._select_fragments_and_write(basedir=directory, seq_length=seq_length, test=True )
+        self._select_fragments_and_write(basedir=directory, seq_length=seq_length, test=False)
