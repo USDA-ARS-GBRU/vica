@@ -41,7 +41,6 @@ class Split:
         pyfaidx_obj (obj): An instance of the Pyfaidx class from the reference
             fasta file
         tax_instance (obj): An instance of the ETE NCBITaxa class
-        rand_key_list (list): the keys in the Pyfaidx reference, randomized
         profile (dict): a dict with the pyfaidx key as its key and the taxid
             and length as values
         test_subtree (dict): a dict of class with value list of subtree ids
@@ -74,11 +73,6 @@ class Split:
         logging.info("Loading ete3 NCBI taxonomy data object")
         self.tax_instance = ete3.NCBITaxa()
         self.pruned_tree = None
-        logging.info("Creating a random ordering of ids")
-        self.rand_key_list = []
-        #for  key in self.pyfaidx_obj:
-        #    self.rand_key_list.append(key)
-        #    random.shuffle(self.rand_key_list)
         logging.info("Profiling sequences taxonomically")
         self.profile = self.set_profile(fasta_file)
         self.test_subtrees = None
@@ -358,7 +352,6 @@ class Split:
                                     length=seq_length,
                                     tries=10,
                                     ns= 0.1)
-                            print("pos: {}".format(pos))
                             if pos:
                                 self._writeseq(self.pyfaidx_obj[i],
                                     pos=pos,
@@ -393,3 +386,32 @@ class Split:
             os.makedirs(os.path.join(directory, "test"))
         self._select_fragments_and_write(basedir=directory, seq_length=seq_length, test=True )
         self._select_fragments_and_write(basedir=directory, seq_length=seq_length, test=False)
+
+
+
+def run(infile, outdir, length, testfrac,
+    split_depth, classes):
+    """Run sample selection workflow
+
+    Args:
+        infile (str):A fasta containing the reference database (usually RefSseq)
+        outdir (str): The directory to write the training data
+        length (int): the length of the training fragments
+        testfrac (float): the fraction of the data to put into the test set.
+        split_depth (int): the depth above the leaf to split the trst and train data at.
+        classes (dict):a dictionary of classes and the number of samples to collect from each class
+    Returns:
+        None, a directory is written
+
+    """
+    logging.info("Creating Split object.")
+    data = vica.split_shred.Split(
+        fasta_file=infile,
+        split_depth=split_depth,
+        classes=classes,
+        testfrac=testfrac)
+    logging.info("Dividing testing and training nodes.")
+    data.split_test_train_nodes()
+    logging.info("Writing data to the output directory.")
+    data.write_sequence_data(outdir, overwrite=True, seq_length=length)
+    logging.info("The distribution of taxonomic levels for split depth {} is {}.".format(data.depth,data. composition))

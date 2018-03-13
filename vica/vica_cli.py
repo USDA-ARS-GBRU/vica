@@ -100,20 +100,17 @@ def parser():
         '--length', help="The length of training fragments.", type=int,
         default=5000)
     split.add_argument(
-        '--n_per_class', help="The number of training fragments to select per class",
-        type=int, default=50000)
-    split.add_argument(
         '--testfrac', help="The proportion of data to put into the test group.",
         type=float, default=0.1)
     split.add_argument(
-        '--level', help="The taxonomic level at which to split data. Data will \
-        be split at this level if available or at the next highest available \
-        rank (many taxa do not have assignments at every taxonomic level).",
-        default='genus')
+        '--split_depth', help="The depth above the leaves at which the testing \
+        and training data will be split at. The final distribution of taxonomic \
+        ranks sampled will be displayed in the log file.",
+        default=7, type=int)
     split.add_argument(
         '--classes', help="The classes to separate data into. This should be a \
-        dictionary of NCBI taxonomy identifiers and names.",
-        default='{2: "Bacteria", 2157: "Archaea", 2759: "Eukaryota", 10239: "Viruses"}')
+        dictionary of NCBI taxonomy identifiers and the number of samples from each class.",
+        default='{2: 100000, 2157: 100000, 2759: 100000, 10239: 100000}')
     split.add_argument(
         '--logfile',help="A file to record the analysis. If the same log file \
         is given for multiple Vica commands all the steps in the workflow will \
@@ -233,14 +230,12 @@ def main():
                 n_classes=args.n_classes,
                 configpath= args.config)
         elif args.whichmethod == 'split':
-            vica.split_shred.run(fastafile=args.infile,
+            vica.split_shred.run(infile=args.infile,
                 outdir=args.out,
                 length=args.length,
-                n_per_class=args.n_per_class,
-                testfrac =args.testfrac,
-                splitlevel=args.level,
-                classes=ast.literal_eval(args.classes),
-                configpath = args.config)
+                testfrac=args.testfrac,
+                split_depth=args.split_depth,
+                classes=ast.literal_eval(args.classes))
         elif args.whichmethod == 'get_features':
             vica.get_features.run(infile=args.infile,
                 output=args.out,

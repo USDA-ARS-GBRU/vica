@@ -1,6 +1,6 @@
 
 pyyaml
-ETE3
+ete3
 numpy >= 1.13
 tensorflow >= 1.4
 pandas >= 0.20.3
