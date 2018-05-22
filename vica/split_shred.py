@@ -267,7 +267,12 @@ class Split:
         leaves = []
         for tax_id in self.profile:
             leaves.append(tax_id)
-        self.pruned_tree = self.tax_instance.get_topology(list(set(leaves)),intermediate_nodes=True) # create ncbi topology tree
+        try:
+            self.pruned_tree = self.tax_instance.get_topology(list(set(leaves)),intermediate_nodes=True) # create ncbi topology tree
+        except KeyError:
+            logging.error("A taxonomy id in the sequence database could not be \
+             found in the taxonomy database used by ETE3. Please update the \
+             taxonomy database by removing the directory ~/.etetoolkit") \
         # For each classification class process the data
         for key in self.classes:
             subtree = self.pruned_tree&str(key)
