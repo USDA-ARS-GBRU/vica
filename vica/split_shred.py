@@ -171,8 +171,11 @@ class Split:
             nodelist (list): a list of nodes to set 'samples' attribute on
 
         """
-        whole_samples = n // len(nodelist)
-        modulo = n % len(nodelist)
+        try:
+            whole_samples = n // len(nodelist)
+            modulo = n % len(nodelist)
+        except ZeroDivisionError:
+            logging.warn("node list was empty")
         if modulo != 0:
             nodes_with_extra_sample  = numpy.random.choice(a=nodelist, size = modulo,
                 replace=False)
@@ -186,7 +189,7 @@ class Split:
                 node.add_features(samples=whole_samples)
 
     def _add_samples_feature_to_test_train_nodes(self, n, test_subtrees, train_subtrees):
-        """split n samples up evenly among the test and train subtrees
+        """split n samples up among the test and train subtrees
 
         Args:
             n (int): the number of samples to take
@@ -194,11 +197,13 @@ class Split:
             train_subtrees (list): a list of train nodes
 
         """
+
         testn = round(n * self.testfrac)
         trainn = n - testn
-        self._assign_samples_attribute(testn, test_subtrees)
-        self._assign_samples_attribute(trainn, train_subtrees)
-
+        if testn >= len(test_subtrees):
+            self._assign_samples_attribute(testn, test_subtrees)
+        if trainn >= len(train_subtrees):
+            self._assign_samples_attribute(trainn, train_subtrees)
 
     def _add_samples_feature_to_children(self, node):
         """for node with the 'samples' attribute add a 'samples' attribute to each
