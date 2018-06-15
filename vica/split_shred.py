@@ -425,5 +425,5 @@ def run(infile, outdir, length, testfrac,
     logging.info("Dividing testing and training nodes.")
     data.split_test_train_nodes()
     logging.info("Writing data to the output directory.")
-    data.write_sequence_data(outdir, overwrite=True, seq_length=length)
+    data.write_sequence_data(os.path.abspath(outdir), overwrite=True, seq_length=length)
     logging.info("The distribution of taxonomic levels for split depth {} is {}.".format(data.depth,data. composition))
