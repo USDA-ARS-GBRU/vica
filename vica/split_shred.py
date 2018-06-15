@@ -174,19 +174,21 @@ class Split:
         try:
             whole_samples = n // len(nodelist)
             modulo = n % len(nodelist)
+
+            if modulo != 0:
+                nodes_with_extra_sample  = numpy.random.choice(a=nodelist, size = modulo,
+                    replace=False)
+                for node in  nodes_with_extra_sample:
+                    node.add_features(samples=whole_samples + 1)
+                normal_nodes = list(set(nodelist)- set(nodes_with_extra_sample))
+                for node in normal_nodes:
+                    node.add_features(samples=whole_samples)
+            else:
+                for node in nodelist:
+                    node.add_features(samples=whole_samples)
+
         except ZeroDivisionError:
             logging.warn("node list was empty")
-        if modulo != 0:
-            nodes_with_extra_sample  = numpy.random.choice(a=nodelist, size = modulo,
-                replace=False)
-            for node in  nodes_with_extra_sample:
-                node.add_features(samples=whole_samples + 1)
-            normal_nodes = list(set(nodelist)- set(nodes_with_extra_sample))
-            for node in normal_nodes:
-                node.add_features(samples=whole_samples)
-        else:
-            for node in nodelist:
-                node.add_features(samples=whole_samples)
 
     def _add_samples_feature_to_test_train_nodes(self, n, test_subtrees, train_subtrees):
         """split n samples up among the test and train subtrees
