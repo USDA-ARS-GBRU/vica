@@ -349,26 +349,30 @@ class Split:
                 for item in subtree:
                     for leaf in item.iter_leaves():
                         # make a list of seq_ids for the taxon
-                        seq_ids=list(self.profile[leaf.name].keys())
-                        full_seq_ids = ["tid|" + leaf.name + "|" + i for i in seq_ids]
-                        # make an array of lengths for the contigs
-                        length_array=numpy.array(list(self.profile[leaf.name].values()))
-                        # select the contigs to sample based on their length.
-                        sampling_list = numpy.random.choice(a=full_seq_ids,
-                                            size=leaf.samples,
-                                            replace=True,
-                                            p=length_array/sum(length_array))
-                        for i in sampling_list:
-                            pos = self._select_random_segment(seqobj=self.pyfaidx_obj,
-                                    name=i,
-                                    length=seq_length,
-                                    tries=10,
-                                    ns= 0.1)
-                            if pos:
-                                self._writeseq(self.pyfaidx_obj[i],
-                                    pos=pos,
-                                    length=seq_length,
-                                    handle=outfile)
+                        try: # in case leaf.name is not in self.profile
+                            seq_ids=list(self.profile[leaf.name].keys())
+                        
+                            full_seq_ids = ["tid|" + leaf.name + "|" + i for i in seq_ids]
+                            # make an array of lengths for the contigs
+                            length_array=numpy.array(list(self.profile[leaf.name].values()))
+                            # select the contigs to sample based on their length.
+                            sampling_list = numpy.random.choice(a=full_seq_ids,
+                                                size=leaf.samples,
+                                                replace=True,
+                                                p=length_array/sum(length_array))
+                            for i in sampling_list:
+                                pos = self._select_random_segment(seqobj=self.pyfaidx_obj,
+                                        name=i,
+                                        length=seq_length,
+                                        tries=10,
+                                        ns= 0.1)
+                                if pos:
+                                    self._writeseq(self.pyfaidx_obj[i],
+                                        pos=pos,
+                                        length=seq_length,
+                                        handle=outfile)
+                        except KeyError:
+                            print('leaf.name '+leaf.name+' is not in self.profile')
 
     def write_sequence_data(self, directory, overwrite=False, seq_length=5000):
         """Write the training and test data to a directory
