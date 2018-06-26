@@ -174,19 +174,21 @@ class Split:
         try:
             whole_samples = n // len(nodelist)
             modulo = n % len(nodelist)
+
+            if modulo != 0:
+                nodes_with_extra_sample  = numpy.random.choice(a=nodelist, size = modulo,
+                    replace=False)
+                for node in  nodes_with_extra_sample:
+                    node.add_features(samples=whole_samples + 1)
+                normal_nodes = list(set(nodelist)- set(nodes_with_extra_sample))
+                for node in normal_nodes:
+                    node.add_features(samples=whole_samples)
+            else:
+                for node in nodelist:
+                    node.add_features(samples=whole_samples)
+
         except ZeroDivisionError:
             logging.warn("node list was empty")
-        if modulo != 0:
-            nodes_with_extra_sample  = numpy.random.choice(a=nodelist, size = modulo,
-                replace=False)
-            for node in  nodes_with_extra_sample:
-                node.add_features(samples=whole_samples + 1)
-            normal_nodes = list(set(nodelist)- set(nodes_with_extra_sample))
-            for node in normal_nodes:
-                node.add_features(samples=whole_samples)
-        else:
-            for node in nodelist:
-                node.add_features(samples=whole_samples)
 
     def _add_samples_feature_to_test_train_nodes(self, n, test_subtrees, train_subtrees):
         """split n samples up among the test and train subtrees
@@ -347,26 +349,30 @@ class Split:
                 for item in subtree:
                     for leaf in item.iter_leaves():
                         # make a list of seq_ids for the taxon
-                        seq_ids=list(self.profile[leaf.name].keys())
-                        full_seq_ids = ["tid|" + leaf.name + "|" + i for i in seq_ids]
-                        # make an array of lengths for the contigs
-                        length_array=numpy.array(list(self.profile[leaf.name].values()))
-                        # select the contigs to sample based on their length.
-                        sampling_list = numpy.random.choice(a=full_seq_ids,
-                                            size=leaf.samples,
-                                            replace=True,
-                                            p=length_array/sum(length_array))
-                        for i in sampling_list:
-                            pos = self._select_random_segment(seqobj=self.pyfaidx_obj,
-                                    name=i,
-                                    length=seq_length,
-                                    tries=10,
-                                    ns= 0.1)
-                            if pos:
-                                self._writeseq(self.pyfaidx_obj[i],
-                                    pos=pos,
-                                    length=seq_length,
-                                    handle=outfile)
+                        try: # in case leaf.name is not in self.profile
+                            seq_ids=list(self.profile[leaf.name].keys())
+                        
+                            full_seq_ids = ["tid|" + leaf.name + "|" + i for i in seq_ids]
+                            # make an array of lengths for the contigs
+                            length_array=numpy.array(list(self.profile[leaf.name].values()))
+                            # select the contigs to sample based on their length.
+                            sampling_list = numpy.random.choice(a=full_seq_ids,
+                                                size=leaf.samples,
+                                                replace=True,
+                                                p=length_array/sum(length_array))
+                            for i in sampling_list:
+                                pos = self._select_random_segment(seqobj=self.pyfaidx_obj,
+                                        name=i,
+                                        length=seq_length,
+                                        tries=10,
+                                        ns= 0.1)
+                                if pos:
+                                    self._writeseq(self.pyfaidx_obj[i],
+                                        pos=pos,
+                                        length=seq_length,
+                                        handle=outfile)
+                        except KeyError:
+                            print('leaf.name '+leaf.name+' is not in self.profile')
 
     def write_sequence_data(self, directory, overwrite=False, seq_length=5000):
         """Write the training and test data to a directory
@@ -423,5 +429,5 @@ def run(infile, outdir, length, testfrac,
     logging.info("Dividing testing and training nodes.")
     data.split_test_train_nodes()
     logging.info("Writing data to the output directory.")
-    data.write_sequence_data(outdir, overwrite=True, seq_length=length)
+    data.write_sequence_data(os.path.abspath(outdir), overwrite=True, seq_length=length)
     logging.info("The distribution of taxonomic levels for split depth {} is {}.".format(data.depth,data. composition))
