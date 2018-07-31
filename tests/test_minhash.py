@@ -1,5 +1,6 @@
 import vica.minhash
 import tempfile
+import csv
 import os
 import filecmp
 import difflib
@@ -124,12 +125,25 @@ def test_minhashlocal():
         ok_(filecmp.cmp("tests/test-data/minhashlocal.csv", outfile, shallow=False))
 
 def test_minhashremote():
-        td = tempfile.mkdtemp()
-        outfile = os.path.join(td,"minhashremote.csv")
-        vica.minhash.minhashremote(dtemp= td,
-                                  infile="tests/test-data/2testseqs.fasta",
-                                  outfile=outfile,
-                                  server_url=vica.minhash.config["minhash"]["server_url"],
-                                  nodesfile="phylum.txt",
-                                  noncellular=vica.minhash.config["minhash"]["noncellular"])
-        ok_(filecmp.cmp("tests/test-data/minhashremote.csv", outfile, shallow=False))
+    
+    def filechecker(file1, file2):
+        with open(file1, "r") as fn1, open(file2, "r") as fn2:
+            fn1reader = csv.reader(fn1)
+            fn2reader = csv.reader(fn2)
+            fn1data = [r for r in fn1reader]
+            fn2data = [r for r in fn2reader]
+            print(fn1data)
+            print(fn2data)
+            if fn1data != fn2data:
+                return False
+            else:
+                return True
+    td = tempfile.mkdtemp()
+    outfile = os.path.join(td,"minhashremote.csv")
+    vica.minhash.minhashremote(dtemp= td,
+                               infile="tests/test-data/2testseqs.fasta",
+                               outfile=outfile,
+                               server_url=vica.minhash.config["minhash"]["server_url"],
+                               nodesfile="phylum.txt",
+                               noncellular=vica.minhash.config["minhash"]["noncellular"])
+    eq_(filechecker("tests/test-data/minhashremote.csv", outfile),True)
