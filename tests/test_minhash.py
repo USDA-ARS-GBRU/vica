@@ -151,4 +151,4 @@ def test_minhashremote():
                                   server_url=vica.minhash.config["minhash"]["server_url"],
                                   nodesfile="phylum.txt",
                                   noncellular=vica.minhash.config["minhash"]["noncellular"])
-        eq_(filechecker("tests/test-data/minhashremote.csv", outfile))
+        eq_(filechecker("tests/test-data/minhashremote.csv", outfile),True)
