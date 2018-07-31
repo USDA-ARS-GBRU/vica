@@ -126,29 +126,29 @@ def test_minhashlocal():
 def test_minhashremote():
     
     def filechecker(file1, file2):
-    same = True
-    with open(file1, "r") as fn1, open(file2, "r") as fn2:
-        currentfn1 = fn1.readlines()
-        currentfn2 = fn2.readlines()
-        end = len(currentfn1)
-        x = 0
-        while same:
-            if currentfn1[x] != currentfn2[x]:
-                same = False
-            elif x == end-1:
-                 break
-            x += 1
-    if not same:
-        return False
-    else:
-        return True
-    
-        td = tempfile.mkdtemp()
-        outfile = os.path.join(td,"minhashremote.csv")
-        vica.minhash.minhashremote(dtemp= td,
-                                  infile="tests/test-data/2testseqs.fasta",
-                                  outfile=outfile,
-                                  server_url=vica.minhash.config["minhash"]["server_url"],
-                                  nodesfile="phylum.txt",
-                                  noncellular=vica.minhash.config["minhash"]["noncellular"])
-        eq_(filechecker("tests/test-data/minhashremote.csv", outfile),True)
+        same = True
+        with open(file1, "r") as fn1, open(file2, "r") as fn2:
+            currentfn1 = fn1.readlines()
+            currentfn2 = fn2.readlines()
+            end = len(currentfn1)
+            x = 0
+            while same:
+                if currentfn1[x] != currentfn2[x]:
+                    same = False
+                elif x == end-1:
+                     break
+                x += 1
+        if not same:
+            return False
+        else:
+            return True
+
+    td = tempfile.mkdtemp()
+    outfile = os.path.join(td,"minhashremote.csv")
+    vica.minhash.minhashremote(dtemp= td,
+                               infile="tests/test-data/2testseqs.fasta",
+                               outfile=outfile,
+                               server_url=vica.minhash.config["minhash"]["server_url"],
+                               nodesfile="phylum.txt",
+                               noncellular=vica.minhash.config["minhash"]["noncellular"])
+    eq_(filechecker("tests/test-data/minhashremote.csv", outfile),True)
