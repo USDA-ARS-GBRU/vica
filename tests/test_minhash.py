@@ -132,7 +132,8 @@ def test_minhashremote():
             fn2reader = csv.reader(fn2)
             fn1data = [r for r in fn1reader]
             fn2data = [r for r in fn2reader]
-
+            print(fn1data)
+            print(fn2data)
             if fn1data != fn2data:
                 return False
             else:
