@@ -126,23 +126,16 @@ def test_minhashlocal():
 def test_minhashremote():
     
     def filechecker(file1, file2):
-        same = True
         with open(file1, "r") as fn1, open(file2, "r") as fn2:
-            currentfn1 = fn1.readlines()
-            currentfn2 = fn2.readlines()
-            end = len(currentfn1)
-            x = 0
-            while same:
-                if currentfn1[x] != currentfn2[x]:
-                    same = False
-                elif x == end-1:
-                     break
-                x += 1
-        if not same:
-            return False
-        else:
-            return True
+            fn1reader = csv.reader(fn1)
+            fn2reader = csv.reader(fn2)
+            fn1data = [r for r in fn1reader]
+            fn2data = [r for r in fn2reader]
 
+            if fn1data != fn2data:
+                return False
+            else:
+                return True
     td = tempfile.mkdtemp()
     outfile = os.path.join(td,"minhashremote.csv")
     vica.minhash.minhashremote(dtemp= td,
