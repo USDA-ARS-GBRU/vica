@@ -1,5 +1,6 @@
 import vica.minhash
 import tempfile
+import csv
 import os
 import filecmp
 import difflib
