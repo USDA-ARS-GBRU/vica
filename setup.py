@@ -24,5 +24,5 @@ setup(
     python_requires='>3.5',
     tests_require=['nose'],
     include_package_data=True,
-    scripts=['vica/vica_cli.py'],
+    entry_points= {'console_scripts':['vica=vica.vica_cli:main']},
     zip_safe=False)
