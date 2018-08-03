@@ -13,7 +13,9 @@ Vica: Software to identify highly divergent DNA and RNA viruses and phages in mi
 .. image:: https://api.codacy.com/project/badge/Grade/f39e8359ea334739842bba35e596cfdc
     :target: https://www.codacy.com/app/arivers/vica?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=USDA-ARS-GBRU/vica&amp;utm_campaign=Badge_Grade
 
-
+.. image:: https://zenodo.org/badge/105309222.svg
+   :target: https://zenodo.org/badge/latestdoi/105309222
+   
 Authors
 -------
 * Adam R. Rivers, US Department of Agriculture, Agricultural Research Service
