@@ -151,13 +151,20 @@ class Split:
         """
         top_nodes = []
         for node in tree.traverse():
-            cn, depth = node.get_farthest_leaf()
-            if depth == self.depth:
+        	nd = node.get_distance(subtree, node, topology_only=True)
+        	if nd == self.depth:
                 top_nodes.append(node)
         testn = round(len(top_nodes) * self.testfrac)
         test_subtrees = list(numpy.random.choice(a=top_nodes, size = testn,
             replace=False))
         train_subtrees = list(set(top_nodes) - set(test_subtrees))
+        # check for  lists with no training or rest data and move one node in if needed
+        if len(train_subtrees) < 1 and len(test_subtrees > 1 ):
+        	train_subtrees.append(test_subtrees[0])
+        	test_subtrees = test.subtrees[1:]
+        elif len(test_subtrees) < 1 and len(train_subtrees > 1 ):
+        	test_subtrees.append(train_subtrees[0])
+        	train_subtrees = train.subtrees[1:]
         return test_subtrees, train_subtrees
 
 
@@ -281,7 +288,9 @@ class Split:
              found in the taxonomy database used by ETE3. Please update the \
              taxonomy database by removing the directory ~/.etetoolkit") \
         # For each classification class process the data
+        print(self.classes)
         for key in self.classes:
+            print(key)
             subtree = self.pruned_tree&str(key)
             # Split subtrees into test and train sets
             self.test_subtrees[key], self.train_subtrees[key] = self._test_or_train(subtree)
