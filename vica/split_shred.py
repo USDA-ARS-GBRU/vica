@@ -58,7 +58,7 @@ class Split:
 
         Args:
             fasta_file (str): the path to the reference fasta file to use
-            split_depth (int): the tree depth at which to split data between
+            split_depth (int): the taxonomic level at which to split data between
                 test and train.
             classes (dict): a dict of NCBI Taxonomy ids as keys and the number of
                 samples to sample for each class
@@ -69,7 +69,7 @@ class Split:
         """
         logging.info("Initializing vica.split_shred.Split object")
         logging.info("loading pyfaidx index, or creating index if not present")
-        self.pyfaidx_obj =pyfaidx.Fasta(fasta_file, read_ahead=100)
+        self.pyfaidx_obj = pyfaidx.Fasta(fasta_file, read_ahead=100)
         logging.info("Loading ete3 NCBI taxonomy data object")
         self.tax_instance = ete3.NCBITaxa()
         self.pruned_tree = None
@@ -81,6 +81,14 @@ class Split:
         self.composition = {}
         self.classes = classes
         self.testfrac = testfrac
+        self.ranks= {'no rank':None, 'superkingdom':0, 'kingdom':1, 'subkingdom':2,
+                     'superphylum':3,'phylum':4, 'subphylum':5, 'superclass':6, 'class':7,
+                     'subclass':8, 'infraclass':9,'superorder':10, 'order': 11, 
+                     'suborder':12, 'infraorder':13,'parvorder':14,'superfamily':15,
+                     'family':16, 'subfamily':17, 'tribe':18,'subtribe':19,'genus':20,
+                     'subgenus':21,'species group':22,'species subgroup':23,'species':24,
+                     'subspecies':25,'varietas':26,'forma':27}
+
 
 
     def _find_organelles(self):
@@ -137,9 +145,9 @@ class Split:
             logging.info("{:,d} sequence entries out of {:,d} had errors".format(errorcount, n))
         return pdict
 
-
+    
     def _test_or_train(self, tree):
-        """Split internal nodes at the selected path into test and train given a subtree.
+        """Split internal nodes at the selected split_depth into test and train given a subtree.
 
         Args:
             tree (obj): An ETE3 TreeNode object
@@ -148,23 +156,56 @@ class Split:
         Returns:
             (tuple): A list of test internal nodes and list of training internal nodes
 
-        """
+        """ 
+        target_level = self.ranks[self.depth] 
         top_nodes = []
-        for node in tree.traverse():
-        	nd = node.get_distance(subtree, node, topology_only=True)
-        	if nd == self.depth:
-                top_nodes.append(node)
+        # iterate across all leaves
+        for node in tree.iter_leaves():
+            # get ordered lineage list
+            ranklist = self.tax_instance.get_lineage(int(node.name))
+            # get dict mapping taxids to rank names
+            rankdict = self.tax_instance.get_rank(ranklist)
+            # write id to top_nodes if below or at the target_taxa 
+            for id in ranklist:
+                named_rank = rankdict[id]
+                if named_rank not in self.ranks:
+                    continue
+                num_rank = self.ranks[named_rank]
+                if named_rank == 'no rank':
+                    continue
+                if num_rank < target_level:
+                    continue
+                elif num_rank == target_level:
+                    top_nodes.append(tree&str(id))
+                    break
+                elif num_rank > target_level:
+                    top_nodes.append(tree&str(id))
+                    break
+        unique_top_nodes = list(set(top_nodes))
+        test_subtrees, train_subtrees = self._list_to_test_or_train(unique_top_nodes)
+        return test_subtrees, train_subtrees
+    
+    def _list_to_test_or_train(self, top_nodes):
+        """Split a list of internal nodes  into test and train.
+
+        Args:
+            top_nodes(list):  
+
+        Returns:
+            (tuple): A list of test internal nodes and list of training internal nodes
+
+        """
         testn = round(len(top_nodes) * self.testfrac)
         test_subtrees = list(numpy.random.choice(a=top_nodes, size = testn,
             replace=False))
         train_subtrees = list(set(top_nodes) - set(test_subtrees))
-        # check for  lists with no training or rest data and move one node in if needed
-        if len(train_subtrees) < 1 and len(test_subtrees > 1 ):
-        	train_subtrees.append(test_subtrees[0])
-        	test_subtrees = test.subtrees[1:]
-        elif len(test_subtrees) < 1 and len(train_subtrees > 1 ):
-        	test_subtrees.append(train_subtrees[0])
-        	train_subtrees = train.subtrees[1:]
+        # check for  lists with no training or test data and move one node in if needed
+        if len(train_subtrees) < 1 and len(test_subtrees) > 1 :
+            train_subtrees.append(test_subtrees[0])
+            test_subtrees = test.subtrees[1:]
+        elif len(test_subtrees) < 1 and len(train_subtrees) > 1 :
+            test_subtrees.append(train_subtrees[0])
+            train_subtrees = train.subtrees[1:]
         return test_subtrees, train_subtrees
 
 
@@ -288,9 +329,7 @@ class Split:
              found in the taxonomy database used by ETE3. Please update the \
              taxonomy database by removing the directory ~/.etetoolkit") \
         # For each classification class process the data
-        print(self.classes)
         for key in self.classes:
-            print(key)
             subtree = self.pruned_tree&str(key)
             # Split subtrees into test and train sets
             self.test_subtrees[key], self.train_subtrees[key] = self._test_or_train(subtree)
@@ -354,7 +393,7 @@ class Split:
         for key in self.classes:
             subtree = subtrees[key]
             writefile = os.path.join(subdir, str(key) + ".fasta")
-            with open(writefile, 'w') as outfile:
+            with open(writefile, 'w', 16777216) as outfile:
                 for item in subtree:
                     for leaf in item.iter_leaves():
                         # make a list of seq_ids for the taxon
@@ -423,7 +462,7 @@ def run(infile, outdir, length, testfrac,
         outdir (str): The directory to write the training data
         length (int): the length of the training fragments
         testfrac (float): the fraction of the data to put into the test set.
-        split_depth (int): the depth above the leaf to split the trst and train data at.
+        split_depth (int): The desired taxonomic level to split the test and train data
         classes (dict):a dictionary of classes and the number of samples to collect from each class
     Returns:
         None, a directory is written
