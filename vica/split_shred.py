@@ -210,30 +210,46 @@ class Split:
 
 
     def _assign_samples_attribute(self, n, nodelist):
-        """for each node in nodelist, set split n samples evenly among them,
-            randomly assigning modulo. Add a 'samples' attribute to each
-            recording their own n.
+        """for each node in nodelist, set split n samples among them,
+            with less samples given to nodes below the desired taxonomic level.
+            Add a 'samples' attribute to each recording their own n.
 
         Args:
             n (int): the number of samples to take
             nodelist (list): a list of nodes to set 'samples' attribute on
 
         """
+        
+        def weight(rank, target_rank):
+            """Create a weight for the node
+            
+            The weight diminishes exponenitally as the distance from the target level 
+            to the node level increases.
+            
+            Args:
+                rank(str): the rank of the node, e.g. order
+                target_rank(str): the targeted rank for dividing the data, e.g. genus
+            """
+            r0 = self.ranks[target_rank]
+            r = self.ranks[rank]
+            dif = r - r0
+            level_penalty = 0.5
+            weight = 1/(2**(level_penalty * dif))
+            return weight
+                    
         try:
-            whole_samples = n // len(nodelist)
-            modulo = n % len(nodelist)
-
-            if modulo != 0:
-                nodes_with_extra_sample  = numpy.random.choice(a=nodelist, size = modulo,
-                    replace=False)
-                for node in  nodes_with_extra_sample:
-                    node.add_features(samples=whole_samples + 1)
-                normal_nodes = list(set(nodelist)- set(nodes_with_extra_sample))
-                for node in normal_nodes:
-                    node.add_features(samples=whole_samples)
-            else:
-                for node in nodelist:
-                    node.add_features(samples=whole_samples)
+            wvect = []
+            for node in nodelist:
+                rankdict =self.tax_instance.get_rank([node.name])
+                wvect = weight(rankdict[node.name], self.depth)
+            warray = numpy.array(wvect)
+            x = n/sum(wvect)
+            samplevect = list(x * warray)
+            samplelist1 = [ round(item) for item in samplevect]
+            samplelist2 = [ item == 1 for item in samplelist1 if item < 1 ]
+            
+            for i, node in enumerate(nodelist):
+                node.add_features(samples=samplelist2[i])
 
         except ZeroDivisionError:
             logging.warn("node list was empty")
