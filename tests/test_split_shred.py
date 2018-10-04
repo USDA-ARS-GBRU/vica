@@ -29,14 +29,14 @@ classes = {2: 1000,
 def test_split_init():
     data = vica.split_shred.Split(
         fasta_file='tests/test-data/test_contigs.fasta',
-            split_depth=5,
+            split_depth='order',
         classes=classes,
         testfrac=0.2)
 
 def test_find_organelles():
     data = vica.split_shred.Split(
         fasta_file='tests/test-data/test_contigs.fasta',
-        split_depth=5,
+        split_depth='order',
         classes=classes,
         testfrac=0.2)
     seqidlist = data._find_organelles()
@@ -46,7 +46,7 @@ def test_find_organelles():
 def test_test_or_train():
     data = vica.split_shred.Split(
         fasta_file='tests/test-data/test_contigs.fasta',
-        split_depth=5,
+        split_depth='genus',
         classes=classes,
         testfrac=0.2)
     subtree = data.tax_instance.get_topology([10239])
@@ -57,17 +57,17 @@ def test_test_or_train():
 def test_assign_samples_attribute():
     data = vica.split_shred.Split(
         fasta_file='tests/test-data/test_contigs.fasta',
-        split_depth=5,
+        split_depth='order',
         classes=classes,
         testfrac=0.2)
     subtree = data.tax_instance.get_topology([10239])
-    data._assign_samples_attribute(n=1000, nodelist=[subtree])
+    data._assign_samples_attribute(n=1000, depth='order', nodelist=[subtree])
     eq_(subtree.samples,1000)
 
 def test_add_samples_feature_to_test_train_nodes():
     data = vica.split_shred.Split(
         fasta_file='tests/test-data/test_contigs.fasta',
-        split_depth=5,
+        split_depth='order',
         classes=classes,
         testfrac=0.2)
     subtree = data.tax_instance.get_topology([2])
@@ -77,15 +77,17 @@ def test_add_samples_feature_to_test_train_nodes():
     data._add_samples_feature_to_test_train_nodes(n, test, train)
     print(test[0].samples)
     print(train[0].samples)
-    eq_(test[0].samples, 100)
-    eq_(test[1].samples, 100)
-    eq_(train[0].samples, 400)
-    eq_(train[1].samples, 400)
+    print(test[1].samples)
+    print(train[1].samples)
+    eq_(test[0].samples, 192)
+    eq_(test[1].samples, 8)
+    eq_(train[0].samples, 34)
+    eq_(train[1].samples, 766)
 
 def test_add_samples_to_children():
     data = vica.split_shred.Split(
         fasta_file='tests/test-data/test_contigs.fasta',
-        split_depth=5,
+        split_depth='order',
         classes=classes,
         testfrac=0.2)
     subtree = data.tax_instance.get_topology([97050])
@@ -95,12 +97,12 @@ def test_add_samples_to_children():
     for child in children:
         print(child.samples)
         ok_(child.samples > 11)
-        ok_(child.samples < 14)
+        ok_(child.samples < 30)
 
 def test_propagate_samples_feature_from_nodes_to_leaves():
     data = vica.split_shred.Split(
         fasta_file='tests/test-data/test_contigs.fasta',
-        split_depth=5,
+        split_depth='genus',
         classes=classes,
         testfrac=0.2)
     subtree = data.tax_instance.get_topology([31989])
@@ -113,7 +115,7 @@ def test_propagate_samples_feature_from_nodes_to_leaves():
 def test_calculate_tax_composition():
     data = vica.split_shred.Split(
         fasta_file='tests/test-data/test_contigs.fasta',
-        split_depth=5,
+        split_depth='order',
         classes=classes,
         testfrac=0.2)
     subtree = data.tax_instance.get_topology([31989])
@@ -125,7 +127,7 @@ def test_calculate_tax_composition():
 def test_split_test_train_nodes():
     data = vica.split_shred.Split(
         fasta_file='tests/test-data/test_contigs.fasta',
-        split_depth=2,
+        split_depth='order', # or less?
         classes=classes,
         testfrac=0.5)
     data.split_test_train_nodes()
@@ -139,7 +141,7 @@ def test_writeseq():
     dtemp = tempfile.mkdtemp()
     data = vica.split_shred.Split(
         fasta_file='tests/test-data/test_contigs.fasta',
-        split_depth=2,
+        split_depth='order',
         classes=classes,
         testfrac=0.5)
     with open(os.path.join(dtemp,"test.fasta"), 'w') as outfile:
@@ -160,7 +162,7 @@ def test_select_random_segment_and_write():
     dtemp = tempfile.mkdtemp()
     data = vica.split_shred.Split(
         fasta_file='tests/test-data/test_contigs.fasta',
-        split_depth=2,
+        split_depth='order',
         classes=classes,
         testfrac=0.5)
     data.split_test_train_nodes()
@@ -174,7 +176,7 @@ def test_write_sequence_data():
     dtemp = tempfile.mkdtemp()
     data = vica.split_shred.Split(
         fasta_file='tests/test-data/test_contigs.fasta',
-        split_depth=2,
+        split_depth='order',
         classes=classes,
         testfrac=0.5)
     data.split_test_train_nodes()

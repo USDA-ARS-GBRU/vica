@@ -255,9 +255,9 @@ class Split:
             samplelist = []
             for item in samplevect:
                 if item < 1.0:
-                    samplelist.append(1.0)
+                    samplelist.append(1)
                 else:
-                    samplelist.append(round(item))
+                    samplelist.append(int(round(item)))
             
             for i, node in enumerate(nodelist):
                 node.add_features(samples=samplelist[i])
@@ -453,8 +453,9 @@ class Split:
                             # make an array of lengths for the contigs
                             length_array=numpy.array(list(self.profile[leaf.name].values()))
                             # select the contigs to sample based on their length.
+                            logging.debug("writing {} segments for {}".format(leaf.samples, leaf.sci_name))
                             sampling_list = numpy.random.choice(a=full_seq_ids,
-                                                size=leaf.samples,
+                                                size=int(leaf.samples),
                                                 replace=True,
                                                 p=length_array/sum(length_array))
                             for i in sampling_list:
