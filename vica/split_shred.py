@@ -34,23 +34,27 @@ class Split:
     """A class to create taxonomically distributed training data.
 
     The split class is used to sample refseq data formatted by BBtools. The
-    methods hold summary dat necessary for sampling. for faster loading a
-    precomputed summary file can be passed at initialization.
-
+    object holds summary data necessary for sampling and methods for sampling.
+    
     Attributes:
         pyfaidx_obj (obj): An instance of the Pyfaidx class from the reference
             fasta file
         tax_instance (obj): An instance of the ETE NCBITaxa class
+        pruned_tree(obj): An ete3.Tree object containing just the nodes with genomic data
         profile (dict): a dict with the pyfaidx key as its key and the taxid
             and length as values
-        test_subtree (dict): a dict of class with value list of subtree ids
-        train_subtree (dict): a list of class with value list of subtree ids
-        depth (int): the depth of the NCBI taxonomy tree at which to sample
-        composition (dict): a summary of the number of samples taken at each
-            taxonomic level for a selected sampling split_depth
-        classes (list): a list of the lasses to be sampled
-        n_samples (list): a list of the samples to be taken for each class.
-
+        test_subtrees (dict): a dict of classes with a list of subtrees
+        train_subtrees (dict): a list of classes with a list of subtrees
+        depth (int): the taxonomic level of the NCBI taxonomy tree at which to sample e.g. 'order'
+        composition (dict): a summary of the number of subtree nodes taken at each
+            taxonomic level. On level is targeted but thih it the actual distribution.
+        classes (dict): a dict of NCBI Taxonomy ids as keys and the number of
+                samples to sample for each class
+        testfrac (int): the fraction of samples to add to the test set
+        ranks (dict): a dictionary mapping NCBI ranks to their sequencial order
+        iranks (dict): the inverse of ranks
+        
+        
     """
 
     def __init__(self, fasta_file, split_depth, classes, testfrac):
@@ -58,7 +62,7 @@ class Split:
 
         Args:
             fasta_file (str): the path to the reference fasta file to use
-            split_depth (int): the tree depth at which to split data between
+            split_depth (int): the taxonomic level at which to split data between
                 test and train.
             classes (dict): a dict of NCBI Taxonomy ids as keys and the number of
                 samples to sample for each class
@@ -69,7 +73,7 @@ class Split:
         """
         logging.info("Initializing vica.split_shred.Split object")
         logging.info("loading pyfaidx index, or creating index if not present")
-        self.pyfaidx_obj =pyfaidx.Fasta(fasta_file, read_ahead=100)
+        self.pyfaidx_obj = pyfaidx.Fasta(fasta_file, read_ahead=100)
         logging.info("Loading ete3 NCBI taxonomy data object")
         self.tax_instance = ete3.NCBITaxa()
         self.pruned_tree = None
@@ -81,6 +85,15 @@ class Split:
         self.composition = {}
         self.classes = classes
         self.testfrac = testfrac
+        self.ranks= {'no rank':None, 'superkingdom':0, 'kingdom':1, 'subkingdom':2,
+                     'superphylum':3,'phylum':4, 'subphylum':5, 'superclass':6, 'class':7,
+                     'subclass':8, 'infraclass':9,'superorder':10, 'order': 11, 
+                     'suborder':12, 'infraorder':13,'parvorder':14,'superfamily':15,
+                     'family':16, 'subfamily':17, 'tribe':18,'subtribe':19,'genus':20,
+                     'subgenus':21,'species group':22,'species subgroup':23,'species':24,
+                     'subspecies':25,'varietas':26,'forma':27}
+        self.iranks = {v: k for k, v in self.ranks.items()}
+
 
 
     def _find_organelles(self):
@@ -115,7 +128,7 @@ class Split:
         organelles = self._find_organelles()
         errorcount = 0
         with open(index_file, 'r') as f:
-            for n, line in enumerate(f):
+            for n, line in enumerate(f, 1):
                 try:
                     if n % 1000000 == 0:
                         logging.info("processed {:,d} records".format(n))
@@ -137,9 +150,9 @@ class Split:
             logging.info("{:,d} sequence entries out of {:,d} had errors".format(errorcount, n))
         return pdict
 
-
+    
     def _test_or_train(self, tree):
-        """Split internal nodes at the selected path into test and train given a subtree.
+        """Split internal nodes at the selected split_depth into test and train given a subtree.
 
         Args:
             tree (obj): An ETE3 TreeNode object
@@ -148,44 +161,106 @@ class Split:
         Returns:
             (tuple): A list of test internal nodes and list of training internal nodes
 
-        """
+        """ 
+        target_level = self.ranks[self.depth] 
         top_nodes = []
-        for node in tree.traverse():
-            cn, depth = node.get_farthest_leaf()
-            if depth == self.depth:
-                top_nodes.append(node)
+        # iterate across all leaves
+        for node in tree.iter_leaves():
+            # get ordered lineage list
+            ranklist = node.lineage
+            # get dict mapping taxids to rank names
+            rankdict = self.tax_instance.get_rank(node.lineage)
+            # write id to top_nodes if below or at the target_taxa 
+            for id in node.lineage:
+                named_rank = rankdict[id]
+                if named_rank not in self.ranks:
+                    continue
+                num_rank = self.ranks[named_rank]
+                if named_rank == 'no rank':
+                    continue
+                if num_rank < target_level:
+                    continue
+                elif num_rank == target_level:
+                    top_nodes.append(tree&str(id))
+                    break
+                elif num_rank > target_level:
+                    top_nodes.append(tree&str(id))
+                    break
+        unique_top_nodes = list(set(top_nodes))
+        test_subtrees, train_subtrees = self._list_to_test_or_train(unique_top_nodes)
+        return test_subtrees, train_subtrees
+    
+    def _list_to_test_or_train(self, top_nodes):
+        """Split a list of internal nodes into test and train.
+
+        Args:
+            top_nodes(list):  
+
+        Returns:
+            (tuple): A list of test internal nodes and list of training internal nodes
+
+        """
         testn = round(len(top_nodes) * self.testfrac)
         test_subtrees = list(numpy.random.choice(a=top_nodes, size = testn,
             replace=False))
         train_subtrees = list(set(top_nodes) - set(test_subtrees))
+        # check for  lists with no training or test data and move one node in if needed
+        if len(train_subtrees) < 1 and len(test_subtrees) > 1 :
+            train_subtrees.append(test_subtrees[0])
+            test_subtrees = test.subtrees[1:]
+        elif len(test_subtrees) < 1 and len(train_subtrees) > 1 :
+            test_subtrees.append(train_subtrees[0])
+            train_subtrees = train.subtrees[1:]
         return test_subtrees, train_subtrees
 
+    def _weight(self, rank, target_rank):
+        """Create a weight for the node
+        
+        The weight diminishes exponenitally as the distance from the target level 
+        to the node level increases.
+        
+        Args:
+            rank(str): the rank of the node, e.g. order
+            target_rank(str): the targeted rank for dividing the data, e.g. genus
+        """
+        r0 = self.ranks[target_rank]
+        r = self.ranks[rank]
+        if not r:
+            r = r0 + 2 # for node with no rank assume we went down 2 levels 
+        dif = r - r0
+        level_penalty = 0.5
+        weight = 1/(2**(level_penalty * dif))
+        return weight
 
-    def _assign_samples_attribute(self, n, nodelist):
-        """for each node in nodelist, set split n samples evenly among them,
-            randomly assigning modulo. Add a 'samples' attribute to each
-            recording their own n.
+    def _assign_samples_attribute(self, n, depth, nodelist):
+        """for each node in nodelist, set split n samples among them,
+            with less samples given to nodes below the desired taxonomic level.
+            Add a 'samples' attribute to each recording their own n.
 
         Args:
             n (int): the number of samples to take
+            depth (str): the taxonomic level of the target or parent node e.g. 'order'
             nodelist (list): a list of nodes to set 'samples' attribute on
 
         """
+                    
         try:
-            whole_samples = n // len(nodelist)
-            modulo = n % len(nodelist)
-
-            if modulo != 0:
-                nodes_with_extra_sample  = numpy.random.choice(a=nodelist, size = modulo,
-                    replace=False)
-                for node in  nodes_with_extra_sample:
-                    node.add_features(samples=whole_samples + 1)
-                normal_nodes = list(set(nodelist)- set(nodes_with_extra_sample))
-                for node in normal_nodes:
-                    node.add_features(samples=whole_samples)
-            else:
-                for node in nodelist:
-                    node.add_features(samples=whole_samples)
+            wvect = []
+            for node in nodelist:
+                wvect.append(self._weight(node.rank, depth))
+            warray = numpy.array(wvect)
+            x = n/sum(wvect)
+            samplevect = list(x * warray)
+            # round to whole numbers and give any node at least 1 sample
+            samplelist = []
+            for item in samplevect:
+                if item < 1.0:
+                    samplelist.append(1)
+                else:
+                    samplelist.append(int(round(item)))
+            
+            for i, node in enumerate(nodelist):
+                node.add_features(samples=samplelist[i])
 
         except ZeroDivisionError:
             logging.warn("node list was empty")
@@ -203,9 +278,9 @@ class Split:
         testn = round(n * self.testfrac)
         trainn = n - testn
         if testn >= len(test_subtrees):
-            self._assign_samples_attribute(testn, test_subtrees)
+            self._assign_samples_attribute(testn, self.depth, test_subtrees)
         if trainn >= len(train_subtrees):
-            self._assign_samples_attribute(trainn, train_subtrees)
+            self._assign_samples_attribute(trainn, self.depth, train_subtrees)
 
     def _add_samples_feature_to_children(self, node):
         """for node with the 'samples' attribute add a 'samples' attribute to each
@@ -217,8 +292,26 @@ class Split:
 
         """
         children = node.get_children()
+        noderank = node.rank
+        # if the node has no rank estimate its position from the number of steps to a 
+        # parent node with a rank
+        if noderank == 'no rank':
+            no_rank_count = 0
+            upstream_rank = None
+            for id in node.lineage[::-1][1:]:
+                ancestor = self.pruned_tree&str(id)
+                if ancestor.rank == 'no rank':
+                    no_rank_count += 1
+                else:
+                    upstream_rank = ancestor.rank
+                    break
+            nodeval = 1 * no_rank_count + (self.ranks[upstream_rank])
+            if nodeval > 27:
+                nodeval == 27
+            noderank = self.iranks[nodeval]        
+
         if len(children) > 0:
-            self._assign_samples_attribute(node.samples, children)
+            self._assign_samples_attribute(node.samples, noderank, children)
 
 
     def _propagate_samples_feature_from_nodes_to_leaves(self, node):
@@ -226,7 +319,7 @@ class Split:
 
         """
         for node in node.traverse():
-                self._add_samples_feature_to_children(node)
+            self._add_samples_feature_to_children(node)
 
 
 
@@ -242,10 +335,9 @@ class Split:
         rankdict = collections.Counter()
         for node in taxalist:
             try:
-                rank = self.tax_instance.get_rank([int(node.name)])
-                currank = rank[int(node.name)]
-                if currank == 'no_rank':
-                    lineage_list = self.tax_instance.get_lineage(int(node.name))[::-1]
+
+                if node.rank == 'no_rank':
+                    lineage_list = node.lineage[::-1]
                     full_rank_dict = self.tax_instance.get_rank(lineage_list)
                     for i in lineage_list:
                         uprank = full_rank_dict[i]
@@ -253,7 +345,7 @@ class Split:
                             rankdict['below_' + uprank] += 1
                             break
                 else:
-                    rankdict[currank] += 1
+                    rankdict[node.rank] += 1
             except ValueError:
                 logging.exception("there is no node name for this node {}, skipping".format(node))
                 continue
@@ -282,17 +374,22 @@ class Split:
              taxonomy database by removing the directory ~/.etetoolkit") \
         # For each classification class process the data
         for key in self.classes:
+            logging.info("spliting testing and training nodes for class {}".format(key))
             subtree = self.pruned_tree&str(key)
             # Split subtrees into test and train sets
             self.test_subtrees[key], self.train_subtrees[key] = self._test_or_train(subtree)
             n = self.classes[key]
             # split the samples among the subtrees
+            logging.info("assigning initial sample values to top nodes in the class {}".format(key))
             self._add_samples_feature_to_test_train_nodes(n, self.test_subtrees[key], self.train_subtrees[key])
             # record the taxonomic levels the sampling occurred at
             comp_counter = self._calculate_tax_composition(self.test_subtrees[key] + self.train_subtrees[key])
+            logging.info("the subnode level distribution for  {} is {}".format(key, comp_counter))
             self.composition = self.composition + comp_counter
             # propagate the samples down to the leaves
+            logging.info("propagating sample values down the tree for the class {}".format(key))
             for node in self.test_subtrees[key] + self.train_subtrees[key]:
+                logging.info("propagating for node {}".format(node.sci_name))
                 self._propagate_samples_feature_from_nodes_to_leaves(node)
 
 
@@ -345,7 +442,7 @@ class Split:
         for key in self.classes:
             subtree = subtrees[key]
             writefile = os.path.join(subdir, str(key) + ".fasta")
-            with open(writefile, 'w') as outfile:
+            with open(writefile, 'w', 16777216) as outfile:
                 for item in subtree:
                     for leaf in item.iter_leaves():
                         # make a list of seq_ids for the taxon
@@ -356,8 +453,9 @@ class Split:
                             # make an array of lengths for the contigs
                             length_array=numpy.array(list(self.profile[leaf.name].values()))
                             # select the contigs to sample based on their length.
+                            logging.debug("writing {} segments for {}".format(leaf.samples, leaf.sci_name))
                             sampling_list = numpy.random.choice(a=full_seq_ids,
-                                                size=leaf.samples,
+                                                size=int(leaf.samples),
                                                 replace=True,
                                                 p=length_array/sum(length_array))
                             for i in sampling_list:
@@ -414,7 +512,7 @@ def run(infile, outdir, length, testfrac,
         outdir (str): The directory to write the training data
         length (int): the length of the training fragments
         testfrac (float): the fraction of the data to put into the test set.
-        split_depth (int): the depth above the leaf to split the trst and train data at.
+        split_depth (int): The desired taxonomic level to split the test and train data
         classes (dict):a dictionary of classes and the number of samples to collect from each class
     Returns:
         None, a directory is written
@@ -430,4 +528,4 @@ def run(infile, outdir, length, testfrac,
     data.split_test_train_nodes()
     logging.info("Writing data to the output directory.")
     data.write_sequence_data(os.path.abspath(outdir), overwrite=True, seq_length=length)
-    logging.info("The distribution of taxonomic levels for split depth {} is {}.".format(data.depth,data. composition))
+    logging.info("The distribution of taxonomic levels for split depth {} is {}.".format(data.depth, data.composition))

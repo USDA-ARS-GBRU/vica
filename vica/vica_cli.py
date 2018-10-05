@@ -106,7 +106,8 @@ def parser():
         '--split_depth', help="The depth above the leaves at which the testing \
         and training data will be split at. The final distribution of taxonomic \
         ranks sampled will be displayed in the log file.",
-        default=7, type=int)
+        default='family', choices=['phylum', 'subphylum', 'superclass', 'class', 'subclass', 'infraclass', 'superorder', 'order', 'suborder', 'infraorder', 'parvorder', 'superfamily', 'family', 'subfamily', 'tribe', 'subtribe', 'genus'])
+        
     split.add_argument(
         '--classes', help="The classes to separate data into. This should be a \
         dictionary of NCBI taxonomy identifiers and the number of samples from each class.",
