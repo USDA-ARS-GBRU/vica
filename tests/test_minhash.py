@@ -70,7 +70,7 @@ def test_compare_sketch_with_taxfilter():
 
 def test_parse_sendsketch():
     dout = vica.minhash._parse_sendsketch("tests/test-data/testsketch1.txt")
-    expected = {'NC_003911.12': {246200: 176.0}, 'NC_005072.1': {190047: 288.7}}
+    expected = {'NC_003911.12': {246200: 176.0}, 'NC_005072.1': {190047: 288.4}}
     eq_(dout, expected)
 
 def test_parse_comparesketch():
