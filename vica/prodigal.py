@@ -10,9 +10,10 @@ import csv
 import yaml
 
 import numpy as np
-import scipy.linalg
-import scipy.stats
+# import scipy.linalg
+import scipy
 from Bio import SeqIO
+# from skbio.stats.composition import ilr
 from collections import defaultdict
 
 
@@ -40,12 +41,13 @@ def clr(composition):
     return list(clrarray)
 
 
-def ilr(composition):
+def ilr(composition, helmert):
     """Calculates a isometric log-ratio transformation from a list of values.
 
     Args:
         composition (list): a list of integers of floats containing the
             compositional data
+        helmert: a helmert matrix generated scipy.linalg.helmert(n). Outside of function for speed
 
     Returns:
         a list with the isometric log-ratio transformed values. The
@@ -57,10 +59,8 @@ def ilr(composition):
 
     """
     with np.errstate(divide='ignore', invalid='ignore'):
-        clrlen= len(composition)
         clrarray = clr(composition)
-        hmat = scipy.linalg.helmert(clrlen)
-        ilrmat = np.inner(clrarray, hmat)
+        ilrmat = np.inner(clrarray, helmert)
     return list(ilrmat)
 
 
@@ -195,13 +195,14 @@ def count_dict_to_ilr_array(count_dict, codon_list):
             The length is len(codon_list - 1).
 
     """
+    helmert = scipy.linalg.helmert(60)
     output_list = []
     for i in codon_list:
         if i in count_dict:
             output_list.append(count_dict[i])
         else:
             output_list.append(0)
-    return ilr(output_list)
+    return ilr(output_list, helmert)
 
 def dsum(*dicts):
     """Add up values in multiple dicts returning their sum.
