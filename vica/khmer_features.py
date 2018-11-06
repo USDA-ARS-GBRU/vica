@@ -39,7 +39,7 @@ def iterate_kmer(k):
         logging.exception("Could not calculate the list of kmers for k = {}".format(k))
 
 def get_composition(ksize, seq, kmers, norm):
-    """Calculate the kmer compsosition from a sequence.
+    """Calculate the kmer composition from a sequence.
 
     Count the kmers in a sequence and return a list of kmer counts or
     normalized kmer counts
@@ -110,7 +110,7 @@ def _write_kmers_as_csv(infile, outfile, ksize, kmers):
                 rn = 0
                 for record in SeqIO.parse(f1, 'fasta'):
                     rl = [record.id]
-                    kmer_frequency = get_composition(ksize,str(record.seq).upper(), kmers, False)
+                    kmer_frequency = get_composition(ksize, str(record.seq).upper(), kmers, False)
                     kmer_ilr = vica.prodigal.ilr(kmer_frequency)
                     rl.extend(kmer_ilr)
                     mywriter.writerow(rl)
