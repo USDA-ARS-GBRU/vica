@@ -115,13 +115,8 @@ def _write_kmers_as_csv(infile, outfile, ksize, kmers):
                 rn = 0
                 for record in SeqIO.parse(f1, 'fasta'):
                     rl = [record.id]
-<<<<<<< HEAD
-                    kmer_frequency = get_composition(ksize, str(record.seq).upper(), kmers, False)
-                    kmer_ilr = vica.prodigal.ilr(kmer_frequency)
-=======
                     kmer_frequency = get_composition(ksize,str(record.seq).upper(), kmers, False)
                     kmer_ilr = vica.prodigal.ilr(kmer_frequency, helmert)
->>>>>>> 07f76a7bb261410f36d50f9415fec0352448712b
                     rl.extend(kmer_ilr)
                     mywriter.writerow(rl)
                     rn += 1
@@ -150,7 +145,7 @@ def run(infile, outfile, ksize):
        compositional data. Blackburn Press.
 
     """
-    
+
     kmers = iterate_kmer(ksize)
     logging.info("identifying kmer features with a k of {}".format(ksize))
     _write_kmers_as_csv(infile=infile, outfile=outfile, ksize=ksize, kmers=kmers)
