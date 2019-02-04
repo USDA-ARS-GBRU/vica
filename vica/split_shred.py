@@ -35,7 +35,7 @@ class Split:
 
     The split class is used to sample refseq data formatted by BBtools. The
     object holds summary data necessary for sampling and methods for sampling.
-    
+
     Attributes:
         pyfaidx_obj (obj): An instance of the Pyfaidx class from the reference
             fasta file
@@ -53,8 +53,8 @@ class Split:
         testfrac (int): the fraction of samples to add to the test set
         ranks (dict): a dictionary mapping NCBI ranks to their sequencial order
         iranks (dict): the inverse of ranks
-        
-        
+
+
     """
 
     def __init__(self, fasta_file, split_depth, classes, testfrac):
@@ -87,7 +87,7 @@ class Split:
         self.testfrac = testfrac
         self.ranks= {'no rank':None, 'superkingdom':0, 'kingdom':1, 'subkingdom':2,
                      'superphylum':3,'phylum':4, 'subphylum':5, 'superclass':6, 'class':7,
-                     'subclass':8, 'infraclass':9,'superorder':10, 'order': 11, 
+                     'subclass':8, 'infraclass':9,'superorder':10, 'order': 11,
                      'suborder':12, 'infraorder':13,'parvorder':14,'superfamily':15,
                      'family':16, 'subfamily':17, 'tribe':18,'subtribe':19,'genus':20,
                      'subgenus':21,'species group':22,'species subgroup':23,'species':24,
@@ -150,7 +150,7 @@ class Split:
             logging.info("{:,d} sequence entries out of {:,d} had errors".format(errorcount, n))
         return pdict
 
-    
+
     def _test_or_train(self, tree):
         """Split internal nodes at the selected split_depth into test and train given a subtree.
 
@@ -161,8 +161,8 @@ class Split:
         Returns:
             (tuple): A list of test internal nodes and list of training internal nodes
 
-        """ 
-        target_level = self.ranks[self.depth] 
+        """
+        target_level = self.ranks[self.depth]
         top_nodes = []
         # iterate across all leaves
         for node in tree.iter_leaves():
@@ -170,7 +170,7 @@ class Split:
             ranklist = node.lineage
             # get dict mapping taxids to rank names
             rankdict = self.tax_instance.get_rank(node.lineage)
-            # write id to top_nodes if below or at the target_taxa 
+            # write id to top_nodes if below or at the target_taxa
             for id in node.lineage:
                 named_rank = rankdict[id]
                 if named_rank not in self.ranks:
@@ -189,36 +189,36 @@ class Split:
         unique_top_nodes = list(set(top_nodes))
         test_subtrees, train_subtrees = self._list_to_test_or_train(unique_top_nodes)
         return test_subtrees, train_subtrees
-    
+
     def _list_to_test_or_train(self, top_nodes):
         """Split a list of internal nodes into test and train.
 
         Args:
-            top_nodes(list):  
+            top_nodes(list):
 
         Returns:
             (tuple): A list of test internal nodes and list of training internal nodes
 
         """
         testn = round(len(top_nodes) * self.testfrac)
-        test_subtrees = list(numpy.random.choice(a=top_nodes, size = testn,
+        test_subtrees = list(numpy.random.choice(a=top_nodes, size=testn,
             replace=False))
         train_subtrees = list(set(top_nodes) - set(test_subtrees))
         # check for  lists with no training or test data and move one node in if needed
-        if len(train_subtrees) < 1 and len(test_subtrees) > 1 :
+        if len(train_subtrees) < 1 and len(test_subtrees) > 1:
             train_subtrees.append(test_subtrees[0])
             test_subtrees = test.subtrees[1:]
-        elif len(test_subtrees) < 1 and len(train_subtrees) > 1 :
+        elif len(test_subtrees) < 1 and len(train_subtrees) > 1:
             test_subtrees.append(train_subtrees[0])
             train_subtrees = train.subtrees[1:]
         return test_subtrees, train_subtrees
 
     def _weight(self, rank, target_rank):
         """Create a weight for the node
-        
-        The weight diminishes exponenitally as the distance from the target level 
+
+        The weight diminishes exponentially as the distance from the target level
         to the node level increases.
-        
+
         Args:
             rank(str): the rank of the node, e.g. order
             target_rank(str): the targeted rank for dividing the data, e.g. genus
@@ -226,7 +226,7 @@ class Split:
         r0 = self.ranks[target_rank]
         r = self.ranks[rank]
         if not r:
-            r = r0 + 2 # for node with no rank assume we went down 2 levels 
+            r = r0 + 2 # for node with no rank assume we went down 2 levels
         dif = r - r0
         level_penalty = 0.5
         weight = 1/(2**(level_penalty * dif))
@@ -243,7 +243,7 @@ class Split:
             nodelist (list): a list of nodes to set 'samples' attribute on
 
         """
-                    
+
         try:
             wvect = []
             for node in nodelist:
@@ -258,7 +258,7 @@ class Split:
                     samplelist.append(1)
                 else:
                     samplelist.append(int(round(item)))
-            
+
             for i, node in enumerate(nodelist):
                 node.add_features(samples=samplelist[i])
 
@@ -293,7 +293,7 @@ class Split:
         """
         children = node.get_children()
         noderank = node.rank
-        # if the node has no rank estimate its position from the number of steps to a 
+        # if the node has no rank estimate its position from the number of steps to a
         # parent node with a rank
         if noderank == 'no rank':
             no_rank_count = 0
@@ -308,7 +308,7 @@ class Split:
             nodeval = 1 * no_rank_count + (self.ranks[upstream_rank])
             if nodeval > 27:
                 nodeval == 27
-            noderank = self.iranks[nodeval]        
+            noderank = self.iranks[nodeval]
 
         if len(children) > 0:
             self._assign_samples_attribute(node.samples, noderank, children)
@@ -448,7 +448,7 @@ class Split:
                         # make a list of seq_ids for the taxon
                         try: # in case leaf.name is not in self.profile
                             seq_ids=list(self.profile[leaf.name].keys())
-                        
+
                             full_seq_ids = ["tid|" + leaf.name + "|" + i for i in seq_ids]
                             # make an array of lengths for the contigs
                             length_array=numpy.array(list(self.profile[leaf.name].values()))
@@ -472,8 +472,8 @@ class Split:
                         except KeyError:
                             print('leaf.name '+leaf.name+' is not in self.profile')
 
-    def write_sequence_data(self, directory, overwrite=False, seq_length=5000):
-        """Write the training and test data to a directory
+    def write_sequence_data(self, directory, overwrite=False, seq_length=5000, shuffle=True):
+        """Write the training and test data to a directory optionally shuffle it
 
         Args:
             directory (str): The directory to write the training and test data
@@ -500,8 +500,31 @@ class Split:
             os.makedirs(os.path.join(directory, "test"))
         self._select_fragments_and_write(basedir=directory, seq_length=seq_length, test=True )
         self._select_fragments_and_write(basedir=directory, seq_length=seq_length, test=False)
+        if shuffle:
+            for ctype in ["train", "test"]:
+                for file in os.listdir(os.path.join(directory, ctype)):
+                    tempfastafile = os.path.join(directory, ctype, "temp.fa.gz")
+                    shutil.move(file, tempfastafile)
+                    shuffle(tempfastafile, file)
+                    os.remove(tempfastafile)
 
 
+def shuffle(infile, outfile):
+    """Runs bbtools shuffle2.sh to randomize the training segments
+
+    Args:
+         infile (str): a multi-sequence fasta
+         outfile (str): a shuffled multi-sequence fasta
+
+    Returns:
+         (str): shuffle output
+
+    """
+    options = ["shuffle2.sh",
+               "in=" +infile,
+               "out=" + outfile]
+    callgenesout = subprocess.run(options, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+    return callgenesout.stderr.decode('utf-8')
 
 def run(infile, outdir, length, testfrac,
     split_depth, classes):
@@ -527,5 +550,5 @@ def run(infile, outdir, length, testfrac,
     logging.info("Dividing testing and training nodes.")
     data.split_test_train_nodes()
     logging.info("Writing data to the output directory.")
-    data.write_sequence_data(os.path.abspath(outdir), overwrite=True, seq_length=length)
+    data.write_sequence_data(os.path.abspath(outdir), overwrite=True, seq_length=length, shuffle=True)
     logging.info("The distribution of taxonomic levels for split depth {} is {}.".format(data.depth, data.composition))
