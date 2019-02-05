@@ -390,7 +390,7 @@ class Split:
             self._add_samples_feature_to_test_train_nodes(n, self.test_subtrees[key], self.train_subtrees[key])
             # record the taxonomic levels the sampling occurred at
             comp_counter = self._calculate_tax_composition(self.test_subtrees[key] + self.train_subtrees[key])
-            logging.info("the subnode level distribution for %s is %d" % (key, comp_counter))
+            logging.info("the subnode level distribution for %s is %s" % (key, str(comp_counter)))
             self.composition = self.composition + comp_counter
             # propagate the samples down to the leaves
             logging.info(" propagating sample values down the tree for the class {}".format(key))
