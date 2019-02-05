@@ -263,7 +263,7 @@ class Split:
                 node.add_features(samples=samplelist[i])
 
         except ZeroDivisionError:
-            logging.warn("node list was empty")
+            logging.warning("node list was empty")
 
     def _add_samples_feature_to_test_train_nodes(self, n, test_subtrees, train_subtrees):
         """split n samples up among the test and train subtrees
@@ -322,7 +322,7 @@ class Split:
             try:
                 self._add_samples_feature_to_children(node)
             except:
-                logging.warn("could not add samples feature to node {}. Continuingg.".format(node)_
+                logging.warning("could not add samples feature to node {}. Continuing.".format(node))
                 continue
 
 
