@@ -278,9 +278,11 @@ class Split:
         testn = round(n * self.testfrac)
         trainn = n - testn
         if testn >= len(test_subtrees):
-            self._assign_samples_attribute(testn, self.depth, test_subtrees)
+            logging.warning("The number of test samples requested {} is less than the number of taxa at the requested taxonomic level {}".format(n, testn))
+        self._assign_samples_attribute(testn, self.depth, test_subtrees)
         if trainn >= len(train_subtrees):
-            self._assign_samples_attribute(trainn, self.depth, train_subtrees)
+            logging.warning("The number of training samples requested {} is less than the number of taxa at the requested taxonomic level {}".format(n, trainn))
+        self._assign_samples_attribute(trainn, self.depth, train_subtrees)
 
     def _add_samples_feature_to_children(self, node):
         """for node with the 'samples' attribute add a 'samples' attribute to each
@@ -322,7 +324,7 @@ class Split:
             try:
                 self._add_samples_feature_to_children(node)
             except:
-                logging.warning("could not add samples feature to node {}. Continuing.".format(node))
+                logging.warning("Could not add samples feature to node {}. Continuing.".format(node))
                 continue
 
 
@@ -378,20 +380,20 @@ class Split:
              taxonomy database by removing the directory ~/.etetoolkit") \
         # For each classification class process the data
         for key in self.classes:
-            logging.info("spliting testing and training nodes for class {}".format(key))
+            logging.info("splitting testing and training nodes for class %s", key)
             subtree = self.pruned_tree&str(key)
             # Split subtrees into test and train sets
             self.test_subtrees[key], self.train_subtrees[key] = self._test_or_train(subtree)
             n = self.classes[key]
             # split the samples among the subtrees
-            logging.info("assigning initial sample values to top nodes in the class {}".format(key))
+            logging.info("Assigning initial sample values to top nodes in the class %s", key)
             self._add_samples_feature_to_test_train_nodes(n, self.test_subtrees[key], self.train_subtrees[key])
             # record the taxonomic levels the sampling occurred at
             comp_counter = self._calculate_tax_composition(self.test_subtrees[key] + self.train_subtrees[key])
-            logging.info("the subnode level distribution for  {} is {}".format(key, comp_counter))
+            logging.info("the subnode level distribution for %s is %d" % (key, comp_counter))
             self.composition = self.composition + comp_counter
             # propagate the samples down to the leaves
-            logging.info("propagating sample values down the tree for the class {}".format(key))
+            logging.info(" propagating sample values down the tree for the class {}".format(key))
             for node in self.test_subtrees[key] + self.train_subtrees[key]:
                 logging.info("propagating for node {}".format(node.sci_name))
                 self._propagate_samples_feature_from_nodes_to_leaves(node)
