@@ -319,7 +319,11 @@ class Split:
 
         """
         for node in node.traverse():
-            self._add_samples_feature_to_children(node)
+            try:
+                self._add_samples_feature_to_children(node)
+            except:
+                logging.warn("could not add samples feature to node {}. Continuingg.".format(node)_
+                continue
 
 
 
