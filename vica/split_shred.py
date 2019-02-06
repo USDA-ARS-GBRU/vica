@@ -510,8 +510,9 @@ class Split:
             for ctype in ["train", "test"]:
                 for file in os.listdir(os.path.join(directory, ctype)):
                     tempfastafile = os.path.join(directory, ctype, "temp.fa.gz")
-                    shutil.move(file, tempfastafile)
-                    shuffle(tempfastafile, file)
+                    fullpath = os.path.join(directory, ctype, file)
+                    shutil.move(fullpath, tempfastafile)
+                    logging.info(shuffle(tempfastafile, file))
                     os.remove(tempfastafile)
 
 
