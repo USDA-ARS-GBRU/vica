@@ -476,7 +476,7 @@ class Split:
                                         length=seq_length,
                                         handle=outfile)
                         except KeyError:
-                            print('leaf.name '+leaf.name+' is not in self.profile')
+                            logging.info('leaf.name '+leaf.name+' is not in self.profile')
 
     def write_sequence_data(self, directory, overwrite=False, seq_length=5000, shuffle=True):
         """Write the training and test data to a directory optionally shuffle it
@@ -513,7 +513,7 @@ class Split:
                     fullpath = os.path.join(directory, ctype, file)
                     shutil.move(fullpath, tempfastafile)
                     runshuffle(tempfastafile, fullpath)
-                    # os.remove(tempfastafile)
+                    os.remove(tempfastafile)
 
 
 def runshuffle(infile, outfile):
