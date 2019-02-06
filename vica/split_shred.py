@@ -509,14 +509,14 @@ class Split:
         if shuffle:
             for ctype in ["train", "test"]:
                 for file in os.listdir(os.path.join(directory, ctype)):
-                    tempfastafile = os.path.join(directory, ctype, "temp.fa.gz")
+                    tempfastafile = os.path.join(directory, ctype, "temp.fa")
                     fullpath = os.path.join(directory, ctype, file)
                     shutil.move(fullpath, tempfastafile)
-                    shuffle(tempfastafile, fullpath)
+                    runshuffle(tempfastafile, fullpath)
                     # os.remove(tempfastafile)
 
 
-def shuffle(infile, outfile):
+def runshuffle(infile, outfile):
     """Runs bbtools shuffle2.sh to randomize the training segments
 
     Args:
@@ -528,7 +528,7 @@ def shuffle(infile, outfile):
 
     """
     options = ["shuffle2.sh",
-               "in=" +infile,
+               "in=" + infile,
                "out=" + outfile]
     callgenesout = subprocess.run(options, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
     return callgenesout.stderr.decode('utf-8')
