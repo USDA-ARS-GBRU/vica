@@ -277,11 +277,11 @@ class Split:
 
         testn = round(n * self.testfrac)
         trainn = n - testn
-        if testn >= len(test_subtrees):
-            logging.warning("The number of test samples requested {} is less than the number of taxa at the requested taxonomic level {}".format(n, testn))
+        if testn < len(test_subtrees):
+            logging.warning("The number of test samples requested, {} is less than the number of taxa at the requested taxonomic level, {}".format(testn, len(test_subtrees) ))
         self._assign_samples_attribute(testn, self.depth, test_subtrees)
-        if trainn >= len(train_subtrees):
-            logging.warning("The number of training samples requested {} is less than the number of taxa at the requested taxonomic level {}".format(n, trainn))
+        if trainn < len(train_subtrees):
+            logging.warning("The number of training samples requested, {} is less than the number of taxa at the requested taxonomic level, {}".format(trainn, len(train_subtrees) ))
         self._assign_samples_attribute(trainn, self.depth, train_subtrees)
 
     def _add_samples_feature_to_children(self, node):
