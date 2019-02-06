@@ -512,7 +512,8 @@ class Split:
                     tempfastafile = os.path.join(directory, ctype, "temp.fa.gz")
                     fullpath = os.path.join(directory, ctype, file)
                     shutil.move(fullpath, tempfastafile)
-                    logging.info(shuffle(tempfastafile, file))
+                    shuffleout = shuffle(tempfastafile, fullpath)
+                    logging.info(shuffleout)
                     os.remove(tempfastafile)
 
 
