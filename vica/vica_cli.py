@@ -236,7 +236,6 @@ def main():
             vica.get_features.run(infile=args.infile,
                 output=args.out,
                 label= args.label,
-                minhashlocal=args.minhashlocal,
                 configpath=args.config)
         elif args.whichmethod == 'train':
             vica.train_eval.train(infiles=args.infile,
