@@ -53,8 +53,8 @@ def run(infile, output, label, configpath=vica.CONFIG_PATH):
 
 
     # Set paths for temporary output files
-    minhashout = os.path.join(dtemp,"minhashout.txt")
-    kmerout = os.path.join(dtemp,"kmerout.csv")
+    minhashout = os.path.join(dtemp, "minhashout.txt")
+    kmerout = os.path.join(dtemp, "kmerout.csv")
     codonout = os.path.join(dtemp, "codonout.csv")
 
     # Extract minhash features

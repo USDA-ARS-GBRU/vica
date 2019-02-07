@@ -112,6 +112,7 @@ def _get_feature_list(nodesfile, noncellular):
             if linelist[4] in ["superphylum", "phylum", "subphylum"]:
                 phylist.append(int(linelist[0]))
             feat_list = phylist + list(noncellular)
+    logging.info("the length of the minhash feature vector is {}".format(len(feat_list)))
     return sorted(feat_list)
 
 

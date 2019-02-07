@@ -111,7 +111,7 @@ def _gene_to_codon(genestring):
                 f1 = f1[:-1]
             return f1
     except:
-        logger.exception("Warning: could not convert gene sequence to a list for codon counting")
+        logging.exception("Warning: could not convert gene sequence to a list for codon counting")
         return []
 
 def _codon_to_dict(genestring, offset):
