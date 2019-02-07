@@ -96,7 +96,7 @@ def _parse_sendsketch(file):
                     tempdf[key1][int(ll2[5])] = float(ll2[2])
         return tempdf
     except RuntimeError:
-        logging.error("could not parse sketch file {}".format(file))
+        logging.error("Could not parse sketch file {}".format(file))
 
 
 
@@ -122,15 +122,11 @@ def _raise_taxdict_level(taxdict, taxlist, taxinstance):
 
     """
     # pick highest scoring taxid
-    print(taxdict)
     hi_score, hi_score_taxa = max(zip(taxdict.values(), taxdict.keys()))
-    print(hi_score)
-    print(hi_score_taxa)
     if hi_score_taxa=='0':
         return taxdict
     lineage = taxinstance.get_lineage(hi_score_taxa)
     inters = list(set(lineage).intersection(taxlist))
-    print(inters)
     phyid = inters[0]
     newdict = {phyid: hi_score}
     return newdict

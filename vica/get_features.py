@@ -14,7 +14,7 @@ import yaml
 import vica
 
 
-def run(infile, output, label, minhashlocal=None, configpath=vica.CONFIG_PATH):
+def run(infile, output, label, configpath=vica.CONFIG_PATH):
     """Run all the steps in the feature selection selection workflow.
 
     This command: 1) selects minhash features, 2) codon usage features, 3)
@@ -30,9 +30,6 @@ def run(infile, output, label, minhashlocal=None, configpath=vica.CONFIG_PATH):
             classifier.  It should be -1 if the true class is unknown or,
             if the class is known it should  begin with 0 and
             increase sequentially for each training class.
-        minhashlocal (bool): If True the function uses a local instance of
-            the bbtools minhash database and taxonomy files. Locations of
-            the reference files should be set in the configuration file.
         configpath (str): path to the yaml configuration file.
 
     Returns:
@@ -62,35 +59,17 @@ def run(infile, output, label, minhashlocal=None, configpath=vica.CONFIG_PATH):
 
     # Extract minhash features
     s1 = time.perf_counter()
-    if minhashlocal:
-        logging.info("Extacting minhash signatures and identifying them locally")
-        try:
-            vica.minhash.minhashlocal(dtemp=dtemp,
-                infile=infile,
-                outfile=minhashout,
-                ref=config["minhash"]["ref"],
-                blacklist=config["minhash"]["blacklist"],
-                tree=config["minhash"]["tree"],
-                taxfilter=config["minhash"]["taxfilter"],
-                taxfilterlevel=config["minhash"]["taxfilterlevel"],
-                memory=config["minhash"]["memory"],
-                nodesfile=config["minhash"]["nodesfile"],
-                noncellular=config["minhash"]["noncellular"])
-        except:
-            logging.exception("vica get_features: during minhash local feature selection the following exception occurred:")
-            raise SystemExit(1)
-    else:
-        try:
-            logging.info("Extacting minhash signatures and sending them to a server for identification")
-            vica.minhash.minhashremote(dtemp=dtemp,
-                infile=infile,
-                outfile=minhashout,
-                server_url=config["minhash"]["server_url"],
-                nodesfile=config["minhash"]["nodesfile"],
-                noncellular=config["minhash"]["noncellular"])
-        except:
-            logging.exception("vica get_features: during minhash remote feature selection the following exception occurred:")
-            raise SystemExit(1)
+    try:
+        logging.info("Extacting minhash signatures and sending them to a server for identification")
+        vica.minhash.minhashremote(dtemp=dtemp,
+            infile=infile,
+            outfile=minhashout,
+            server_url=config["minhash"]["server_url"],
+            nodesfile=config["minhash"]["nodesfile"],
+            noncellular=config["minhash"]["noncellular"])
+    except:
+        logging.exception("vica get_features: during minhash remote feature selection the following exception occurred:")
+        raise SystemExit(1)
 
     s2 = time.perf_counter()
     t1 = s2-s1

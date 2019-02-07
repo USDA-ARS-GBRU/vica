@@ -107,7 +107,7 @@ def parser():
         and training data will be split at. The final distribution of taxonomic \
         ranks sampled will be displayed in the log file.",
         default='family', choices=['phylum', 'subphylum', 'superclass', 'class', 'subclass', 'infraclass', 'superorder', 'order', 'suborder', 'infraorder', 'parvorder', 'superfamily', 'family', 'subfamily', 'tribe', 'subtribe', 'genus'])
-        
+
     split.add_argument(
         '--classes', help="The classes to separate data into. This should be a \
         dictionary of NCBI taxonomy identifiers and the number of samples from each class.",
@@ -134,11 +134,6 @@ def parser():
         training or evaluation data. Needed to for training and test data. \
         for data to be classified use -1.",
         type=int, required=True)
-    get_features.add_argument(
-        '--minhashlocal', help="A flag to use a local version of a minhash \
-        database rather than a remote server. Default is false. relevant minhash \
-        paths in the config file should be updated before using --minhashlocal.",
-        action="store_true")
     get_features.add_argument(
         '--logfile',help="A file to record the analysis. If the same log file \
         is given for multiple Vica commands all the steps in the workflow will \
