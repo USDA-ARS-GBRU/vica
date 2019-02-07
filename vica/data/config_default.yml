@@ -53,10 +53,10 @@ get_features:
 classifier: null
 train_eval:
   codonlength: 177
-  minhashlength: 267
+  minhashlength: 280
   train_batch_size: 32
   eval_batch_size: 512
-  epochs: 10
+  epochs: 30
   # models [DNNLogistic, DNN]
   model: "DNNLogistic"
 khmer_features:
