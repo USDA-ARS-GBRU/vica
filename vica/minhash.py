@@ -124,7 +124,7 @@ def _raise_taxdict_level(taxdict, taxlist, taxinstance):
     # pick highest scoring taxid
     hi_score_taxa, hi_score = max(zip(taxdict.values(), taxdict.keys()))
     lineage = taxinstance.get_lineage(hi_score_taxa)
-    inters = set(lineage).intersection(set(taxlist))
+    inters = list(set(lineage).intersection(taxlist))
     phyid = inters[0]
     newdict = {phyid: hi_score}
     return newdict
