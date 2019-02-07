@@ -127,6 +127,8 @@ def _raise_taxdict_level(taxdict, taxlist, taxinstance):
         return taxdict
     lineage = taxinstance.get_lineage(hi_score_taxa)
     inters = list(set(lineage).intersection(taxlist))
+    if len(inters) == 0:
+        return {'0': 0}
     phyid = inters[0]
     newdict = {phyid: hi_score}
     return newdict
