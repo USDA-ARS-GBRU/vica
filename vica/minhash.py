@@ -126,6 +126,8 @@ def _raise_taxdict_level(taxdict, taxlist, taxinstance):
     hi_score, hi_score_taxa = max(zip(taxdict.values(), taxdict.keys()))
     print(hi_score)
     print(hi_score_taxa)
+    if hi_score_taxa ='0':
+        return taxdict
     lineage = taxinstance.get_lineage(hi_score_taxa)
     inters = list(set(lineage).intersection(taxlist))
     print(inters)
