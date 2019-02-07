@@ -24,7 +24,7 @@ from sklearn.metrics import f1_score
 with open(vica.CONFIG_PATH) as cf:
     config = yaml.safe_load(cf)
 
-def _featureshape(k=5, codonlength=177, minhashlength=267):
+def _featureshape(k=5, codonlength=177, minhashlength=280):
     """Determine the shape of the features for each feature type including
     for kmers of different lengths.
 
