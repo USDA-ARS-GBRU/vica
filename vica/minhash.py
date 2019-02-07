@@ -20,7 +20,7 @@ def _send_sketch(infile, outfile, server_url):
     """Runs bbtools sendsketch.sh on a file of sequences returning a
         classification for each
 
-    Calculates minhash sketches if (k=24, 31) for each sequence in a fasta
+    Calculates minhash sketches if (k=32, 24) for each sequence in a fasta
     sends the sketches to a server and returns the classification data to
     a file.
 
@@ -44,6 +44,7 @@ def _send_sketch(infile, outfile, server_url):
                "level=3",
                "color=f",
                "overwrite=t",
+               "k=32,24",
                "printani=f",
                "completeness=f",
                "score=t",
@@ -65,7 +66,7 @@ def _send_sketch(infile, outfile, server_url):
 def _compare_sketch(infile, outfile, ref, blacklist, tree, taxfilter, taxfilterlevel, memory):
     """Runs bbtools compareketch.sh on a file of sequences returning a classification for each
 
-    Calculates minhash sketches if (k=24, 31) for each sequence in a fasta
+    Calculates minhash sketches if (k=32,24) for each sequence in a fasta
     and uses a local sketch database, then returns the classification data to
     a file.
 
@@ -102,7 +103,7 @@ def _compare_sketch(infile, outfile, ref, blacklist, tree, taxfilter, taxfilterl
                "blacklist=" + blacklist,
                "tree=" + tree,
                "mode=sequence",
-               "k=31,24",
+               "k=32,24",
                "level=3",
                "color=f",
                "overwrite=t",
