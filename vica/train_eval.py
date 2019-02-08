@@ -123,7 +123,7 @@ def base_input_fn(codonlength, minhashlength, kmerdim, shuffle, shuffle_buffer_s
     dataset = dataset.map(parser)
     dataset = dataset.repeat(epochs)
     if shuffle:
-        dataset = dataset.shuffle(shuffle_buffer_size)
+        dataset = dataset.shuffle(2000)
     dataset = dataset.batch(batch)
     if shuffle:
         dataset = dataset.shuffle(20)
