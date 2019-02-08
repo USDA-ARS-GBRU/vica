@@ -75,7 +75,6 @@ def _ids_labels_from_tfrecords_files(file_names):
     id_label_list = []
     for filename in file_names:
         id_label_list = id_label_list + _ids_labels_from_tfrecords(filename)
-
     return id_label_list
 
 
@@ -105,10 +104,11 @@ def base_input_fn(codonlength, minhashlength, kmerdim, shuffle, shuffle_buffer_s
         a input function for a Tensorflow estimator
 
     """
-    datasetlist = []
-    for recfile in filenames:
-        datasetlist.append(tf.data.TFRecordDataset(recfile))
-    dataset = tf.data.experimental.sample_from_datasets(datasetlist)
+    # datasetlist = []
+    # for recfile in filenames:
+    #    datasetlist.append(tf.data.TFRecordDataset(recfile))
+    #dataset = tf.data.experimental.sample_from_datasets(datasetlist)
+    dataset = tf.data.TFRecordDataset(filenames)
     def parser(record):
         keys_to_features = {"id": tf.FixedLenFeature((), tf.string),
             "label": tf.FixedLenFeature((), tf.int64),
@@ -118,8 +118,8 @@ def base_input_fn(codonlength, minhashlength, kmerdim, shuffle, shuffle_buffer_s
         parsed = tf.parse_single_example(record, keys_to_features)
         return {'kmer': parsed['kmer'], 'codon': parsed['codon'], 'minhash': parsed['minhash']}, parsed['label']
     dataset = dataset.map(parser)
-    # if shuffle:
-    #    dataset = dataset.shuffle(shuffle_buffer_size)
+    if shuffle:
+        dataset = dataset.shuffle(shuffle_buffer_size)
     dataset = dataset.batch(batch)
     dataset = dataset.repeat(epochs)
     iterator = dataset.make_one_shot_iterator()
@@ -214,7 +214,7 @@ def train(infiles, out, modeldir, n_classes, configpath):
             minhashlength=config["train_eval"]["minhashlength"],
             kmerdim=kmerdim,
             shuffle=True,
-            shuffle_buffer_size=200000,
+            shuffle_buffer_size=500000,
             batch=config["train_eval"]["train_batch_size"],
             epochs=config["train_eval"]["epochs"],
             filenames=infiles)
