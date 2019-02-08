@@ -107,7 +107,7 @@ def base_input_fn(codonlength, minhashlength, kmerdim, shuffle, shuffle_buffer_s
     """
     datasetlist = []
     for recfile in filenames:
-        datasetlist.append(tf.data.TFRecordDataset(filenames))
+        datasetlist.append(tf.data.TFRecordDataset(recfile))
     dataset = tf.data.experimental.sample_from_datasets(datasetlist)
     def parser(record):
         keys_to_features = {"id": tf.FixedLenFeature((), tf.string),
@@ -377,7 +377,7 @@ def evaluate(infiles, out, modeldir, n_classes, configpath):
         for key in sorted(results):
             logging.info('{}: {}'.format(key, results[key]))
     except:
-        logging.exception("During tensorflow model evaluation the following exception occured:")
+        logging.exception("During tensorflow model evaluation the following exception occurred:")
 
 
 def classify(infile, out, modeldir, n_classes, configpath):
@@ -391,7 +391,7 @@ def classify(infile, out, modeldir, n_classes, configpath):
     Args:
         infile (str): the path to a fasta file of contigs (2 kb or longer is
             recomended) or TFrecords to be classified.
-        out (str): a file with contig modelpredictions
+        out (str): a file with contig model predictions
         modeldir (str): a model directory containing a trained model to use
         for classification.
         n_classes (int): the number of classes in the model (default 4)
