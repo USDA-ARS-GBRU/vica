@@ -118,8 +118,8 @@ def base_input_fn(codonlength, minhashlength, kmerdim, shuffle, shuffle_buffer_s
         parsed = tf.parse_single_example(record, keys_to_features)
         return {'kmer': parsed['kmer'], 'codon': parsed['codon'], 'minhash': parsed['minhash']}, parsed['label']
     dataset = dataset.map(parser)
-    if shuffle:
-        dataset = dataset.shuffle(shuffle_buffer_size)
+    # if shuffle:
+    #    dataset = dataset.shuffle(shuffle_buffer_size)
     dataset = dataset.batch(batch)
     dataset = dataset.repeat(epochs)
     iterator = dataset.make_one_shot_iterator()
