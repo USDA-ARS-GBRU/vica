@@ -106,7 +106,7 @@ def base_input_fn(codonlength, minhashlength, kmerdim, shuffle, shuffle_buffer_s
 
     """
     dataset = tf.data.TFRecordDataset(filenames)
-    dataset = dataset.shuffle(buffer_size=1000)
+    dataset = dataset.shuffle(buffer_size=100)
     dataset = dataset.interleave(
         tf.data.TFRecordDataset,
         cycle_length=10,
@@ -122,12 +122,8 @@ def base_input_fn(codonlength, minhashlength, kmerdim, shuffle, shuffle_buffer_s
         return {'kmer': parsed['kmer'], 'codon': parsed['codon'], 'minhash': parsed['minhash']}, parsed['label']
     dataset = dataset.map(parser)
     dataset = dataset.repeat(epochs)
-    if shuffle:
-        dataset = dataset.shuffle(2000)
+    dataset = dataset.shuffle(2000)
     dataset = dataset.batch(batch)
-    if shuffle:
-        dataset = dataset.shuffle(20)
-
     iterator = dataset.make_one_shot_iterator()
     features, labels = iterator.get_next()
     return features, labels
