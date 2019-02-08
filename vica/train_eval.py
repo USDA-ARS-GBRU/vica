@@ -171,7 +171,7 @@ def mk_dnn_estimator(modeldir, n_classes, kmer, codon):
         model_dir = modeldir,
         n_classes=n_classes,
         weight_column=None,
-        feature_columns=[kmer],
+        feature_columns=[codon],
         dropout=0.5,
         activation_fn=tf.nn.relu,
         hidden_units=[64, 8],
