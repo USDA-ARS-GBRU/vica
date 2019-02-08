@@ -108,7 +108,7 @@ def base_input_fn(codonlength, minhashlength, kmerdim, shuffle, shuffle_buffer_s
     datasetlist = []
     for recfile in filenames:
         datasetlist.append(tf.data.TFRecordDataset(filenames))
-    dataset = tf.data.experimental.choose_from_datasets(datasetlist)
+    dataset = tf.data.experimental.sample_from_datasets(datasetlist)
     def parser(record):
         keys_to_features = {"id": tf.FixedLenFeature((), tf.string),
             "label": tf.FixedLenFeature((), tf.int64),
