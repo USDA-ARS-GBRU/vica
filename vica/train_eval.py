@@ -108,7 +108,7 @@ def base_input_fn(codonlength, minhashlength, kmerdim, shuffle, shuffle_buffer_s
     datasets = []
     for filename in filenames:
         datasets.append(tf.data.TFRecordDataset(filename))
-    choice_dataset = tf.data.Dataset.range(4).repeat(8)
+    choice_dataset = tf.data.Dataset.range(4)
     dataset = tf.data.experimental.choose_from_datasets(datasets, choice_dataset)
 
     def parser(record):
