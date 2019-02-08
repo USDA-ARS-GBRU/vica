@@ -105,13 +105,11 @@ def base_input_fn(codonlength, minhashlength, kmerdim, shuffle, shuffle_buffer_s
         a input function for a Tensorflow estimator
 
     """
-    dataset = tf.data.TFRecordDataset(filenames)
-    dataset = dataset.shuffle(buffer_size=100)
-    dataset = dataset.interleave(
-        tf.data.TFRecordDataset,
-        cycle_length=10,
-        block_length=1)
+    datasets = []
+    for file in filenames:
+        datasets.append(tf.data.TFRecordDataset(file))
 
+    dataset = tf.data.experimental.sample_from_datasets(datasets)
     def parser(record):
         keys_to_features = {"id": tf.FixedLenFeature((), tf.string),
             "label": tf.FixedLenFeature((), tf.int64),
@@ -121,9 +119,10 @@ def base_input_fn(codonlength, minhashlength, kmerdim, shuffle, shuffle_buffer_s
         parsed = tf.parse_single_example(record, keys_to_features)
         return {'kmer': parsed['kmer'], 'codon': parsed['codon'], 'minhash': parsed['minhash']}, parsed['label']
     dataset = dataset.map(parser)
-    dataset = dataset.repeat(epochs)
-    dataset = dataset.shuffle(2000)
+    if shuffle:
+        dataset = dataset.shuffle(shuffle_buffer_size)
     dataset = dataset.batch(batch)
+    dataset = dataset.repeat(epochs)
     iterator = dataset.make_one_shot_iterator()
     features, labels = iterator.get_next()
     return features, labels
