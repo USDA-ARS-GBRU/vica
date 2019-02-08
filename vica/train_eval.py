@@ -150,7 +150,7 @@ def mk_dnnlogistic_estimator(modeldir, n_classes, minhash, kmer, codon):
         dnn_feature_columns=[kmer, codon],
         dnn_dropout=0.5,
         dnn_activation_fn=tf.nn.relu,
-        dnn_hidden_units=[256, 32],
+        dnn_hidden_units=[128, 16],
         dnn_optimizer='Adagrad')
     return dnnlogistic_estimator
 
@@ -174,7 +174,7 @@ def mk_dnn_estimator(modeldir, n_classes, kmer, codon):
         feature_columns=[kmer, codon],
         dropout=0.5,
         activation_fn=tf.nn.relu,
-        hidden_units=[256, 32],
+        hidden_units=[128, 16],
         optimizer='Adagrad')
     return dnn_estimator
 
