@@ -425,11 +425,10 @@ def classify(infile, out, modeldir, n_classes, configpath):
         dtemp = tempfile.mkdtemp()
         tfrecfile = os.path.join(dtemp, "data.tfrecord")
         logging.info("Extracting Features from the sequence data. For more \
-            control of options use `vica get_featues`")
+            control of options use `vica get_features`")
         vica.get_features.run(infile=infile,
             output=tfrecfile,
             label=0,
-            minhashlocal=None,
             configpath=configpath)
     else:
         tfrecfile=infile
