@@ -33,7 +33,7 @@ def external_sort(infile, outfile, sep, key=1):
 
     """
     try:
-        sortoptions = ['sort', '-t', sep, '-k', str(key), '-s','-u', '-o', outfile,  infile ]
+        sortoptions = ['LC_ALL=C','sort', '-t', sep, '-k', '1b,'+ str(key), '-s','-u', '-o', outfile,  infile ]
         subprocess.run(sortoptions, check=True,)
         return outfile
     except:
@@ -60,10 +60,10 @@ def join(kmerfile, codonfile, minhashfile, dtemp):
     mergefile = os.path.join(dtemp, "mergefile.csv")
     try:
         with open(kcfile, 'w') as kcf:
-            options = ['join', '-t', ',', '-1', '1', '-2', '1', kmerfile, codonfile]
+            options = ['LC_ALL=C','join', '-t', ',', '-1', '1', '-2', '1', kmerfile, codonfile]
             subprocess.run(options,  check=True, stdout=kcf)
         with open(mergefile, "w") as  mf:
-            options2 = ['join', '-t', ',', '-1', '1', '-2', '1', kcfile, minhashfile]
+            options2 = ['LC_ALL=C','join', '-t', ',', '-1', '1', '-2', '1', kcfile, minhashfile]
             subprocess.run(options2,  check=True, stdout=mf)
         os.remove(kcfile)
         return mergefile
