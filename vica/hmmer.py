@@ -61,7 +61,7 @@ def _get_tokens(hmmfile):
     """reads hmmfile and returns a list of all the possible hmms
 
     """
-    options = ["hmmstats",
+    options = ["hmmstat",
                hmmfile]
     sendsketchout = subprocess.run(options, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     namelist = []
