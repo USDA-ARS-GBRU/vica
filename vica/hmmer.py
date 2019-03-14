@@ -71,10 +71,11 @@ def _get_tokens(hmmfile):
                 continue
             if not line.startswith('#') and not line.startswith(" "):
                 linelist = line.strip().split()
-                namelist.append(linelist[1])
-        except:
+                print(linelist)
+                #namelist.append(linelist[1])
+        except Exception:
             print(line)
-            raise Exception
+            raise
 
     return linelist
     #return sendsketchout
