@@ -63,19 +63,20 @@ def _get_tokens(hmmfile):
     """
     options = ["hmmstat",
                hmmfile]
-    sendsketchout = subprocess.run(options, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    hmmstatout = subprocess.run(options, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     namelist = []
-    for rec in sendsketchout.stdout.decode('utf-8').splitlines():
+    for rec in  hmmstatout.stdout.decode('utf-8').splitlines():
         try:
-		if rec =='':
+            if rec == '': # remove blank lines
                 continue
             if not rec.startswith('#'):
-                linelist = line.strip().split()
+                linelist = rec.split()
                 namelist.append(linelist[1])
         except Exception:
             raise
 
     return linelist
+
 
 
 def _write_file(sampledict, report_file):
