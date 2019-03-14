@@ -1,4 +1,6 @@
+"""Vica Initialization
 
+"""
 import pkg_resources
 
 # Set data path
@@ -14,3 +16,4 @@ from .tfrecord_maker import *
 from .vica_cli import *
 from .train_eval import *
 from .tfrecord_maker import *
+from .hmmer import *

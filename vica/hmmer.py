@@ -4,6 +4,7 @@
 """
 
 import subprocess
+import os
 
 import logging
 import yaml
@@ -76,7 +77,7 @@ def _write_file(sampledict, report_file):
     with open(report_file, "w") as ofile:
         yaml.dump(sampledict, ofile)
 
-def get_hmmer_feaures(dtemp, hmmfile, seqfile, outfile):
+def get_hmmer_features(dtemp, hmmfile, seqfile, outfile):
     """ Run and parde hmm results
 
     """
