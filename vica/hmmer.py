@@ -31,7 +31,7 @@ def _run_hmmsearch(hmmfile, seqfile, tblout):
     options = ["hmmsearch",
                "--tblout",
                tblout,
-               "-T", "8",
+               "-T", "30",
                "--noali",
                "--cpu", "2",
                hmmfile,
@@ -47,7 +47,7 @@ def _parse_tblout(tblout):
         for line in ifile:
             if not line.startswith('#'):
                 linelist = line.strip().split()
-                hmm = linelist[3]
+                hmm = linelist[2]
                 source = linelist[0]
                 source_nt = "".join(source.split("_")[:-1])
                 if source_nt in sampledict:
@@ -75,7 +75,7 @@ def _get_tokens(hmmfile):
         except Exception:
             raise
 
-    return linelist
+    return namelist
 
 
 
