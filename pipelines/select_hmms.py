@@ -49,7 +49,7 @@ def read_dom_files(argv):
                         modelset[hmm] = [source_nt]
                     psource = source
                     phmm = hmm
-    return modelset, len((set(sourcelist)))
+    return cnt, modelset, len((set(sourcelist)))
 
 
 # modellist = list(modelset.items())
@@ -112,7 +112,7 @@ def main():
 
     """
     args = myparser()
-    modelset, num = read_dom_files(args.reports)
+    cnt, modelset, num = read_dom_files(args.reports)
     datalist = estimate_fraction_covered2(modelset=modelset, tot=num, cutoff=args.cutoff)
     with open(args.out, "w") as fhandle:
         fhandle.writelines("%s\n" % item[1] for item in datalist)

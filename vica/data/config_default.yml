@@ -2,6 +2,7 @@
 # parameters for the minhash module
 split_shred:
   organellefile: "organelles.json"
+  classes: {2: 100000, 2157: 100000, 2759: 100000, 10239: 100000}
 minhash:
   # location of remote server to send minhash sketches to
   server_url: "https://refseq-sketch.jgi-psf.org/sketch"
@@ -125,3 +126,5 @@ prodigal:
     - GCG
     - GAG
     - GGG
+hmmer:
+  hmmer_file: "vica.99.hmm"

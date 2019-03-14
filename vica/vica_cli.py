@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""vica_cli.py a command line interface to Vica: A classifier for indentifing
+"""Vica: A classifier for identifying
     highly divergent DNA and RNA viruses
     in metagenomic and metatranscriptomic contigs
     """
@@ -44,12 +44,12 @@ def config_logging(logfile, level=logging.DEBUG):
     logging.info("Starting Vica: software for the identification of highly divergent DNA and RNA viruses")
 
 
-def parser():
+def myparser():
     """Parse the input arguments for the classifier and return an args object"""
     parser = argparse.ArgumentParser(
         description="Vica: A classifier for identifying highly divergent \
         DNA and RNA viruses in metagenomic and metatranscriptomic contigs")
-    subparsers = parser.add_subparsers(help ="Commands", dest= 'command')
+    subparsers = parser.add_subparsers(help="Commands", dest='command')
     classify = subparsers.add_parser(
         'classify',help="Predict viral contigs from fasta or tfrecord files.")
     split = subparsers.add_parser(
@@ -78,9 +78,6 @@ def parser():
         evaluation data for analysis. If training has been done in this directory \
         previously the results will be added", required=True)
     classify.add_argument(
-        '--n_classes', help="the number of classes present in the training \
-        data, default 4", default=4)
-    classify.add_argument(
         '--logfile',help="A file to record the analysis. If the same log file \
         is given for multiple vica commands all the steps in the workflow will \
         be recorded.", default="vica.log")
@@ -107,11 +104,6 @@ def parser():
         and training data will be split at. The final distribution of taxonomic \
         ranks sampled will be displayed in the log file.",
         default='family', choices=['phylum', 'subphylum', 'superclass', 'class', 'subclass', 'infraclass', 'superorder', 'order', 'suborder', 'infraorder', 'parvorder', 'superfamily', 'family', 'subfamily', 'tribe', 'subtribe', 'genus'])
-
-    split.add_argument(
-        '--classes', help="The classes to separate data into. This should be a \
-        dictionary of NCBI taxonomy identifiers and the number of samples from each class.",
-        default='{2: 100000, 2157: 100000, 2759: 100000, 10239: 100000}')
     split.add_argument(
         '--logfile',help="A file to record the analysis. If the same log file \
         is given for multiple Vica commands all the steps in the workflow will \
@@ -129,11 +121,6 @@ def parser():
         '--out', help="An uncompressed tfrecord file containing the name of \
         the sequence, the class label, and vectors for minhash, codon and \
         5-mer features", required=True)
-    get_features.add_argument(
-        '--label', help="An integer label for the classification class of \
-        training or evaluation data. Needed to for training and test data. \
-        for data to be classified use -1.",
-        type=int, required=True)
     get_features.add_argument(
         '--logfile',help="A file to record the analysis. If the same log file \
         is given for multiple Vica commands all the steps in the workflow will \
@@ -155,9 +142,6 @@ def parser():
         evaluation data for analysis. If training has been done in this \
         directory previously, the results will be added.", required=True)
     train.add_argument(
-        '--n_classes', help="the number of classes present in the training \
-        data, default 4", default=4)
-    train.add_argument(
         '--logfile',help="A file to record the analysis. If the same log file \
         is given for multiple Vica commands all the steps in the workflow will \
         be recorded.", default="vica.log")
@@ -178,9 +162,6 @@ def parser():
         evaluation data for analysis. If training has been done in this directory \
         previously the results will be added", required=True)
     evaluate.add_argument(
-        '--n_classes', help="the number of classes present in the training \
-        data, default 4", default=4)
-    evaluate.add_argument(
         '--logfile',help="A file to record the analysis. If the same log file \
         is given for multiple Vica commands all the steps in the workflow will \
         be recorded.", default="vica.log")
@@ -199,7 +180,7 @@ def main():
     set up logging and run selected subprogram
     """
     try:
-        args = parser()
+        args = myparser()
     except:
         print("Could not parse command line arguments.")
         raise SystemExit(1)
@@ -213,7 +194,7 @@ def main():
 
     try:
         config_logging(args.logfile)
-        logging.info("Configuration data loaded from {}:".format(args.config))
+        logging.info("Configuration data loaded from: %s", args.config)
         logging.info(config)
     except:
         print("Could not set up logging, exiting.")
@@ -221,36 +202,35 @@ def main():
     try:
         if args.whichmethod == 'classify':
             vica.train_eval.classify(infile=args.infile,
-                out= args.out,
-                modeldir= args.modeldir,
-                n_classes=args.n_classes,
-                configpath= args.config)
+                                     out=args.out,
+                                     modeldir=args.modeldir,
+                                     n_classes=len(config["split_shred"]["classes"]),
+                                     configpath=args.config)
         elif args.whichmethod == 'split':
             vica.split_shred.run(infile=args.infile,
-                outdir=args.out,
-                length=args.length,
-                testfrac=args.testfrac,
-                split_depth=args.split_depth,
-                classes=ast.literal_eval(args.classes))
+                                 outdir=args.out,
+                                 length=args.length,
+                                 testfrac=args.testfrac,
+                                 split_depth=args.split_depth,
+                                 classes=ast.literal_eval(config["split_shred"]["classes"]))
         elif args.whichmethod == 'get_features':
             vica.get_features.run(infile=args.infile,
-                output=args.out,
-                label= args.label,
-                configpath=args.config)
+                                  output=args.out,
+                                  configpath=args.config)
         elif args.whichmethod == 'train':
             vica.train_eval.train(infiles=args.infile,
-                out= args.out,
-                modeldir= args.modeldir,
-                n_classes= args.n_classes,
-                configpath= args.config)
+                                  out=args.out,
+                                  modeldir=args.modeldir,
+                                  n_classes=len(config["split_shred"]["classes"]),
+                                  configpath=args.config)
         elif args.whichmethod == 'evaluate':
             vica.train_eval.evaluate(infiles=args.infile,
-                out= args.out,
-                modeldir= args.modeldir,
-                n_classes= args.n_classes,
-                configpath= args.config)
+                                     out=args.out,
+                                     modeldir=args.modeldir,
+                                     n_classes=len(config["split_shred"]["classes"]),
+                                     configpath=args.config)
     except:
-        logging.exception("vica_cli.py: The following exception occurred:")
+        logging.exception("Vica: The following exception occurred:")
         raise SystemExit(1)
 
 

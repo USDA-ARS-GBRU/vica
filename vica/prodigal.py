@@ -64,7 +64,7 @@ def ilr(composition, helmert):
     return list(ilrmat)
 
 
-def _call_genes(infile, outfile):
+def _call_genes(infile, outfile, translations):
     """Runs Prodigal, calling genes.
 
     The function runs Prodigal, prokaryotic gene calling software, in
@@ -72,7 +72,8 @@ def _call_genes(infile, outfile):
 
     Args:
          infile (str): a multi-sequence fasta to call genes on.
-         outfile (str): a Fasta file containing the called genestring
+         outfile (str): a Fasta file containing the called genes in nucleotide format
+         translations ( str): a file containing the translated proteins in AA format
 
     Returns:
          (str): the Standard output of Prodigal
@@ -89,6 +90,8 @@ def _call_genes(infile, outfile):
     options = ["prodigal",
                "-i", infile,
                "-p", "meta",
+               "-a", translations,
+               "-g", "1",
                "-d", outfile]
     callgenesout = subprocess.run(options, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
     return callgenesout.stderr.decode('utf-8')
@@ -295,10 +298,10 @@ def count_codons(seqio_iterator, csv_writer_instance, codon_list):
     return lc
 
 
-def contigs_to_feature_file(infile, outfile, dtemp, codon_list):
+def contigs_to_feature_file(infile, outfile, translations, dtemp, codon_list):
     """for each contig in a file, count codons and write to csv"""
     genefile= os.path.join(dtemp, "genes.fasta")
-    cgout = _call_genes(infile, genefile)
+    cgout = _call_genes(infile, genefile, translations)
     logging.debug("From prodigal gene caller:")
     logging.debug(cgout)
     seqs = SeqIO.parse(genefile, 'fasta')

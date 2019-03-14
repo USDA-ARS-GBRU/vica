@@ -76,12 +76,13 @@ def _write_file(sampledict, report_file):
     with open(report_file, "w") as ofile:
         yaml.dump(sampledict, ofile)
 
-def get_hmmer_feaures(hmmfile, seqfile, tblout, report_file):
+def get_hmmer_feaures(dtemp, hmmfile, seqfile, outfile):
     """ Run and parde hmm results
 
     """
+    tblout = os.path.join(dtemp, "tblout.txt")
     _run_hmmsearch(hmmfile, seqfile, tblout)
     sampledict = _parse_tblout(tblout)
     linelist = _get_tokens(hmmfile)
     datadict = {"tokens":linelist, "data":sampledict}
-    _write_file(datadict, report_file)
+    _write_file(datadict, outfile)

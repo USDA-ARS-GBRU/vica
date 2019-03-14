@@ -14,7 +14,7 @@ import yaml
 import vica
 
 
-def run(infile, output, label, configpath=vica.CONFIG_PATH):
+def run(infile, output, configpath=vica.CONFIG_PATH):
     """Run all the steps in the feature selection selection workflow.
 
     This command: 1) selects minhash features, 2) codon usage features, 3)
@@ -37,11 +37,13 @@ def run(infile, output, label, configpath=vica.CONFIG_PATH):
 
 
     """
-    # Begin timing opperation
+    # Begin timing operation
     t0 = time.perf_counter()
+
     # read config
     with open(configpath) as cf:
         config = yaml.safe_load(cf)
+
     # Set up temp directory
     if config["get_features"]["tempdir"]:
         if not os.path.exists(config["get_features"]["tempdir"]):
@@ -51,22 +53,23 @@ def run(infile, output, label, configpath=vica.CONFIG_PATH):
         dtemp = tempfile.mkdtemp()
     logging.info("temporary directory: {}".format(dtemp))
 
-
     # Set paths for temporary output files
     minhashout = os.path.join(dtemp, "minhashout.txt")
     kmerout = os.path.join(dtemp, "kmerout.csv")
     codonout = os.path.join(dtemp, "codonout.csv")
+    transout = os.path.join(dtemp, "translations.fasta")
+    hmmerout = os.path.join(dtemp, "hmmerout.json")
 
     # Extract minhash features
     s1 = time.perf_counter()
     try:
         logging.info("Extacting minhash signatures and sending them to a server for identification")
         vica.minhash.minhashremote(dtemp=dtemp,
-            infile=infile,
-            outfile=minhashout,
-            server_url=config["minhash"]["server_url"],
-            nodesfile=config["minhash"]["nodesfile"],
-            noncellular=config["minhash"]["noncellular"])
+                                   infile=infile,
+                                   outfile=minhashout,
+                                   server_url=config["minhash"]["server_url"],
+                                   nodesfile=config["minhash"]["nodesfile"],
+                                   noncellular=config["minhash"]["noncellular"])
     except:
         logging.exception("vica get_features: during minhash remote feature selection the following exception occurred:")
         raise SystemExit(1)
@@ -95,7 +98,11 @@ def run(infile, output, label, configpath=vica.CONFIG_PATH):
     logging.info("Calculating Codon features")
     s3 = time.perf_counter()
     try:
-        vica.prodigal.contigs_to_feature_file(infile=infile, outfile=codonout, dtemp=dtemp, codon_list=config["prodigal"]["codon_list"])
+        vica.prodigal.contigs_to_feature_file(infile=infile,
+                                              outfile=codonout,
+                                              translations=transout,
+                                              dtemp=dtemp,
+                                              codon_list=config["prodigal"]["codon_list"])
     except:
         logging.exception("vica get_features: during codon feature selection the following exception occurred:")
         raise SystemExit(1)
@@ -103,24 +110,43 @@ def run(infile, output, label, configpath=vica.CONFIG_PATH):
     t2 = s4 - s3
     timestring2 =  str(datetime.timedelta(seconds=t2))
     logging.info("Processed Codon features in: {}".format(timestring2))
-    #shutil.copytree(dtemp, "dtempout")
+
+    # Identify proteins
+    logging.info("Finding protein homology with Hmmer")
+    shmmer = time.perf_counter()
+    try:
+        vica.hmmer.get_hmmer_feaures(dtemp=dtemp,
+                                     seqfile=transout,
+                                     outfile=hmmerout,
+                                     hmmfile=config["hmmer"]["hmmer_file"])
+    except:
+        logging.exception("vica get_features: during HMM feature selection the following exception occurred:")
+        raise SystemExit(1)
+    thmmer = time.perf_counter() - shmmer
+    timestringhmmer =  str(datetime.timedelta(seconds=thmmer))
+    logging.info("Processed protein homology features in: %s", timestringhmmer)
 
     # Combine data into a Tensorflow TF record file
-    logging.info("Writing data to the TFrecord file {}".format(output))
+    logging.info("Writing data to the TFrecord file %s", output)
     s7 = time.perf_counter()
     try:
-        vica.tfrecord_maker.convert_to_tfrecords(dtemp=dtemp, kmerfile=kmerout, codonfile=codonout,
-                 minhashfile=minhashout, tfrecordfile=output,
-                 label=str(label), sort=True)
+        vica.tfrecord_maker.convert_to_tfrecords(dtemp=dtemp,
+                                                 kmerfile=kmerout,
+                                                 codonfile=codonout,
+                                                 minhashfile=minhashout,
+                                                 hmmerfile=hmmerout,
+                                                 tfrecordfile=output,
+                                                 sort=True)
     except:
         logging.exception("vica get_features: While creating a TFrecord file the following exception occurred:")
         raise SystemExit(1)
     s8 = time.perf_counter()
     t4 = s8-s7
     timestring4 =  str(datetime.timedelta(seconds=t4))
-    logging.info("Wrote TFrecord file in: {}".format( timestring4))
+    logging.info("Wrote TFrecord file in: %s", timestring4)
+
     tfinal = time.perf_counter()
     ttot = str(datetime.timedelta(seconds=(tfinal - t0)))
-    logging.info("All features processed in: {}".format(ttot) )
+    logging.info("All features processed in: {}".format(ttot))
     if not config["get_features"]["tempdir"]:
         shutil.rmtree(dtemp)
