@@ -31,7 +31,7 @@ def _run_hmmsearch(hmmfile, seqfile, tblout):
     options = ["hmmsearch",
                "--tblout",
                tblout,
-               "-T", 8,
+               "-T", "8",
                "--noali",
                "--cpu", "2",
                hmmfile,
