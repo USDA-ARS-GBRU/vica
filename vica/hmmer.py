@@ -66,11 +66,16 @@ def _get_tokens(hmmfile):
     sendsketchout = subprocess.run(options, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     namelist = []
     for line in sendsketchout.stdout.decode('utf-8'):
-        if not line.strip(): # remove blank lines
-            continue
-        if not line.startswith('#') and not line.startswith(" "):
-            linelist = line.strip().split()
-            namelist.append(linelist[1])
+        try:
+            if not line.strip(): # remove blank lines
+                continue
+            if not line.startswith('#') and not line.startswith(" "):
+                linelist = line.strip().split()
+                namelist.append(linelist[1])
+        except:
+            print(line)
+            raise Exception
+
     return linelist
     #return sendsketchout
 
