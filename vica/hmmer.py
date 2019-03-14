@@ -29,14 +29,14 @@ def _run_hmmsearch(hmmfile, seqfile, tblout):
     """
 
     options = ["hmmsearch",
-               "tblout",
+               "--tblout",
                tblout,
                "--cut_ga",
                "--noali",
                "--cpu", "2",
                hmmfile,
                seqfile]
-    sendsketchout = subprocess.run(options, stderr=subprocess.PIPE)
+    sendsketchout = subprocess.run(options, stdout= subprocess.PIPE, stderr=subprocess.PIPE)
     return sendsketchout.stderr.decode('utf-8')
     #return sendsketchout
 
