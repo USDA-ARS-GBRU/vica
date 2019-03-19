@@ -115,7 +115,7 @@ def run(infile, output, configpath=vica.CONFIG_PATH):
     logging.info("Finding protein homology with Hmmer")
     shmmer = time.perf_counter()
     try:
-        vica.hmmer.get_hmmer_feaures(dtemp=dtemp,
+        vica.hmmer.get_hmmer_features(dtemp=dtemp,
                                      seqfile=transout,
                                      outfile=hmmerout,
                                      hmmfile=config["hmmer"]["hmmer_file"])
