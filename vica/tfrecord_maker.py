@@ -128,7 +128,7 @@ def _data_to_tfrecords(kmerfile, codonfile, minhashfile, mergefile, hmmerfile, t
             if lab in hmmerdatadict["data"]:
                 hmmlist = [tf.compat.as_bytes(x) for x in hmmerdatadict["data"][lab]]
             else:
-                hmmlist = "nohits"
+                hmmlist = [tf.compat.as_bytes("nohits")]
             example = tf.train.Example(features=tf.train.Features(feature={
                 "id":
                     tf.train.Feature(bytes_list=tf.train.BytesList(value=[tf.compat.as_bytes(lab)])),
