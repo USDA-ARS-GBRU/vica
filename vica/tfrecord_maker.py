@@ -12,6 +12,7 @@ import subprocess
 import os
 import logging
 import yaml
+import json
 
 import tensorflow as tf
 import numpy as np
@@ -115,7 +116,7 @@ def _data_to_tfrecords(kmerfile, codonfile, minhashfile, mergefile, hmmerfile, t
     cend = kend + features['codons']
     i = 0
     with open(hmmerfile, 'r') as hmmerdata:
-        hmmerdatadict = yaml.safe_load(hmmerdata)
+        hmmerdatadict = json.load(hmmerdata)
 
     with open(mergefile, 'r') as mergedata:
         for i, lstring in enumerate(mergedata, 1):
