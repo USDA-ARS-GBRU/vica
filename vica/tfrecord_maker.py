@@ -125,6 +125,10 @@ def _data_to_tfrecords(kmerfile, codonfile, minhashfile, mergefile, hmmerfile, t
             kdat = np.array(line[kstart:kend], dtype='float32')
             cdat = np.array(line[kend:cend], dtype='float32')
             mdat = np.array(line[cend:], dtype='float32')
+            if lab in hmmerdatadict["data"]:
+                hmmlist = [tf.compat.as_bytes(x) for x in hmmerdatadict["data"][lab]]
+            else:
+                hmmlist = "nohits"
             example = tf.train.Example(features=tf.train.Features(feature={
                 "id":
                     tf.train.Feature(bytes_list=tf.train.BytesList(value=[tf.compat.as_bytes(lab)])),
@@ -135,7 +139,7 @@ def _data_to_tfrecords(kmerfile, codonfile, minhashfile, mergefile, hmmerfile, t
                 "minhash":
                     tf.train.Feature(float_list=tf.train.FloatList(value=mdat)),
                 "hmmer":
-                    tf.train.Feature(bytes_list=tf.train.BytesList(value=[tf.compat.as_bytes(x) for x in hmmerdatadict["data"][lab]]))
+                    tf.train.Feature(bytes_list=tf.train.BytesList(value=hmmlist))
                 }))
             writer.write(example.SerializeToString())
     writer.close()
