@@ -67,7 +67,7 @@ def _create_class_lookup(classdict: dict, tf_rec_filenames: list) -> Tuple[dict,
             classtaxid = list(set(class2labels.keys()).intersection(lineage))
             assert len(classtaxid)==1
             labeldict[taxid] = labeldict[classtaxid[0]]["class"]
-    return labeldict, classdict
+    return labeldict
 
 
 
@@ -165,7 +165,8 @@ def base_input_fn(codonlength: int, minhashlength: int, kmerdim: int,
             "minhash": tf.FixedLenFeature([minhashlength], tf.float32),
             "hmmer":tf.FixedLenFeature((),dtype=tf.string)}
         parsed = tf.parse_example(serialized=record, features=keys_to_features)
-        return {'id': parsed['id'], 'kmer': parsed['kmer'], 'codon': parsed['codon'], 'minhash': parsed['minhash']}
+        recordlabel = labeldict[parsed["id"]]
+        return {'id': parsed['id'], 'kmer': parsed['kmer'], 'codon': parsed['codon'], 'minhash': parsed['minhash']}, recordlabel
     dataset = dataset.map(parser)
     if shuffle:
         dataset = dataset.shuffle(shuffle_buffer_size)
