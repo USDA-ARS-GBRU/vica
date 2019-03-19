@@ -50,7 +50,7 @@ def _parse_tblout(tblout):
                 linelist = line.strip().split()
                 hmm = linelist[2]
                 source = linelist[0]
-                source_nt = "".join(source.split("_")[:-1])
+                source_nt = "_".join(source.split("_")[:-1])
                 if source_nt in sampledict:
                     sampledict[source_nt].append(hmm)
                 else:
