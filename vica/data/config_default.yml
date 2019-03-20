@@ -129,4 +129,4 @@ prodigal:
     - GAG
     - GGG
 hmmer:
-  hmmer_file: "vica.99.hmm"
+  hmmer_file: "refseq_tara.85.hmm"
