@@ -118,7 +118,7 @@ def run(infile, output, configpath=vica.CONFIG_PATH):
         vica.hmmer.get_hmmer_features(dtemp=dtemp,
                                      seqfile=transout,
                                      outfile=hmmerout,
-                                     hmmfile=config["hmmer"]["hmmer_file"])
+                                     hmmfile=os.path.join(vica.DATA_PATH, config["hmmer"]["hmmer_file"]))
     except:
         logging.exception("vica get_features: during HMM feature selection the following exception occurred:")
         raise SystemExit(1)

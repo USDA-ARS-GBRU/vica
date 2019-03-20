@@ -56,7 +56,8 @@ def _send_sketch(infile, outfile, server_url):
                "printcontam=f",
                "printunique=t",
                "printnohit=f",
-               "printtaxid=t"]
+               "printtaxid=t",
+               "fixjunk"]
     sendsketchout = subprocess.run(options, stderr=subprocess.PIPE)
     return sendsketchout.stderr.decode('utf-8')
     #return sendsketchout

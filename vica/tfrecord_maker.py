@@ -14,9 +14,12 @@ import logging
 import yaml
 import json
 
+import ete3
 import tensorflow as tf
 import numpy as np
 
+with open(vica.CONFIG_PATH) as cf:
+    config = yaml.safe_load(cf)
 
 def external_sort(infile, outfile, sep, key=1):
     """Externally sort and make unique csv files using built-in GNU Coreutils.
@@ -92,6 +95,30 @@ def count_features(**kwargs):
         featuredict[key] = features
     return featuredict
 
+def create_class2labels(classdict):
+    ncbi = ete3.NCBITaxa()
+    class2labels = {}
+    for i, val in enumerate(classdict.keys()):
+        taxa = ncbi.get_taxid_translator([val])
+        class2labels[val] = {"name": taxa[val], "class": i}
+    logging.info("Class labels are %s", class2labels)
+    return(class2labels)
+
+
+
+
+def _label_lookup(class2labels, seqid, ncbi):
+    try:
+        taxid = seqid.split("|")[1]
+        lineage = ncbi.get_lineage(taxid)
+        classtaxid = list(set(class2labels.keys()).intersection(lineage))
+        assert len(classtaxid) == 1
+        return class2labels[classtaxid[0]]["class"]
+    except:
+        logging.info("Could not determine the class for taxid %s, randomly assigned class " % str(taxid))
+        return random.randint(0, len(classdict)-1)
+
+
 
 def _data_to_tfrecords(kmerfile, codonfile, minhashfile, mergefile, hmmerfile, tfrecordfile):
     """Convert csv and json data files of features created by Vica into a TFRecords file.
@@ -115,23 +142,27 @@ def _data_to_tfrecords(kmerfile, codonfile, minhashfile, mergefile, hmmerfile, t
     kend = features['kmers'] + 1
     cend = kend + features['codons']
     i = 0
+    class2labels = create_class2labels(config["split_shred"]["classes"])
+    ncbi = ete3.NCBITaxa()
     with open(hmmerfile, 'r') as hmmerdata:
         hmmerdatadict = json.load(hmmerdata)
 
     with open(mergefile, 'r') as mergedata:
         for i, lstring in enumerate(mergedata, 1):
             line = lstring.strip().split(",")
-            lab = line[0]
+            seqid = line[0]
             kdat = np.array(line[kstart:kend], dtype='float32')
             cdat = np.array(line[kend:cend], dtype='float32')
             mdat = np.array(line[cend:], dtype='float32')
-            if lab in hmmerdatadict["data"]:
-                hmmlist = [tf.compat.as_bytes(x) for x in hmmerdatadict["data"][lab]]
+            label = _label_lookup(class2labels, seqid, ncbi)
+            if seqid in hmmerdatadict["data"]:
+                hmmlist = [tf.compat.as_bytes(x) for x in hmmerdatadict["data"][seqid]]
             else:
                 hmmlist = [tf.compat.as_bytes("nohits")]
+
             example = tf.train.Example(features=tf.train.Features(feature={
                 "id":
-                    tf.train.Feature(bytes_list=tf.train.BytesList(value=[tf.compat.as_bytes(lab)])),
+                    tf.train.Feature(bytes_list=tf.train.BytesList(value=[tf.compat.as_bytes(seqid)])),
                 "kmer":
                     tf.train.Feature(float_list=tf.train.FloatList(value=kdat)),
                 "codon":
@@ -139,7 +170,9 @@ def _data_to_tfrecords(kmerfile, codonfile, minhashfile, mergefile, hmmerfile, t
                 "minhash":
                     tf.train.Feature(float_list=tf.train.FloatList(value=mdat)),
                 "hmmer":
-                    tf.train.Feature(bytes_list=tf.train.BytesList(value=hmmlist))
+                    tf.train.Feature(bytes_list=tf.train.BytesList(value=hmmlist)),
+                "label":
+                    tf.train.Feature(float_list=tf.train.IntList(value=[label]))
                 }))
             writer.write(example.SerializeToString())
     writer.close()
