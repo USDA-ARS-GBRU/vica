@@ -125,11 +125,11 @@ def _base_input_fn(labeldict: dict, shuffle_buffer_size: int,
 
 
 
-classift_input_fn = functools.partial(_base_input_fn,
-    shuffle_buffer_size=0,
-    batch=config["train_eval"]["eval_batch_size"],
-    epochs=1,
-    filenames=classify_files)
+# classift_input_fn = functools.partial(_base_input_fn,
+#     shuffle_buffer_size=0,
+#     batch=config["train_eval"]["eval_batch_size"],
+#     epochs=1,
+#     filenames=classify_files)
 
 # Define feature_columns
 
