@@ -18,6 +18,8 @@ import ete3
 import tensorflow as tf
 import numpy as np
 
+import vica
+
 with open(vica.CONFIG_PATH) as cf:
     config = yaml.safe_load(cf)
 
