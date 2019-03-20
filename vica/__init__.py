@@ -15,5 +15,6 @@ from .split_shred import *
 from .tfrecord_maker import *
 from .vica_cli import *
 from .train_eval import *
+from .train_eval2 import *
 from .tfrecord_maker import *
 from .hmmer import *

@@ -35,9 +35,9 @@ def _featureshape(k=5, codonlength=177, minhashlength=280):
 
     """
     kmerdim = len(vica.khmer_features.iterate_kmer(k)) - 1
-    kmer = tf.feature_column.numeric_column(key='kmer', shape=(kmerdim))
-    codon = tf.feature_column.numeric_column(key='codon', shape=(codonlength))
-    minhash = tf.feature_column.numeric_column(key='minhash', shape=(minhashlength))
+    kmer = tf.feature_column.numeric_column(key='kmer', shape=(config["train_eval"]["kmerlength"]))
+    codon = tf.feature_column.numeric_column(key='codon', shape=(config["train_eval"]["codonlength"]))
+    minhash = tf.feature_column.numeric_column(key='minhash', shape=(config["train_eval"]["minhashlength"]))
     return kmerdim, kmer, codon, minhash
 
 

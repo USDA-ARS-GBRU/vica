@@ -55,9 +55,11 @@ classifier: null
 train_eval:
   codonlength: 177
   minhashlength: 280
+  kmerlength: 511
   train_batch_size: 32
   eval_batch_size: 512
   epochs: 30
+  train_shuffle_buffer: 500000
   # models [DNNLogistic, DNN]
   model: "DNNLogistic"
 khmer_features:

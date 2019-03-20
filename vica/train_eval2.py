@@ -9,6 +9,7 @@ import tempfile
 import functools
 import logging
 import shutil
+import random
 
 import yaml
 import tensorflow as tf
@@ -17,15 +18,11 @@ import ete3
 from typing import Tuple
 import vica
 
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import accuracy_score
-from sklearn.metrics import precision_recall_curve
-from sklearn.metrics import f1_score
 
 with open(vica.CONFIG_PATH) as cf:
     config = yaml.safe_load(cf)
 
-
+## Functions for creating Labels from TF record data automatically
 def _ids_from_tfrecords(filename: str) -> list:
     """Takes a tfrecord filename and returns a list with the ids in order.
 
@@ -46,10 +43,10 @@ def _create_class_lookup(classdict: dict, tf_rec_filenames: list) -> Tuple[dict,
         tf_rec_filenames (list): a list of the tfracords to be used
 
     Returns:
-        labeldict (dict)
+        labeldict (dict): Dict containing record IDs and the class they belong to
 
     """
-    ncbi =  ete3.NCBITaxa()
+    ncbi = ete3.NCBITaxa()
     class2labels = {}
     for i, val in enumerate(classdict.keys()):
         taxa = ncbi.get_taxid_translator([val])
@@ -58,75 +55,27 @@ def _create_class_lookup(classdict: dict, tf_rec_filenames: list) -> Tuple[dict,
 
     idlist = []
     for filename in tf_rec_filenames:
-        idlist.append(_ids_from_tfrecords(filename))
+        idlist.extend(_ids_from_tfrecords(filename))
     labeldict = {}
     for item in idlist:
         taxid = item.split("|")[1]
         if not taxid in labeldict:
-            lineage = ncbi.get_lineage(taxid)
-            classtaxid = list(set(class2labels.keys()).intersection(lineage))
-            assert len(classtaxid)==1
-            labeldict[taxid] = labeldict[classtaxid[0]]["class"]
+            try:
+                lineage = ncbi.get_lineage(taxid)
+                classtaxid = list(set(class2labels.keys()).intersection(lineage))
+                assert len(classtaxid) == 1
+                labeldict[taxid] = class2labels[classtaxid[0]]["class"]
+            except:
+                labeldict[taxid] = random.randint(0,len(classdict)-1)
+                logging.info("Could not determine the class for taxid %s, randomly assigned class %s" % (str(taxid), labeldict[taxid]))
     return labeldict
 
 
 
 
-# Model definitions
-def mk_dnnlogistic_estimator(modeldir, n_classes, minhash, kmer, codon):
-    """Specification of Wide and Deep Neural Network model
+# The input functions for the estimators
 
-    Args:
-        modeldir (str): path to directory containing model data
-        n_classes (int): number of classes in the model
-        minhash (obj): Tensorflow feature column object for minhash data
-        kmer (obj): Tensorflow feature column object for kmer data
-        codon (obj): Tensorflow feature column object for codon data
-
-    Returns:
-        (obj): Tensorflow.estimator.DNNLinearCombinedClassifier object
-
-    """
-    dnnlogistic_estimator = tf.estimator.DNNLinearCombinedClassifier(
-        model_dir = modeldir,
-        n_classes=n_classes,
-        weight_column=None,
-        linear_feature_columns=[minhash],
-        linear_optimizer='Ftrl',
-        dnn_feature_columns=[kmer, codon],
-        dnn_dropout=0.5,
-        dnn_activation_fn=tf.nn.relu,
-        dnn_hidden_units=[64, 8],
-        dnn_optimizer='Adagrad')
-    return dnnlogistic_estimator
-
-def mk_dnn_estimator(modeldir, n_classes, kmer, codon):
-    """Specification of Deep Neural Network model
-
-    Args:
-        modeldir (str): path to directory containing model data
-        n_classes (int): number of classes in the model
-        kmer (obj): Tensorflow feature column object for kmer data
-        codon (obj): Tensorflow feature column object for codon data
-
-    Returns:
-        (obj): Tensorflow.estimator.DNNCLassifier object
-
-    """
-    dnn_estimator = tf.estimator.DNNClassifier(
-        model_dir = modeldir,
-        n_classes=n_classes,
-        weight_column=None,
-        feature_columns=[codon],
-        dropout=0.5,
-        activation_fn=tf.nn.relu,
-        hidden_units=[64, 8],
-        optimizer='Adagrad')
-    return dnn_estimator
-
-
-def base_input_fn(codonlength: int, minhashlength: int, kmerdim: int,
-                  labeldict: dict, shuffle: bool, shuffle_buffer_size: int,
+def _base_input_fn(labeldict: dict, shuffle_buffer_size: int,
                   batch: int, epochs: int, filenames: list):
     """The function for feeding and processing training data
 
@@ -137,13 +86,8 @@ def base_input_fn(codonlength: int, minhashlength: int, kmerdim: int,
     (train, evaluate, classify).
 
     Args:
-        codonlength (int): the number of elements in the codon feature set
-        minhashlength (int)  the number of elements in the minhash feature set
-        kmerdim (int):  the number of elements in the kmer feature set
-        labeldict (dict): a list containing the ids of the sequence segments and integer class values
-        shuffle (bool):  Should values be shuffled? (True for train, false
-            for evaluate and classify)
-        shuffle_buffer_size (int): How large of a record buffer to load for shuffling
+
+        shuffle_buffer_size (int): How large of a record buffer to load for shuffling, 0 for no shuffling
         batch (int): the size of the training batch (~32 for training larger,
              ~512 for classification )
         epochs (int): Epochs (number of complete passes through the data)
@@ -159,19 +103,87 @@ def base_input_fn(codonlength: int, minhashlength: int, kmerdim: int,
     dataset = dataset.batch(batch)
     # define how to parse the tfrecords
     def parser(record):
-        keys_to_features = {"id": tf.FixedLenFeature((), tf.string),
-            "kmer": tf.FixedLenFeature([kmerdim], tf.float32),
-            "codon": tf.FixedLenFeature([codonlength], tf.float32),
-            "minhash": tf.FixedLenFeature([minhashlength], tf.float32),
-            "hmmer":tf.FixedLenFeature((),dtype=tf.string)}
+        keys_to_features = {"id": tf.FixedLenFeature((), dtype=tf.string),
+                            "kmer": tf.FixedLenFeature([config["train_eval"]["kmerlength"]], dtype=tf.float32),
+                            "codon": tf.FixedLenFeature([config["train_eval"]["codonlength"]], dtype=tf.float32),
+                            "minhash": tf.FixedLenFeature([config["train_eval"]["minhashlength"]], dtype=tf.float32),
+                            "hmmer":tf.FixedLenFeature((), dtype=tf.string)}
         parsed = tf.parse_example(serialized=record, features=keys_to_features)
         recordlabel = labeldict[parsed["id"]]
-        return {'id': parsed['id'], 'kmer': parsed['kmer'], 'codon': parsed['codon'], 'minhash': parsed['minhash']}, recordlabel
+        return {'id': parsed['id'], 'kmer': parsed['kmer'],
+                'codon': parsed['codon'], 'minhash': parsed['minhash']}, recordlabel
     dataset = dataset.map(parser)
-    if shuffle:
+    if shuffle_buffer_size > 0:
         dataset = dataset.shuffle(shuffle_buffer_size)
 
     dataset = dataset.repeat(epochs)
     iterator = dataset.make_one_shot_iterator()
     features, labels = iterator.get_next()
-    return features
+    return features, labels
+
+# modified input functions for special purposes
+
+
+
+classift_input_fn = functools.partial(_base_input_fn,
+    shuffle_buffer_size=0,
+    batch=config["train_eval"]["eval_batch_size"],
+    epochs=1,
+    filenames=classify_files)
+
+# Define feature_columns
+
+kmer_feat = tf.feature_column.numeric_column(key='kmer', shape=(config["train_eval"]["kmerlength"]))
+codon_feat = tf.feature_column.numeric_column(key='codon', shape=(config["train_eval"]["codonlength"]))
+minhash_feat = tf.feature_column.numeric_column(key='minhash', shape=(config["train_eval"]["minhashlength"]))
+hashed_hmm_feat = tf.feature_column.categorical_column_with_hash_bucket(
+    key="hmmer", hash_bucket_size=1000)
+embedded_hmm_feat = tf.feature_column.embedding_column(
+    categorical_column=hashed_hmm_feat, dimension=6)
+dense_features = [embedded_hmm_feat, codon_feat, kmer_feat]
+
+
+# Model definitions
+def create_estimator(modeldir, n_classes):
+    dnnlogistic_estimator = tf.estimator.DNNLinearCombinedClassifier(
+        model_dir=modeldir,
+        n_classes=n_classes,
+        weight_column=None,
+        linear_feature_columns=[minhash_feat],
+        linear_optimizer='Ftrl',
+        dnn_feature_columns=dense_features,
+        dnn_dropout=0.5,
+        dnn_activation_fn=tf.nn.relu,
+        dnn_hidden_units=[64, 8],
+        dnn_optimizer='Adagrad')
+    return dnnlogistic_estimator
+
+
+
+
+
+
+def train_and_eval(train_files, eval_files, modeldir, configpath=vica.CONFIG_PATH):
+    with open(configpath) as cf:
+        config = yaml.safe_load(cf)
+
+    labeldict = _create_class_lookup(classdict=config["split_shred"]["classes"],
+                                     tf_rec_filenames=train_files + eval_files)
+    n_classes = len(config["split_shred"]["classes"])
+
+    train_input_fn = functools.partial(_base_input_fn,
+        shuffle_buffer_size=config["train_eval"]["train_shuffle_buffer"],
+        batch=config["train_eval"]["train_batch_size"],
+        epochs=config["train_eval"]["epochs"],
+        filenames=train_files)
+
+    eval_input_fn = functools.partial(_base_input_fn,
+        shuffle_buffer_size=0,
+        batch=config["train_eval"]["eval_batch_size"],
+        epochs=1,
+        filenames=eval_files)
+
+    my_estimator = create_estimator(modeldir=modeldir, n_classes=n_classes)
+    train_spec = tf.estimator.TrainSpec(input_fn=train_input_fn)
+    evalspec = tf.estimator.EvalSpec(input_fn=eval_input_fn, )
+    tf.estimators.train_and_evaluate()
