@@ -174,7 +174,7 @@ def _data_to_tfrecords(kmerfile, codonfile, minhashfile, mergefile, hmmerfile, t
                 "hmmer":
                     tf.train.Feature(bytes_list=tf.train.BytesList(value=hmmlist)),
                 "label":
-                    tf.train.Feature(float_list=tf.train.IntList(value=[label]))
+                    tf.train.Feature(float_list=tf.train.Int64List(value=[label]))
                 }))
             writer.write(example.SerializeToString())
     writer.close()
