@@ -26,10 +26,6 @@ def run(infile, output, configpath=vica.CONFIG_PATH):
             Example: "tid|1026970|NW_008342263.1
         output (str): a name for the TFrecords file to be generated. It should
             end in ".tfrecords".
-        label (int): This is an integer for the taxonomic class used by the
-            classifier.  It should be -1 if the true class is unknown or,
-            if the class is known it should  begin with 0 and
-            increase sequentially for each training class.
         configpath (str): path to the yaml configuration file.
 
     Returns:

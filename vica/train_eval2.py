@@ -160,33 +160,30 @@ with open(vica.CONFIG_PATH) as cf:
 
 
 
+def train_and_eval(train_files, eval_files, modeldir, configpath=vica.CONFIG_PATH):
 
+    labeldict = _create_class_lookup(classdict=config["split_shred"]["classes"],
+                                     tf_rec_filenames=train_files + eval_files)
+    n_classes = len(config["split_shred"]["classes"])
 
+    train_input_fn = functools.partial(_base_input_fn,
+        labeldict=labeldict,
+        shuffle_buffer_size=config["train_eval"]["train_shuffle_buffer"],
+        batch=config["train_eval"]["train_batch_size"],
+        epochs=config["train_eval"]["epochs"],
+        filenames=train_files)
 
-    def train_and_eval(train_files, eval_files, modeldir, configpath=vica.CONFIG_PATH):
-        tf.initialize_all_variables()
-        with open(configpath) as cf:
-            config = yaml.safe_load(cf)
-
-        labeldict = _create_class_lookup(classdict=config["split_shred"]["classes"],
-                                         tf_rec_filenames=train_files + eval_files)
-        n_classes = len(config["split_shred"]["classes"])
-
-        train_input_fn = functools.partial(_base_input_fn,
-            labeldict=labeldict,
-            shuffle_buffer_size=config["train_eval"]["train_shuffle_buffer"],
-            batch=config["train_eval"]["train_batch_size"],
-            epochs=config["train_eval"]["epochs"],
-            filenames=train_files)
-
-        eval_input_fn = functools.partial(_base_input_fn,
-            labeldict=labeldict,
-            shuffle_buffer_size=0,
-            batch=config["train_eval"]["eval_batch_size"],
-            epochs=1,
-            filenames=eval_files)
-
-        my_estimator = create_estimator(modeldir=modeldir, n_classes=n_classes)
-        train_spec = tf.estimator.TrainSpec(input_fn=train_input_fn)
-        eval_spec = tf.estimator.EvalSpec(input_fn=eval_input_fn, )
-        tf.estimator.train_and_evaluate(my_estimator, train_spec, eval_spec)
+    eval_input_fn = functools.partial(_base_input_fn,
+        labeldict=labeldict,
+        shuffle_buffer_size=0,
+        batch=config["train_eval"]["eval_batch_size"],
+        epochs=1,
+        filenames=eval_files)
+    #def my_auc(labels, predictions):
+    #    return {'auc': tf.metrics.auc(labels, predictions)}
+    my_estimator = create_estimator(modeldir=modeldir, n_classes=n_classes)
+    #my_estimator = tf.estimator.add_metrics(my_estimator, my_auc)
+    train_spec = tf.estimator.TrainSpec(input_fn=train_input_fn)
+    eval_spec = tf.estimator.EvalSpec(input_fn=eval_input_fn)
+    t1, t2 = tf.estimator.train_and_evaluate(my_estimator, train_spec, eval_spec)
+    return t1, t2
