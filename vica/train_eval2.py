@@ -106,11 +106,11 @@ with open(vica.CONFIG_PATH) as cf:
                                 "kmer": tf.FixedLenFeature([config["train_eval"]["kmerlength"]], dtype=tf.float32),
                                 "codon": tf.FixedLenFeature([config["train_eval"]["codonlength"]], dtype=tf.float32),
                                 "minhash": tf.FixedLenFeature([config["train_eval"]["minhashlength"]], dtype=tf.float32),
-                                "hmmer":tf.FixedLenFeature((), dtype=tf.string)}
+                                "hmmer": tf.VarLenFeature(dtype=tf.string),
+                                "label": tf.FixedLenFeature((), dtype=tf.int64)}
             parsed = tf.parse_single_example(serialized=record, features=keys_to_features)
-            recordlabel = labeldict[parsed["id"].eval(tf.get_default_session())]
             return {'id': parsed['id'], 'kmer': parsed['kmer'],
-                    'codon': parsed['codon'], 'minhash': parsed['minhash']}, parsed['label']#recordlabel
+                    'codon': parsed['codon'], 'minhash': parsed['minhash'], 'hmmer': parsed['hmmer']}, parsed['label']
         dataset = dataset.map(parser)
         if shuffle_buffer_size > 0:
             dataset = dataset.shuffle(shuffle_buffer_size)
