@@ -142,8 +142,9 @@ with open(vica.CONFIG_PATH) as cf:
     embedded_minhash_feat = tf.feature_column.embedding_column(
         categorical_column=minhashbucketcol, dimension=6)
     embedded_hmm_feat = tf.feature_column.embedding_column(
-        categorical_column=hashed_hmm_feat, dimension=8)
-    dense_features = [embedded_hmm_feat, codon_feat, kmer_feat]
+        categorical_column=hashed_hmm_feat, dimension=6)
+    dense_features = [embedded_hmm_feat, codon_feat, codon_feat]
+    all_features = [hashed_hmm_feat, kmer_feat, codon_feat, minhash_feat]
 
 
     # Model definitions
@@ -172,6 +173,16 @@ with open(vica.CONFIG_PATH) as cf:
             optimizer='Adam')
         return dnnlogistic_estimator
 
+    def create_log_classifier(modeldir, n_classes):
+        logistic_estimator = tf.estimator.DNNClassifier(
+        model_dir=modeldir,
+        n_classes=n_classes,
+        feature_columns=all_features,
+        optimizer=tf.train.FtrlOptimizer(
+                                         learning_rate=0.1,
+                                         l1_regularization_strength=0.001)
+        return logistic_estimator
+
 def train_and_eval(train_files, eval_files, modeldir, configpath=vica.CONFIG_PATH):
 
     labeldict = _create_class_lookup(classdict=config["split_shred"]["classes"],
@@ -193,7 +204,7 @@ def train_and_eval(train_files, eval_files, modeldir, configpath=vica.CONFIG_PAT
         filenames=eval_files)
     #def my_auc(labels, predictions):
     #    return {'auc': tf.metrics.auc(labels, predictions)}
-    my_estimator = create_DNN_estimator(modeldir=modeldir, n_classes=n_classes)
+    my_estimator = create_lin_estimator(modeldir=modeldir, n_classes=n_classes)
     #my_estimator = tf.estimator.add_metrics(my_estimator, my_auc)
     train_spec = tf.estimator.TrainSpec(input_fn=train_input_fn)
     eval_spec = tf.estimator.EvalSpec(input_fn=eval_input_fn)
