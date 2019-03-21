@@ -56,7 +56,7 @@ train_eval:
   codonlength: 177
   minhashlength: 280
   kmerlength: 511
-  train_batch_size: 256
+  train_batch_size: 512
   eval_batch_size: 512
   epochs: 30
   train_shuffle_buffer: 500000
