@@ -139,7 +139,7 @@ with open(vica.CONFIG_PATH) as cf:
     hashed_hmm_feat = tf.feature_column.categorical_column_with_hash_bucket(
         key="hmmer", hash_bucket_size=1000)
     embedded_hmm_feat = tf.feature_column.embedding_column(
-        categorical_column=hashed_hmm_feat, dimension=6)
+        categorical_column=hashed_hmm_feat, dimension=8)
     dense_features = [embedded_hmm_feat, codon_feat, kmer_feat]
 
 
@@ -152,9 +152,9 @@ with open(vica.CONFIG_PATH) as cf:
             linear_feature_columns=[minhash_feat],
             linear_optimizer='Ftrl',
             dnn_feature_columns=dense_features,
-            dnn_dropout=0.5,
+            dnn_dropout=0.4,
             dnn_activation_fn=tf.nn.relu,
-            dnn_hidden_units=[128, 16],
+            dnn_hidden_units=[256, 32],
             dnn_optimizer='Adam')
         return dnnlogistic_estimator
 
