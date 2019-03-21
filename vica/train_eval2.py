@@ -180,7 +180,7 @@ with open(vica.CONFIG_PATH) as cf:
         feature_columns=all_features,
         optimizer=tf.train.FtrlOptimizer(
                                          learning_rate=0.1,
-                                         l1_regularization_strength=0.001)
+                                         l1_regularization_strength=0.001))
         return logistic_estimator
 
 def train_and_eval(train_files, eval_files, modeldir, configpath=vica.CONFIG_PATH):
