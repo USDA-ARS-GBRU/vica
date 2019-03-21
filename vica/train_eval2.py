@@ -169,7 +169,7 @@ with open(vica.CONFIG_PATH) as cf:
             dropout=0.4,
             activation_fn=tf.nn.relu,
             hidden_units=[256, 32],
-            dnn_optimizer='Adam')
+            optimizer='Adam')
         return dnnlogistic_estimator
 
 def train_and_eval(train_files, eval_files, modeldir, configpath=vica.CONFIG_PATH):
