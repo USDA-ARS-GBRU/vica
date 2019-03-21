@@ -173,7 +173,7 @@ with open(vica.CONFIG_PATH) as cf:
             optimizer='Adam')
         return dnnlogistic_estimator
 
-    def create_log_classifier(modeldir, n_classes):
+    def create_log_estimator(modeldir, n_classes):
         logistic_estimator = tf.estimator.DNNClassifier(
         model_dir=modeldir,
         n_classes=n_classes,
@@ -204,7 +204,7 @@ def train_and_eval(train_files, eval_files, modeldir, configpath=vica.CONFIG_PAT
         filenames=eval_files)
     #def my_auc(labels, predictions):
     #    return {'auc': tf.metrics.auc(labels, predictions)}
-    my_estimator = create_lin_estimator(modeldir=modeldir, n_classes=n_classes)
+    my_estimator = create_log_estimator(modeldir=modeldir, n_classes=n_classes)
     #my_estimator = tf.estimator.add_metrics(my_estimator, my_auc)
     train_spec = tf.estimator.TrainSpec(input_fn=train_input_fn)
     eval_spec = tf.estimator.EvalSpec(input_fn=eval_input_fn)
