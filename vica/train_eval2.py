@@ -143,7 +143,7 @@ with open(vica.CONFIG_PATH) as cf:
         categorical_column=minhashbucketcol, dimension=6)
     embedded_hmm_feat = tf.feature_column.embedding_column(
         categorical_column=hashed_hmm_feat, dimension=8)
-    dense_features = [embedded_hmm_feat, codon_feat, kmer_feat, embedded_minhash_feat]
+    dense_features = [embedded_hmm_feat, codon_feat, kmer_feat]
 
 
     # Model definitions
