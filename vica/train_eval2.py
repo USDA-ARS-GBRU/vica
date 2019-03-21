@@ -174,7 +174,7 @@ with open(vica.CONFIG_PATH) as cf:
         return dnnlogistic_estimator
 
     def create_log_estimator(modeldir, n_classes):
-        logistic_estimator = tf.estimator.DNNClassifier(
+        logistic_estimator = tf.estimator.LinearClassifier(
         model_dir=modeldir,
         n_classes=n_classes,
         feature_columns=all_features,
