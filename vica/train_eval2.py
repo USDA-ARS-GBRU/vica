@@ -138,8 +138,9 @@ with open(vica.CONFIG_PATH) as cf:
     minhash_feat = tf.feature_column.numeric_column(key='minhash', shape=(config["train_eval"]["minhashlength"]))
     hashed_hmm_feat = tf.feature_column.categorical_column_with_hash_bucket(
         key="hmmer", hash_bucket_size=1000)
+    minhashbucketcol = tf.feature_column.bucketized_column(source_column=minhash_feat, boundaries=[100])
     embedded_minhash_feat = tf.feature_column.embedding_column(
-        categorical_column=minhash_feat, dimension=2)
+        categorical_column=minhashbucketcol, dimension=6)
     embedded_hmm_feat = tf.feature_column.embedding_column(
         categorical_column=hashed_hmm_feat, dimension=8)
     dense_features = [embedded_hmm_feat, codon_feat, kmer_feat, embedded_minhash_feat]
