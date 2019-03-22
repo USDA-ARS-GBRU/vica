@@ -105,7 +105,7 @@ with open(vica.CONFIG_PATH) as cf:
             keys_to_features = {"id": tf.FixedLenFeature((), dtype=tf.string),
                                 "kmer": tf.FixedLenFeature([config["train_eval"]["kmerlength"]], dtype=tf.float32),
                                 "codon": tf.FixedLenFeature([config["train_eval"]["codonlength"]], dtype=tf.float32),
-                                "minhash": tf.FixedLenFeature([config["train_eval"]["minhashlength"]], dtype=tf.float32),
+                                "minhash": tf.VarLenFeature(dtype=tf.string),
                                 "hmmer": tf.VarLenFeature(dtype=tf.string),
                                 "label": tf.FixedLenFeature((), dtype=tf.int64)}
             parsed = tf.parse_example(serialized=record, features=keys_to_features)
@@ -135,7 +135,8 @@ with open(vica.CONFIG_PATH) as cf:
 
     kmer_feat = tf.feature_column.numeric_column(key='kmer', shape=(config["train_eval"]["kmerlength"]))
     codon_feat = tf.feature_column.numeric_column(key='codon', shape=(config["train_eval"]["codonlength"]))
-    minhash_feat = tf.feature_column.numeric_column(key='minhash', shape=(config["train_eval"]["minhashlength"]))
+    minhashvocab = list(config["split_shred"]["classes"].keys()).append("nohits")
+    minhash_feat = tf.feature_column.categorical_column_with_vocabulary_list(key='minhash', vocabulary_list=minhashvocab))
     hashed_hmm_feat = tf.feature_column.categorical_column_with_hash_bucket(
         key="hmmer", hash_bucket_size=1000)
     minhashbucketcol = tf.feature_column.bucketized_column(source_column=minhash_feat, boundaries=[100])
@@ -143,7 +144,7 @@ with open(vica.CONFIG_PATH) as cf:
         categorical_column=minhashbucketcol, dimension=6)
     embedded_hmm_feat = tf.feature_column.embedding_column(
         categorical_column=hashed_hmm_feat, dimension=6)
-    dense_features = [embedded_hmm_feat, codon_feat, codon_feat]
+    dense_features = [embedded_hmm_feat, codon_feat, kmer_feat]
     all_features = [hashed_hmm_feat, kmer_feat, codon_feat, minhash_feat]
 
 

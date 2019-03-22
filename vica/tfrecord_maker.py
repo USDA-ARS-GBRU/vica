@@ -47,14 +47,13 @@ def external_sort(infile, outfile, sep, key=1):
     except:
         logging.exception("Input files could not be sorted")
 
-def join(kmerfile, codonfile, minhashfile, dtemp):
+def join(kmerfile, codonfile, dtemp):
     """Externally join with built-in GNU Coreutils in the order
         label, kmers, codons ,minhash
 
     Args:
         kmerfile (str): Kmer csv file
         codonfile (str): Codon csv file
-        minhashfile (str): Minhash csv file
         dtemp (str): the path to a temporary directory
 
     Returns:
@@ -65,37 +64,15 @@ def join(kmerfile, codonfile, minhashfile, dtemp):
 
     """
     os.environ["LC_ALL"]="C"
-    kcfile= os.path.join(dtemp, "kcfile.csv")
     mergefile = os.path.join(dtemp, "mergefile.csv")
     try:
-        with open(kcfile, 'w') as kcf:
+        with open(mergefile, 'w') as mf:
             options = ['join', '-t', ',', '-1', '1', '-2', '1', kmerfile, codonfile]
-            subprocess.run(options,  check=True, stdout=kcf)
-        with open(mergefile, "w") as  mf:
-            options2 = ['join', '-t', ',', '-1', '1', '-2', '1', kcfile, minhashfile]
-            subprocess.run(options2,  check=True, stdout=mf)
-        os.remove(kcfile)
+            subprocess.run(options,  check=True, stdout=mf)
         return mergefile
     except RuntimeError:
         logging.exception("Could not merge csv files using unix join command")
 
-def count_features(**kwargs):
-    """Given key-value pairs of file types: file locations return a dictionary
-        of filetypes: feature lengths.
-
-        Args:
-            **bar (**kwargs): Key-Value pairs of file_type: file_path
-
-        Returns:
-            (dict): A dict with {file_type (str): feature_length (int)}
-
-    """
-    featuredict ={}
-    for key, val in kwargs.items():
-        with open(val, 'r') as f:
-            features = len(f.readline().strip().split(",")) - 1
-        featuredict[key] = features
-    return featuredict
 
 def create_class2labels(classdict):
     ncbi = ete3.NCBITaxa()
@@ -139,23 +116,24 @@ def _data_to_tfrecords(kmerfile, codonfile, minhashfile, mergefile, hmmerfile, t
 
     """
     writer = tf.python_io.TFRecordWriter(tfrecordfile)
-    features = count_features(kmers=kmerfile,codons=codonfile,minhash=minhashfile)
-    kstart = 1
-    kend = features['kmers'] + 1
-    cend = kend + features['codons']
-    i = 0
+    kend = config['train_eval']['kmerlength']
+    cend = kend + config['train_eval']['codonlength']
     class2labels = create_class2labels(config["split_shred"]["classes"])
     ncbi = ete3.NCBITaxa()
     with open(hmmerfile, 'r') as hmmerdata:
         hmmerdatadict = json.load(hmmerdata)
-
+    with open(minhashfile, 'r') as minhashdata:
+        minhashdatadict = json.load(minhashdata)
     with open(mergefile, 'r') as mergedata:
         for i, lstring in enumerate(mergedata, 1):
             line = lstring.strip().split(",")
             seqid = line[0]
-            kdat = np.array(line[kstart:kend], dtype='float32')
+            kdat = np.array(line[1:kend], dtype='float32')
             cdat = np.array(line[kend:cend], dtype='float32')
-            mdat = np.array(line[cend:], dtype='float32')
+            if seqid in minhashdatadict:
+                mhlist = [tf.compat.as_bytes(minhashdatadict[seqid])]
+            else:
+                mhlist = [tf.compat.as_bytes("nohits")]
             label = _label_lookup(class2labels, seqid, ncbi)
             if seqid in hmmerdatadict["data"]:
                 hmmlist = [tf.compat.as_bytes(x) for x in hmmerdatadict["data"][seqid]]
@@ -170,7 +148,7 @@ def _data_to_tfrecords(kmerfile, codonfile, minhashfile, mergefile, hmmerfile, t
                 "codon":
                     tf.train.Feature(float_list=tf.train.FloatList(value=cdat)),
                 "minhash":
-                    tf.train.Feature(float_list=tf.train.FloatList(value=mdat)),
+                    tf.train.Feature(bytes_list=tf.train.BytesList(value=mhlist)),
                 "hmmer":
                     tf.train.Feature(bytes_list=tf.train.BytesList(value=hmmlist)),
                 "label":
@@ -205,16 +183,13 @@ def convert_to_tfrecords(dtemp, kmerfile, codonfile, minhashfile, hmmerfile,
     if sort:
         ksorted = os.path.join(dtemp, "kmer_sorted.csv")
         csorted = os.path.join(dtemp, "codon_sorted.csv")
-        msorted = os.path.join(dtemp, "minhash_sorted.csv")
         mergefile = os.path.join(dtemp, "mergefile.csv")
         external_sort(infile=kmerfile, outfile=ksorted, sep=",")
         external_sort(infile=codonfile, outfile=csorted, sep=",")
-        external_sort(infile=minhashfile, outfile=msorted, sep=",")
     else:
         ksorted = kmerfile
         csorted = codonfile
-        msorted = minhashfile
-    mergefile = join(kmerfile=ksorted, codonfile=csorted, minhashfile=msorted, dtemp=dtemp)
-    _data_to_tfrecords(kmerfile=ksorted, codonfile=csorted, minhashfile=msorted,
+    mergefile = join(kmerfile=ksorted, codonfile=csorted, dtemp=dtemp)
+    _data_to_tfrecords(kmerfile=ksorted, codonfile=csorted, minhashfile=minhashfile,
                        mergefile=mergefile, hmmerfile=hmmerfile,
                        tfrecordfile=tfrecordfile)

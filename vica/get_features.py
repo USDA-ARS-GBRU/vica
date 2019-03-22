@@ -33,9 +33,6 @@ def run(infile, output, configpath=vica.CONFIG_PATH):
 
 
     """
-    # Begin timing operation
-    t0 = time.perf_counter()
-
     # read config
     with open(configpath) as cf:
         config = yaml.safe_load(cf)
@@ -56,43 +53,31 @@ def run(infile, output, configpath=vica.CONFIG_PATH):
     transout = os.path.join(dtemp, "translations.fasta")
     hmmerout = os.path.join(dtemp, "hmmerout.json")
 
+
     # Extract minhash features
-    s1 = time.perf_counter()
     try:
         logging.info("Extacting minhash signatures and sending them to a server for identification")
-        vica.minhash.minhashremote(dtemp=dtemp,
-                                   infile=infile,
+        vica.minhash.minhashremote(infile=infile,
                                    outfile=minhashout,
-                                   server_url=config["minhash"]["server_url"],
-                                   nodesfile=config["minhash"]["nodesfile"],
-                                   noncellular=config["minhash"]["noncellular"])
+                                   server_url=config["minhash"]["server_url"])
     except:
         logging.exception("vica get_features: during minhash remote feature selection the following exception occurred:")
         raise SystemExit(1)
 
-    s2 = time.perf_counter()
-    t1 = s2-s1
-    timestring1 =  str(datetime.timedelta(seconds=t1))
-    logging.info("Processed Minhash features in: {}".format(timestring1))
+    logging.info("Processed Minhash features")
 
 
     # Extract kmer features
     logging.info("Calculating Kmer features")
-    s5 = time.perf_counter()
     try:
         vica.khmer_features.run(infile=infile, outfile=kmerout, ksize=config["khmer_features"]["ksize"])
     except:
         logging.exception("vica get_features: during kmer feature selection the following exception occurred:")
         raise SystemExit(1)
+    logging.info("Processed Kmer features")
 
-    s6 = time.perf_counter()
-    t3 = s6 - s5
-    timestring3 =  str(datetime.timedelta(seconds=t3))
-    logging.info("Processed Kmer features in: {}".format(timestring3))
 
-    # Extract codons
-    logging.info("Calculating Codon features")
-    s3 = time.perf_counter()
+    # Extract codon features
     try:
         vica.prodigal.contigs_to_feature_file(infile=infile,
                                               outfile=codonout,
@@ -102,14 +87,10 @@ def run(infile, output, configpath=vica.CONFIG_PATH):
     except:
         logging.exception("vica get_features: during codon feature selection the following exception occurred:")
         raise SystemExit(1)
-    s4 = time.perf_counter()
-    t2 = s4 - s3
-    timestring2 =  str(datetime.timedelta(seconds=t2))
-    logging.info("Processed Codon features in: {}".format(timestring2))
+    logging.info("Processed Codon features")
 
     # Identify proteins
     logging.info("Finding protein homology with Hmmer")
-    shmmer = time.perf_counter()
     try:
         vica.hmmer.get_hmmer_features(dtemp=dtemp,
                                      seqfile=transout,
@@ -118,9 +99,8 @@ def run(infile, output, configpath=vica.CONFIG_PATH):
     except:
         logging.exception("vica get_features: during HMM feature selection the following exception occurred:")
         raise SystemExit(1)
-    thmmer = time.perf_counter() - shmmer
-    timestringhmmer =  str(datetime.timedelta(seconds=thmmer))
-    logging.info("Processed protein homology features in: %s", timestringhmmer)
+    logging.info("Processed protein homology features")
+
 
     # Combine data into a Tensorflow TF record file
     logging.info("Writing data to the TFrecord file %s", output)
@@ -136,13 +116,8 @@ def run(infile, output, configpath=vica.CONFIG_PATH):
     except:
         logging.exception("vica get_features: While creating a TFrecord file the following exception occurred:")
         raise SystemExit(1)
-    s8 = time.perf_counter()
-    t4 = s8-s7
-    timestring4 =  str(datetime.timedelta(seconds=t4))
-    logging.info("Wrote TFrecord file in: %s", timestring4)
+    logging.info("Wrote TFrecord file")
 
-    tfinal = time.perf_counter()
-    ttot = str(datetime.timedelta(seconds=(tfinal - t0)))
-    logging.info("All features processed in: {}".format(ttot))
+    logging.info("All features processed")
     if not config["get_features"]["tempdir"]:
         shutil.rmtree(dtemp)
