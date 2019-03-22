@@ -105,6 +105,5 @@ def minhashremote(infile, outfile, server_url):
     dataraw = _send_sketch(infile=infile, server_url=server_url)
     logging.info("Parsing results file from BBtools Sendsketch.sh")
     datadict = _parse_sendsketch(dataraw)
-    print(datadict)
     with open(outfile, 'w') as ofile:
         json.dump(datadict, ofile)

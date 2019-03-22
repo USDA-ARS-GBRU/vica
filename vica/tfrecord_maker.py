@@ -131,7 +131,7 @@ def _data_to_tfrecords(kmerfile, codonfile, minhashfile, mergefile, hmmerfile, t
             kdat = np.array(line[1:kend], dtype='float32')
             cdat = np.array(line[kend:cend], dtype='float32')
             if seqid in minhashdatadict:
-                mhlist = [tf.compat.as_bytes(minhashdatadict[seqid])]
+                mhlist = [tf.compat.as_bytes(str(minhashdatadict[seqid]))]
             else:
                 mhlist = [tf.compat.as_bytes("nohits")]
             label = _label_lookup(class2labels, seqid, ncbi)
