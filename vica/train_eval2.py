@@ -136,7 +136,7 @@ with open(vica.CONFIG_PATH) as cf:
     kmer_feat = tf.feature_column.numeric_column(key='kmer', shape=(config["train_eval"]["kmerlength"]))
     codon_feat = tf.feature_column.numeric_column(key='codon', shape=(config["train_eval"]["codonlength"]))
     minhashvocab = list(config["split_shred"]["classes"].keys()).append("nohits")
-    minhash_feat = tf.feature_column.categorical_column_with_vocabulary_list(key='minhash', vocabulary_list=minhashvocab))
+    minhash_feat = tf.feature_column.categorical_column_with_vocabulary_list(key='minhash', vocabulary_list=minhashvocab)
     hashed_hmm_feat = tf.feature_column.categorical_column_with_hash_bucket(
         key="hmmer", hash_bucket_size=1000)
     minhashbucketcol = tf.feature_column.bucketized_column(source_column=minhash_feat, boundaries=[100])
