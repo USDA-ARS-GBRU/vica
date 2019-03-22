@@ -53,9 +53,9 @@ get_features:
 # parameters for the classify module
 classifier: null
 train_eval:
-  codonlength: 177
+  codonlength: 178
   minhashlength: 280
-  kmerlength: 511
+  kmerlength: 136
   train_batch_size: 1024
   eval_batch_size: 512
   epochs: 30
@@ -64,7 +64,7 @@ train_eval:
   model: "DNNLogistic"
 khmer_features:
   #k 4,5,6,7,8 supported
-  ksize: 5
+  ksize: 4
 #parameters for the train_and_eval module
 prodigal:
   codon_list :

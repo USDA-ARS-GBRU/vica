@@ -79,11 +79,11 @@ def get_composition(ksize, seq, kmers, norm):
 
 
 def _write_kmers_as_csv(infile, outfile, ksize, kmers):
-    """Calculate ilr transformed kmer compositions for sequences in a fasta
+    """Calculate clr transformed kmer compositions for sequences in a fasta
        file.
 
    Takes a multi-sequence fasta file and a list of kmers and calculates the
-   isometric log-ratio transformed kmer composition for each sequence,
+   centered log-ratio transformed kmer composition for each sequence,
    writing a CSV file with the data.
 
    Args:
@@ -103,7 +103,6 @@ def _write_kmers_as_csv(infile, outfile, ksize, kmers):
     # The length id non-redundant kmer vectors for each k
     lendict = {4: 136, 5:512, 6:2080, 7:8192}
     try:
-        helmert = scipy.linalg.helmert(lendict[ksize])
         with open(infile, 'r') as f1:
             with open(outfile, 'w', buffering=16777216) as csvfile:
                 mywriter = csv.writer(csvfile, lineterminator='\n')
@@ -116,7 +115,7 @@ def _write_kmers_as_csv(infile, outfile, ksize, kmers):
                 for record in SeqIO.parse(f1, 'fasta'):
                     rl = [record.id]
                     kmer_frequency = get_composition(ksize,str(record.seq).upper(), kmers, False)
-                    kmer_ilr = vica.prodigal.ilr(kmer_frequency, helmert)
+                    kmer_ilr = vica.prodigal.clr(kmer_frequency)
                     rl.extend(kmer_ilr)
                     mywriter.writerow(rl)
                     rn += 1
