@@ -49,7 +49,7 @@ minhash:
 # paramters for the get_features module
 
 get_features:
-  tempdir: null
+  tempdir: "."
 # parameters for the classify module
 classifier: null
 train_eval:
