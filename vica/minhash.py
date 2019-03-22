@@ -53,11 +53,8 @@ def _send_sketch(infile, server_url):
 def _taxid_2_taxclass(taxid, classdict, taxinstance):
     lineage = taxinstance.get_lineage(taxid)
     classtaxid = list(set(classdict.keys()).intersection(lineage))
-    print(classtaxid)
     if not len(classtaxid) == 1:
-        print(taxid)
-        print(lineage)
-        print(classtaxid)
+        logging.info("Could not assign taxid %s to a higher taxonomic level", taxid)
         return None
     return classtaxid[0]
 

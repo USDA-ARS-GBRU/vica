@@ -116,7 +116,7 @@ def _data_to_tfrecords(kmerfile, codonfile, minhashfile, mergefile, hmmerfile, t
 
     """
     writer = tf.python_io.TFRecordWriter(tfrecordfile)
-    kend = config['train_eval']['kmerlength']
+    kend = config['train_eval']['kmerlength + 1
     cend = kend + config['train_eval']['codonlength']
     class2labels = create_class2labels(config["split_shred"]["classes"])
     ncbi = ete3.NCBITaxa()
