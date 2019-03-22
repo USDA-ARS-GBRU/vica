@@ -53,6 +53,7 @@ def _send_sketch(infile, server_url):
 def _taxid_2_taxclass(taxid, classdict, taxinstance):
     lineage = taxinstance.get_lineage(taxid)
     classtaxid = list(set(classdict.keys()).intersection(lineage))
+    print(classtaxid)
     assert len(classtaxid) == 1
     return classtaxid[0]
 
