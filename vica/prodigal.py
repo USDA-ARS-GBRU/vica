@@ -33,7 +33,7 @@ def clr(composition):
 
     """
     with np.errstate(divide='ignore', invalid='ignore'):
-        a = np.array(composition)
+        a = np.array(composition, dtype=np.float32)
         am =np.ma.masked_equal(a, 0)
         gm = scipy.stats.mstats.gmean(am)
         clrm = np.log(am/gm)

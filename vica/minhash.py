@@ -69,21 +69,18 @@ def _parse_sendsketch(dataraw, cutoff=100):
     while not pos == len(str(json_str)):
         j, json_len = dec.raw_decode(str(json_str)[pos:])
         pos += json_len
-        try:
-            for key, val in j.items():
-                if key == "NAME":
-                    name = val
-                elif key not in ["DB", "SketchLen", "Seqs","Bases","gSize", "File"]:
-                    score = val["Score"]
-                    if score > cutoff:
-                        taxid = val["TaxID"]
-                        classid = _taxid_2_taxclass(taxid=taxid,
-                                                    classdict=config["split_shred"]["classes"],
-                                                    taxinstance=ncbi)
-                        datadict["name"] = classid
-                        break
-        except Exception:
-            logging.info("could not parse record {}".format(j))
+        for key, val in j.items():
+            if key == "Name":
+                name = val
+            elif key not in ["DB", "SketchLen", "Seqs", "Bases", "gSize", "File"]:
+                score = val["Score"]
+                if score > cutoff:
+                    taxid = val["TaxID"]
+                    classid = _taxid_2_taxclass(taxid=taxid,
+                                                classdict=config["split_shred"]["classes"],
+                                                taxinstance=ncbi)
+                    datadict[name] = classid
+                    continue
     return datadict
 
 def minhashremote(infile, outfile, server_url):
@@ -108,5 +105,6 @@ def minhashremote(infile, outfile, server_url):
     dataraw = _send_sketch(infile=infile, server_url=server_url)
     logging.info("Parsing results file from BBtools Sendsketch.sh")
     datadict = _parse_sendsketch(dataraw)
+    print(datadict)
     with open(outfile, 'w') as ofile:
         json.dump(datadict, ofile)
