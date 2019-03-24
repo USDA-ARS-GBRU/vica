@@ -51,12 +51,16 @@ def _send_sketch(infile, server_url):
     return dataraw
 
 def _taxid_2_taxclass(taxid, classdict, taxinstance):
-    lineage = taxinstance.get_lineage(taxid)
-    classtaxid = list(set(classdict.keys()).intersection(lineage))
-    if not len(classtaxid) == 1:
-        logging.info("Could not assign taxid %s to a higher taxonomic level", taxid)
+    try:
+        lineage = taxinstance.get_lineage(taxid)
+        classtaxid = list(set(classdict.keys()).intersection(lineage))
+        if not len(classtaxid) == 1:
+            logging.info("Could not assign taxid %s to a higher taxonomic level", taxid)
+            return None
+        return classtaxid[0]
+    except:
+        logging.info("could not assign %S to a class", taxid)
         return None
-    return classtaxid[0]
 
 def _parse_sendsketch(dataraw, cutoff=100):
     """Parse json string into a dict with
