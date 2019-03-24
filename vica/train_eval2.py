@@ -176,7 +176,7 @@ with open(vica.CONFIG_PATH) as cf:
         logistic_estimator = tf.estimator.LinearClassifier(
         model_dir=modeldir,
         n_classes=n_classes,
-        feature_columns=all_features,
+        feature_columns=hashed_hmm_feat,
         optimizer=tf.train.FtrlOptimizer(
                                          learning_rate=0.1,
                                          l1_regularization_strength=0.001))
@@ -203,7 +203,7 @@ def train_and_eval(train_files, eval_files, modeldir, configpath=vica.CONFIG_PAT
         filenames=eval_files)
     #def my_auc(labels, predictions):
     #    return {'auc': tf.metrics.auc(labels, predictions)}
-    my_estimator = create_log_estimator(modeldir=modeldir, n_classes=n_classes)
+    my_estimator = create_estimator(modeldir=modeldir, n_classes=n_classes)
     #my_estimator = tf.estimator.add_metrics(my_estimator, my_auc)
     train_spec = tf.estimator.TrainSpec(input_fn=train_input_fn)
     eval_spec = tf.estimator.EvalSpec(input_fn=eval_input_fn)
