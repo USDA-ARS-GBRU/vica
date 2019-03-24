@@ -59,7 +59,7 @@ def _taxid_2_taxclass(taxid, classdict, taxinstance):
             return None
         return classtaxid[0]
     except:
-        logging.info("could not assign %S to a class", taxid)
+        logging.info("could not assign %s to a class", taxid)
         return None
 
 def _parse_sendsketch(dataraw, cutoff=100):
