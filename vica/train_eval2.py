@@ -198,7 +198,7 @@ def train_and_eval(train_files, eval_files, modeldir, configpath=vica.CONFIG_PAT
     eval_input_fn = functools.partial(_base_input_fn,
         labeldict=labeldict,
         shuffle_buffer_size=0,
-        batch=config["train_eval"]["eval_batch_size"],
+        batch= 1 #config["train_eval"]["eval_batch_size"],
         epochs=1,
         filenames=eval_files)
     def my_auc(labels, predictions):
