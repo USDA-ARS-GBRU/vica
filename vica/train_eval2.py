@@ -176,7 +176,7 @@ with open(vica.CONFIG_PATH) as cf:
         logistic_estimator = tf.estimator.LinearClassifier(
         model_dir=modeldir,
         n_classes=n_classes,
-        feature_columns=[embedded_hmm_feat],
+        feature_columns=[embedded_hmm_feat, codon_feat],
         optimizer=tf.train.FtrlOptimizer(
                                          learning_rate=0.1,
                                          l1_regularization_strength=0.001))
