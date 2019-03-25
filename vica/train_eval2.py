@@ -145,7 +145,7 @@ with open(vica.CONFIG_PATH) as cf:
     dense_features = [embedded_hmm_feat, codon_feat, kmer_feat]
     all_features = [hashed_hmm_feat, kmer_feat, codon_feat, minhash_feat]
 
-EVAL_INTERVAL = 60
+EVAL_INTERVAL = 300
 run_config = tf.estimator.RunConfig(save_checkpoints_secs = EVAL_INTERVAL,
                                         keep_checkpoint_max = 3)
 
