@@ -59,7 +59,7 @@ train_eval:
   train_batch_size: 1024
   eval_batch_size: 512
   epochs: 30
-  train_shuffle_buffer: 10240
+  train_shuffle_buffer: 500000
   # models [DNNLogistic, DNN]
   model: "DNNLogistic"
 khmer_features:
