@@ -155,7 +155,7 @@ with open(vica.CONFIG_PATH) as cf:
             linear_feature_columns=[minhash_feat],
             linear_optimizer=tf.train.FtrlOptimizer(
                                              learning_rate=0.1,
-                                             l1_regularization_strength=0.001)),
+                                             l1_regularization_strength=0.001),
             dnn_feature_columns=dense_features,
             dnn_dropout=0.5,
             dnn_activation_fn=tf.nn.relu,
