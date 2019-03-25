@@ -198,13 +198,13 @@ def train_and_eval(train_files, eval_files, modeldir, configpath=vica.CONFIG_PAT
     eval_input_fn = functools.partial(_base_input_fn,
         labeldict=labeldict,
         shuffle_buffer_size=0,
-        batch= 1, #config["train_eval"]["eval_batch_size"],
+        batch= config["train_eval"]["eval_batch_size"],
         epochs=1,
         filenames=eval_files)
-    def my_auc(labels, predictions):
-        return {'auc': tf.metrics.auc(labels, predictions['probabilities'], curve="PR")}
+    #def my_auc(labels, predictions):
+    #    return {'auc': tf.metrics.auc(labels, predictions['probabilities'], curve="PR")}
     my_estimator = create_log_estimator(modeldir=modeldir, n_classes=n_classes)
-    my_estimator = tf.estimator.add_metrics(my_estimator, my_auc)
+    #my_estimator = tf.estimator.add_metrics(my_estimator, my_auc)
     train_spec = tf.estimator.TrainSpec(input_fn=train_input_fn)
     eval_spec = tf.estimator.EvalSpec(input_fn=eval_input_fn)
     t1, t2 = tf.estimator.train_and_evaluate(my_estimator, train_spec, eval_spec)
