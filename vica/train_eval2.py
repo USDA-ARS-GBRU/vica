@@ -175,6 +175,7 @@ def create_DNN_estimator(modeldir, n_classes):
         activation_fn=tf.nn.relu,
         hidden_units=[256, 32],
         optimizer='Adam',
+        batch_norm=True,
         config=run_config)
     return dnnlogistic_estimator
 
