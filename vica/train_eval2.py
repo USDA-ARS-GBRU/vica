@@ -168,7 +168,7 @@ with open(vica.CONFIG_PATH) as cf:
             feature_columns=dense_features,
             dropout=0.4,
             activation_fn=tf.nn.relu,
-            hidden_units=[256, 32],
+            hidden_units=[128, 16],
             optimizer='Adam')
         return dnnlogistic_estimator
 
