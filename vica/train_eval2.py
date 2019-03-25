@@ -145,48 +145,50 @@ with open(vica.CONFIG_PATH) as cf:
     dense_features = [embedded_hmm_feat, codon_feat, kmer_feat]
     all_features = [hashed_hmm_feat, kmer_feat, codon_feat, minhash_feat]
 
+EVAL_INTERVAL = 60
+run_config = tf.estimator.RunConfig(save_checkpoints_secs = EVAL_INTERVAL,
+                                        keep_checkpoint_max = 3)
 
     # Model definitions
-    def create_estimator(modeldir, n_classes):
-        dnnlogistic_estimator = tf.estimator.DNNLinearCombinedClassifier(
-            model_dir=modeldir,
-            n_classes=n_classes,
-            weight_column=None,
-            linear_feature_columns=[minhash_feat],
-            linear_optimizer=tf.train.FtrlOptimizer(
-                                             learning_rate=0.1,
-                                             l1_regularization_strength=0.001),
-            dnn_feature_columns=dense_features,
-            dnn_dropout=0.5,
-            dnn_activation_fn=tf.nn.relu,
-            dnn_hidden_units=[256, 32],
-            dnn_optimizer='Adam')
-        return dnnlogistic_estimator
-
-    def create_DNN_estimator(modeldir, n_classes):
-        dnnlogistic_estimator = tf.estimator.DNNClassifier(
-            model_dir=modeldir,
-            n_classes=n_classes,
-            feature_columns=dense_features,
-            dropout=0.5,
-            activation_fn=tf.nn.relu,
-            hidden_units=[256, 32],
-            optimizer='Adam')
-        return dnnlogistic_estimator
-
-    def create_log_estimator(modeldir, n_classes):
-        logistic_estimator = tf.estimator.LinearClassifier(
+def create_estimator(modeldir, n_classes):
+    dnnlogistic_estimator = tf.estimator.DNNLinearCombinedClassifier(
         model_dir=modeldir,
         n_classes=n_classes,
-        feature_columns=[codon_feat, kmer_feat, embedded_hmm_feat],
-        optimizer=tf.train.FtrlOptimizer(
+        weight_column=None,
+        linear_feature_columns=[minhash_feat],
+        linear_optimizer=tf.train.FtrlOptimizer(
                                          learning_rate=0.1,
-                                         l1_regularization_strength=0.001))
-        return logistic_estimator
+                                         l1_regularization_strength=0.001),
+        dnn_feature_columns=dense_features,
+        dnn_dropout=0.5,
+        dnn_activation_fn=tf.nn.relu,
+        dnn_hidden_units=[256, 32],
+        dnn_optimizer='Adam')
+    return dnnlogistic_estimator
 
-EVAL_INTERVAL = 60
-    run_config = tf.estimator.RunConfig(save_checkpoints_secs = EVAL_INTERVAL,
-                                        keep_checkpoint_max = 3)
+def create_DNN_estimator(modeldir, n_classes):
+    dnnlogistic_estimator = tf.estimator.DNNClassifier(
+        model_dir=modeldir,
+        n_classes=n_classes,
+        feature_columns=dense_features,
+        dropout=0.5,
+        activation_fn=tf.nn.relu,
+        hidden_units=[256, 32],
+        optimizer='Adam',
+        config=run_config)
+    return dnnlogistic_estimator
+
+def create_log_estimator(modeldir, n_classes):
+    logistic_estimator = tf.estimator.LinearClassifier(
+    model_dir=modeldir,
+    n_classes=n_classes,
+    feature_columns=[codon_feat, kmer_feat, embedded_hmm_feat],
+    optimizer=tf.train.FtrlOptimizer(
+                                     learning_rate=0.1,
+                                     l1_regularization_strength=0.001))
+    return logistic_estimator
+
+
 def train_and_eval(train_files, eval_files, modeldir, configpath=vica.CONFIG_PATH):
 
     labeldict = _create_class_lookup(classdict=config["split_shred"]["classes"],
