@@ -202,7 +202,7 @@ def train_and_eval(train_files, eval_files, modeldir, configpath=vica.CONFIG_PAT
         epochs=1,
         filenames=eval_files)
     def my_auc(labels, predictions):
-        return {'auc': tf.metrics.auc(labels, predictions['probabilities'])}
+        return {'auc': tf.metrics.auc(labels, predictions['logistic'][3], curve="PR")}
     my_estimator = create_log_estimator(modeldir=modeldir, n_classes=n_classes)
     my_estimator = tf.estimator.add_metrics(my_estimator, my_auc)
     train_spec = tf.estimator.TrainSpec(input_fn=train_input_fn)
