@@ -153,9 +153,11 @@ with open(vica.CONFIG_PATH) as cf:
             n_classes=n_classes,
             weight_column=None,
             linear_feature_columns=[minhash_feat],
-            linear_optimizer='Ftrl',
+            linear_optimizer=tf.train.FtrlOptimizer(
+                                             learning_rate=0.1,
+                                             l1_regularization_strength=0.001)),
             dnn_feature_columns=dense_features,
-            dnn_dropout=0.4,
+            dnn_dropout=0.5,
             dnn_activation_fn=tf.nn.relu,
             dnn_hidden_units=[256, 32],
             dnn_optimizer='Adam')
@@ -166,9 +168,9 @@ with open(vica.CONFIG_PATH) as cf:
             model_dir=modeldir,
             n_classes=n_classes,
             feature_columns=dense_features,
-            dropout=0.4,
+            dropout=0.5,
             activation_fn=tf.nn.relu,
-            hidden_units=[256, 64, 16],
+            hidden_units=[256, 32],
             optimizer='Adam')
         return dnnlogistic_estimator
 
@@ -182,6 +184,9 @@ with open(vica.CONFIG_PATH) as cf:
                                          l1_regularization_strength=0.001))
         return logistic_estimator
 
+EVAL_INTERVAL = 60
+    run_config = tf.estimator.RunConfig(save_checkpoints_secs = EVAL_INTERVAL,
+                                        keep_checkpoint_max = 3)
 def train_and_eval(train_files, eval_files, modeldir, configpath=vica.CONFIG_PATH):
 
     labeldict = _create_class_lookup(classdict=config["split_shred"]["classes"],
@@ -206,6 +211,8 @@ def train_and_eval(train_files, eval_files, modeldir, configpath=vica.CONFIG_PAT
     my_estimator = create_DNN_estimator(modeldir=modeldir, n_classes=n_classes)
     #my_estimator = tf.estimator.add_metrics(my_estimator, my_auc)
     train_spec = tf.estimator.TrainSpec(input_fn=train_input_fn)
-    eval_spec = tf.estimator.EvalSpec(input_fn=eval_input_fn)
+    eval_spec = tf.estimator.EvalSpec(input_fn=eval_input_fn,
+                                      start_delay_secs = 60,
+                                      throttle_secs = EVAL_INTERVAL)
     t1, t2 = tf.estimator.train_and_evaluate(my_estimator, train_spec, eval_spec)
     return t1, t2
