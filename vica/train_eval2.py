@@ -163,7 +163,9 @@ def create_estimator(modeldir, n_classes):
         dnn_dropout=0.5,
         dnn_activation_fn=tf.nn.relu,
         dnn_hidden_units=[256, 32],
-        dnn_optimizer='Adam')
+        dnn_optimizer='Adam',
+        batch_norm=True,
+        config=run_config)
     return dnnlogistic_estimator
 
 def create_DNN_estimator(modeldir, n_classes):
@@ -211,7 +213,7 @@ def train_and_eval(train_files, eval_files, modeldir, configpath=vica.CONFIG_PAT
         filenames=eval_files)
     #def my_auc(labels, predictions):
     #    return {'auc': tf.metrics.auc(labels, predictions['probabilities'], curve="PR")}
-    my_estimator = create_DNN_estimator(modeldir=modeldir, n_classes=n_classes)
+    my_estimator = create_estimator(modeldir=modeldir, n_classes=n_classes)
     #my_estimator = tf.estimator.add_metrics(my_estimator, my_auc)
     train_spec = tf.estimator.TrainSpec(input_fn=train_input_fn)
     eval_spec = tf.estimator.EvalSpec(input_fn=eval_input_fn,
