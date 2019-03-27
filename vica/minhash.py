@@ -4,8 +4,6 @@ return a file of tab delimited classification data
 """
 
 import subprocess
-import os
-import csv
 
 import logging
 from ete3 import NCBITaxa
@@ -51,6 +49,16 @@ def _send_sketch(infile, server_url):
     return dataraw
 
 def _taxid_2_taxclass(taxid, classdict, taxinstance):
+    """Takes taxid and returns classifier class of that id
+
+        Args:
+            taxid (int): the NCBI TaxID
+            classdict (dict): dictionary where the keys are the classes used by the classifier
+            taxinstance (obj): an ete3.NCBITaxa instance
+
+        Returns:
+            int: the class of the taxid
+    """
     try:
         lineage = taxinstance.get_lineage(taxid)
         classtaxid = list(set(classdict.keys()).intersection(lineage))
@@ -58,26 +66,45 @@ def _taxid_2_taxclass(taxid, classdict, taxinstance):
             logging.info("Could not assign taxid %s to a higher taxonomic level", taxid)
             return None
         return classtaxid[0]
-    except:
+    except Exception:
         logging.info("could not assign %s to a class", taxid)
         return None
-#>>> Stopped here
+
+
 def _same_clade_as_query(hit, query, taxinstance, taxtree, level):
+    """Check if the hit taxid is in the same clade as the query taxid
+
+        Args:
+            hit (int): the taxid of the minhash hit
+            query (int): the taxid of the query sequence
+            taxinstance (obj): an ete3.NCBITaxa instance
+            taxtree (obj): taxinstance (obj): an ete3.tree object
+            level (list): A list of the lca taxonomic levels that will be removed
+        Returns:
+            bool: True if taxid is in hte sam clase as the query, false otherwise
+
+    """
     try:
         lca = taxtree.get_common_ancestor[str(hit), str(query)]
-
         rank = taxinstance.get_rank([int(lca.name)]).decode("utf-8")
-        if rank in level:
-            return True
-        else:
-            return False
-    except:
+        return bool(rank in level)
+    except Exception:
         logging.info("there was an issue parsing the lowest common ancestor for query %s", query)
         return False
 
 
-def _parse_sendsketch(dataraw, cutoff=100, filtertaxa=False):
-    """Parse json string into a dict with
+def _parse_sendsketch(dataraw: str, cutoff: float=100., filtertaxa: bool=False) -> dict:
+    """Parse json string from minhashremote into a dict of sequences and
+        the highest scoring class they hit to.
+
+        Args:
+            dataraw (str): the string of multiple json objects returned by _send_sketch
+            cutoff (float): the minimum score to record a hits
+            filtertaxa (bool): should hits be filtered to remove hits in the \
+                        same genera (by default) as the query. This prevents \
+                        information bleedover in the test set
+        Returns:
+            dict: a Dictionary containing the {query: classid, ...}
 
     """
 
@@ -86,7 +113,8 @@ def _parse_sendsketch(dataraw, cutoff=100, filtertaxa=False):
     pos = 0
     datadict = {}
     ncbi = NCBITaxa()
-    taxtree = ncbi.get_topology([1])
+    if filtertaxa:
+        taxtree = ncbi.get_topology([1])
     while not pos == len(str(json_str)):
         j, json_len = dec.raw_decode(str(json_str)[pos:])
         pos += json_len
@@ -98,12 +126,12 @@ def _parse_sendsketch(dataraw, cutoff=100, filtertaxa=False):
                 score = val["Score"]
                 taxid = val["TaxID"]
                 if filtertaxa:
-                    filter = _same_clade_as_query(taxid, query_taxid,
-                                                  ncbi, taxtree,
-                                                  config["minhash"]["taxfilterlevel"])
+                    filter_them = _same_clade_as_query(taxid, query_taxid,
+                                                       ncbi, taxtree,
+                                                       config["minhash"]["taxfilterlevel"])
                 else:
-                    filter = False
-                if score > cutoff and not filter:
+                    filter_them = False
+                if score > cutoff and not filter_them:
                     classid = _taxid_2_taxclass(taxid=taxid,
                                                 classdict=config["split_shred"]["classes"],
                                                 taxinstance=ncbi)
@@ -111,7 +139,7 @@ def _parse_sendsketch(dataraw, cutoff=100, filtertaxa=False):
                     continue
     return datadict
 
-def minhashremote(infile, outfile, server_url, filtertaxa=False ):
+def minhashremote(infile, outfile, server_url, filtertaxa=False):
     """Runs bbtools sendeketch.sh on a file of sequences returning a
         classification for each
 
@@ -128,11 +156,12 @@ def minhashremote(infile, outfile, server_url, filtertaxa=False ):
         filtertaxa (bool): should minhash hits in the same group as the query be removed?
 
     Returns:
+        none
 
     """
-    logging.info("Using BBtools Sendsketch.sh to send minhash sketches to the server {}".format(server_url))
+    logging.info("Using BBtools Sendsketch.sh to send minhash sketches to the server %s", server_url)
     dataraw = _send_sketch(infile=infile, server_url=server_url)
     logging.info("Parsing results file from BBtools Sendsketch.sh")
-    datadict = _parse_sendsketch(dataraw, taxfilte=taxfilter)
+    datadict = _parse_sendsketch(dataraw, filtertaxa=filtertaxa)
     with open(outfile, 'w') as ofile:
         json.dump(datadict, ofile)
