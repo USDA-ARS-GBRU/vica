@@ -14,7 +14,7 @@ import yaml
 import vica
 
 
-def run(infile, output, filtertaxa, configpath=vica.CONFIG_PATH):
+def run(infile, output, filtertaxa=False, configpath=vica.CONFIG_PATH):
     """Run all the steps in the feature selection selection workflow.
 
     This command: 1) selects minhash features, 2) codon usage features, 3)

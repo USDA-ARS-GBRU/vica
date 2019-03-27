@@ -85,8 +85,10 @@ def _same_clade_as_query(hit, query, taxinstance, taxtree, level):
 
     """
     try:
-        lca = taxtree.get_common_ancestor[str(hit), str(query)]
-        rank = taxinstance.get_rank([int(lca.name)]).decode("utf-8")
+        if hit == query:
+            return True
+        lca = taxtree.get_common_ancestor([str(hit), str(query)])
+        rank = list(taxinstance.get_rank([int(lca.name)]).values())[0]
         return bool(rank in level)
     except Exception:
         logging.info("there was an issue parsing the lowest common ancestor for query %s", query)
@@ -131,7 +133,7 @@ def _parse_sendsketch(dataraw: str, cutoff: float=100., filtertaxa: bool=False) 
                                                        config["minhash"]["taxfilterlevel"])
                 else:
                     filter_them = False
-                if score > cutoff and not filter_them:
+                if score > cutoff and filter_them==False:
                     classid = _taxid_2_taxclass(taxid=taxid,
                                                 classdict=config["split_shred"]["classes"],
                                                 taxinstance=ncbi)
