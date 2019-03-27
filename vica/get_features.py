@@ -14,7 +14,7 @@ import yaml
 import vica
 
 
-def run(infile, output, configpath=vica.CONFIG_PATH):
+def run(infile, output, filtertaxa, configpath=vica.CONFIG_PATH):
     """Run all the steps in the feature selection selection workflow.
 
     This command: 1) selects minhash features, 2) codon usage features, 3)
@@ -26,6 +26,7 @@ def run(infile, output, configpath=vica.CONFIG_PATH):
             Example: "tid|1026970|NW_008342263.1
         output (str): a name for the TFrecords file to be generated. It should
             end in ".tfrecords".
+        filtertaxa (bool: Should minhash features be filtered for taxa to prevent bleedover in the the test set)
         configpath (str): path to the yaml configuration file.
 
     Returns:
@@ -59,7 +60,8 @@ def run(infile, output, configpath=vica.CONFIG_PATH):
         logging.info("Extacting minhash signatures and sending them to a server for identification")
         vica.minhash.minhashremote(infile=infile,
                                    outfile=minhashout,
-                                   server_url=config["minhash"]["server_url"])
+                                   server_url=config["minhash"]["server_url"],
+                                   filtertaxa=filtertaxa)
     except:
         logging.exception("vica get_features: during minhash remote feature selection the following exception occurred:")
         raise SystemExit(1)
