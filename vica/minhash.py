@@ -15,7 +15,7 @@ import vica
 with open(vica.CONFIG_PATH) as cf:
     config = yaml.safe_load(cf)
 
-def _send_sketch(infile, server_url):
+def _send_sketch(infile, server_url, level=3):
     """Runs bbtools sendsketch.sh on a file of sequences returning a
         classification for each
 
@@ -37,7 +37,7 @@ def _send_sketch(infile, server_url):
                "in=" + infile,
                "address=" + server_url,
                "mode=sequence",
-               "level=3",
+               "level=" + str(level),
                "k=32,24",
                "records=10",
                "format=json",
@@ -71,27 +71,18 @@ def _taxid_2_taxclass(taxid, classdict, taxinstance):
         return None
 
 
-def _same_clade_as_query(hit, query, taxinstance, taxtree, level):
+def _same_clade_as_query(hit, query):
     """Check if the hit taxid is in the same clade as the query taxid
 
         Args:
             hit (int): the taxid of the minhash hit
             query (int): the taxid of the query sequence
-            taxinstance (obj): an ete3.NCBITaxa instance
-            taxtree (obj): taxinstance (obj): an ete3.tree object
-            level (list): A list of the lca taxonomic levels that will be removed
         Returns:
             bool: True if taxid is in hte sam clase as the query, false otherwise
 
     """
-    try:
         if hit == query:
             return True
-        lca = taxtree.get_common_ancestor([str(hit), str(query)])
-        rank = list(taxinstance.get_rank([int(lca.name)]).values())[0]
-        return bool(rank in level)
-    except Exception:
-        logging.info("there was an issue parsing the lowest common ancestor for query %s", query)
         return False
 
 
@@ -115,8 +106,6 @@ def _parse_sendsketch(dataraw: str, cutoff: float=100., filtertaxa: bool=False) 
     pos = 0
     datadict = {}
     ncbi = NCBITaxa()
-    if filtertaxa:
-        taxtree = ncbi.get_topology([1])
     while not pos == len(str(json_str)):
         j, json_len = dec.raw_decode(str(json_str)[pos:])
         pos += json_len
@@ -128,9 +117,7 @@ def _parse_sendsketch(dataraw: str, cutoff: float=100., filtertaxa: bool=False) 
                 score = val["Score"]
                 taxid = val["TaxID"]
                 if filtertaxa:
-                    filter_them = _same_clade_as_query(taxid, query_taxid,
-                                                       ncbi, taxtree,
-                                                       config["minhash"]["taxfilterlevel"])
+                    filter_them = _same_clade_as_query(taxid, query_taxid)
                 else:
                     filter_them = False
                 if score > cutoff and filter_them==False:
