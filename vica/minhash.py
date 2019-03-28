@@ -81,9 +81,9 @@ def _same_clade_as_query(hit, query):
             bool: True if taxid is in hte sam clase as the query, false otherwise
 
     """
-        if hit == query:
-            return True
-        return False
+    if hit == query:
+        return True
+    return False
 
 
 def _parse_sendsketch(dataraw: str, cutoff: float=100., filtertaxa: bool=False) -> dict:
