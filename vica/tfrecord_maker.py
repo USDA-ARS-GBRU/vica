@@ -96,7 +96,7 @@ def _label_lookup(class2labels, seqid, ncbi):
         return class2labels[classtaxid[0]]["class"]
     except:
         logging.info("Could not determine the class for taxid %s, randomly assigned class " % str(taxid))
-        return random.randint(0, len(classdict)-1)
+        return random.randint(0, len(class2labels)-1)
 
 
 
