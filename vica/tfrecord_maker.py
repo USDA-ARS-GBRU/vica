@@ -95,8 +95,8 @@ def _label_lookup(class2labels, seqid, ncbi):
         assert len(classtaxid) == 1
         return class2labels[classtaxid[0]]["class"]
     except:
-        logging.info("Could not determine the class for taxid %s, randomly assigned class " % str(taxid))
-        return random.randint(0, len(class2labels)-1)
+        logging.info("Could not determine the class for taxid %s assigned class None", str(taxid))
+        return None
 
 
 
@@ -136,6 +136,9 @@ def _data_to_tfrecords(kmerfile, codonfile, minhashfile, mergefile, hmmerfile, t
             else:
                 mhlist = [tf.compat.as_bytes("nohits")]
             label = _label_lookup(class2labels, seqid, ncbi)
+            if label is None:
+                logging.info("No class was found for seqid %s, skipping this record", seqid)
+                continue
             if seqid in hmmerdatadict["data"]:
                 hmmlist = [tf.compat.as_bytes(x) for x in hmmerdatadict["data"][seqid]]
             else:
@@ -157,7 +160,7 @@ def _data_to_tfrecords(kmerfile, codonfile, minhashfile, mergefile, hmmerfile, t
                 }))
             writer.write(example.SerializeToString())
     writer.close()
-    logging.info("Successfully converted {} records to to TFrecord format".format(i))
+    logging.info("Successfully converted %s records to to TFrecord format", str(i))
 
 
 def convert_to_tfrecords(dtemp, kmerfile, codonfile, minhashfile, hmmerfile,
