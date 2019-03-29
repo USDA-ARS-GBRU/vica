@@ -35,47 +35,11 @@ with open(vica.CONFIG_PATH) as cf:
         return idlist
 
 
-    def _create_class_lookup(classdict: dict, tf_rec_filenames: list) -> Tuple[dict, dict]:
-        """Read  the ids of the records and create a dictionary for fast lookup of labels
-
-        Args:
-            clasddict (dict): the dictionary of training classes and their targeted samples
-            tf_rec_filenames (list): a list of the tfracords to be used
-
-        Returns:
-            labeldict (dict): Dict containing record IDs and the class they belong to
-
-        """
-        ncbi = ete3.NCBITaxa()
-        class2labels = {}
-        for i, val in enumerate(classdict.keys()):
-            taxa = ncbi.get_taxid_translator([val])
-            class2labels[val] = {"name": taxa[val], "class": i}
-        logging.info("Class labels are %s", class2labels)
-
-        idlist = []
-        for filename in tf_rec_filenames:
-            idlist.extend(_ids_from_tfrecords(filename))
-        labeldict = {}
-        for item in idlist:
-            taxid = item.split("|")[1]
-            if not taxid in labeldict:
-                try:
-                    lineage = ncbi.get_lineage(taxid)
-                    classtaxid = list(set(class2labels.keys()).intersection(lineage))
-                    assert len(classtaxid) == 1
-                    labeldict[taxid] = class2labels[classtaxid[0]]["class"]
-                except:
-                    labeldict[taxid] = random.randint(0,len(classdict)-1)
-                    logging.info("Could not determine the class for taxid %s, randomly assigned class %s" % (str(taxid), labeldict[taxid]))
-        return labeldict
-
-
 
 
     # The input functions for the estimators
 
-    def _base_input_fn(labeldict: dict, shuffle_buffer_size: int,
+    def _base_input_fn(shuffle_buffer_size: int,
                       batch: int, epochs: int, filenames: list):
         """The function for feeding and processing training data
 
@@ -193,20 +157,15 @@ def create_log_estimator(modeldir, n_classes):
 
 
 def train_and_eval(train_files, eval_files, modeldir, configpath=vica.CONFIG_PATH):
-
-    labeldict = _create_class_lookup(classdict=config["split_shred"]["classes"],
-                                     tf_rec_filenames=train_files + eval_files)
     n_classes = len(config["split_shred"]["classes"])
 
     train_input_fn = functools.partial(_base_input_fn,
-        labeldict=labeldict,
         shuffle_buffer_size=config["train_eval"]["train_shuffle_buffer"],
         batch=config["train_eval"]["train_batch_size"],
         epochs=config["train_eval"]["epochs"],
         filenames=train_files)
 
     eval_input_fn = functools.partial(_base_input_fn,
-        labeldict=labeldict,
         shuffle_buffer_size=0,
         batch= config["train_eval"]["eval_batch_size"],
         epochs=1,

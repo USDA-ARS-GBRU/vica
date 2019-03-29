@@ -80,6 +80,7 @@ def run(infile, output, filtertaxa=False, configpath=vica.CONFIG_PATH):
 
 
     # Extract codon features
+    logging.info("Calculating Codon features")
     try:
         vica.prodigal.contigs_to_feature_file(infile=infile,
                                               outfile=codonout,

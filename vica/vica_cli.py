@@ -122,6 +122,8 @@ def myparser():
         the sequence, the class label, and vectors for minhash, codon and \
         5-mer features", required=True)
     get_features.add_argument(
+        '--filtertaxa', help="Should minhash hits to query be removed? (use for test data)", action='store_true')
+    get_features.add_argument(
         '--logfile',help="A file to record the analysis. If the same log file \
         is given for multiple Vica commands all the steps in the workflow will \
         be recorded.", default="vica.log")
@@ -216,6 +218,7 @@ def main():
         elif args.whichmethod == 'get_features':
             vica.get_features.run(infile=args.infile,
                                   output=args.out,
+                                  filtertaxa=args.filtertaxa,
                                   configpath=args.config)
         elif args.whichmethod == 'train':
             vica.train_eval.train(infiles=args.infile,
