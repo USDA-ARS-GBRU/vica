@@ -110,23 +110,27 @@ def _parse_sendsketch(dataraw: str, cutoff: float=100., filtertaxa: bool=False) 
         j, json_len = dec.raw_decode(str(json_str)[pos:])
         pos += json_len
         for key, val in j.items():
-            if key == "Name":
-                name = val
-                query_taxid = name.split("|")[1]
-            elif key not in ["DB", "SketchLen", "Seqs", "Bases", "gSize", "File"]:
+            try:
+                if key == "Name":
+                    name = val
+                    query_taxid = name.split("|")[1]
+                elif key not in ["DB", "SketchLen", "Seqs", "Bases", "gSize", "File"]:
+                    print(val)
+                    score = val["Score"]
+                    taxid = val["TaxID"]
+                    if filtertaxa:
+                        filter_them = _same_clade_as_query(taxid, query_taxid)
+                    else:
+                        filter_them = False
+                    if score > cutoff and filter_them==False:
+                        classid = _taxid_2_taxclass(taxid=taxid,
+                                                    classdict=config["split_shred"]["classes"],
+                                                    taxinstance=ncbi)
+                        datadict[name] = classid
+                        continue
+            except:
                 print(val)
-                score = val["Score"]
-                taxid = val["TaxID"]
-                if filtertaxa:
-                    filter_them = _same_clade_as_query(taxid, query_taxid)
-                else:
-                    filter_them = False
-                if score > cutoff and filter_them==False:
-                    classid = _taxid_2_taxclass(taxid=taxid,
-                                                classdict=config["split_shred"]["classes"],
-                                                taxinstance=ncbi)
-                    datadict[name] = classid
-                    continue
+                logging.info("error parsing %", val)
     return datadict
 
 def minhashremote(infile, outfile, server_url, filtertaxa=False):
