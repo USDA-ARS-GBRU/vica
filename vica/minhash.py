@@ -81,7 +81,7 @@ def _same_clade_as_query(hit, query):
             bool: True if taxid is in hte sam clase as the query, false otherwise
 
     """
-    if hit == query:
+    if str(hit) == str(query):
         return True
     return False
 
@@ -114,6 +114,7 @@ def _parse_sendsketch(dataraw: str, cutoff: float=100., filtertaxa: bool=False) 
                 name = val
                 query_taxid = name.split("|")[1]
             elif key not in ["DB", "SketchLen", "Seqs", "Bases", "gSize", "File"]:
+                print(val)
                 score = val["Score"]
                 taxid = val["TaxID"]
                 if filtertaxa:
