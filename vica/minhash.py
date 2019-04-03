@@ -130,7 +130,7 @@ def _parse_sendsketch(dataraw: str, cutoff: float=100., filtertaxa: bool=False) 
                         continue
             except:
                 print(val)
-                logging.info("error parsing %", val)
+                logging.info("error parsing %s", val)
     return datadict
 
 def minhashremote(infile, outfile, server_url, filtertaxa=False):
