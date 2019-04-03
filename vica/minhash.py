@@ -122,12 +122,13 @@ def _parse_sendsketch(dataraw: str, cutoff: float=100., filtertaxa: bool=False) 
                     else:
                         filter_them = False
                     if score > cutoff and filter_them==False:
-                        classid = _taxid_2_taxclass(taxid=query_taxid,
+                        classid = _taxid_2_taxclass(taxid=taxid,
                                                     classdict=config["split_shred"]["classes"],
                                                     taxinstance=ncbi)
                         datadict[name] = classid
                         continue
             except:
+                print(key)
                 print(val)
                 logging.info("error parsing %s", val)
     return datadict
