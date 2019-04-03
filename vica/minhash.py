@@ -115,7 +115,6 @@ def _parse_sendsketch(dataraw: str, cutoff: float=100., filtertaxa: bool=False) 
                     name = val
                     query_taxid = name.split("|")[1]
                 elif key not in ["DB", "SketchLen", "Seqs", "Bases", "gSize", "File"]:
-                    print(val)
                     score = val["Score"]
                     taxid = val["TaxID"]
                     if filtertaxa:
@@ -123,7 +122,7 @@ def _parse_sendsketch(dataraw: str, cutoff: float=100., filtertaxa: bool=False) 
                     else:
                         filter_them = False
                     if score > cutoff and filter_them==False:
-                        classid = _taxid_2_taxclass(taxid=taxid,
+                        classid = _taxid_2_taxclass(taxid=query_taxid,
                                                     classdict=config["split_shred"]["classes"],
                                                     taxinstance=ncbi)
                         datadict[name] = classid
