@@ -114,7 +114,7 @@ def _parse_sendsketch(dataraw: str, cutoff: float=100., filtertaxa: bool=False) 
                 if key == "Name":
                     name = val
                     query_taxid = name.split("|")[1]
-                elif key not in ["DB", "SketchLen", "Seqs", "Bases", "gSize", "File"]:
+                elif key not in ["DB", "SketchLen", "Seqs", "Bases", "gSize", "file"]:
                     score = val["Score"]
                     taxid = val["TaxID"]
                     if filtertaxa:
@@ -128,9 +128,7 @@ def _parse_sendsketch(dataraw: str, cutoff: float=100., filtertaxa: bool=False) 
                         datadict[name] = classid
                         continue
             except:
-                print(key)
-                print(val)
-                logging.info("error parsing %s", val)
+                logging.info("error parsing minhash sample, continuing")
     return datadict
 
 def minhashremote(infile, outfile, server_url, filtertaxa=False):
