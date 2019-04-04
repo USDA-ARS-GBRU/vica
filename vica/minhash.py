@@ -106,7 +106,7 @@ def _parse_sendsketch(dataraw: str, cutoff: float=100., filtertaxa: bool=False) 
     dec = json.JSONDecoder()
     pos = 0
     datadict = {}
-    ncbi = NCBITaxa()
+    ncbi = NCBITaxa(dbfile=config["minhash"]["dbfile"])
     while not pos == len(str(json_str)):
         j, json_len = dec.raw_decode(str(json_str)[pos:])
         pos += json_len

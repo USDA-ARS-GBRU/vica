@@ -76,7 +76,7 @@ def join(kmerfile, codonfile, dtemp):
 
 
 def create_class2labels(classdict):
-    ncbi = ete3.NCBITaxa()
+    ncbi = ete3.NCBITaxa(dbfile=config["minhash"]["dbfile"])
     class2labels = {}
     for i, val in enumerate(classdict.keys()):
         taxa = ncbi.get_taxid_translator([val])
@@ -120,7 +120,7 @@ def _data_to_tfrecords(kmerfile, codonfile, minhashfile, mergefile, hmmerfile, t
     kend = config['train_eval']['kmerlength'] + 1
     cend = kend + config['train_eval']['codonlength']
     class2labels = create_class2labels(config["split_shred"]["classes"])
-    ncbi = ete3.NCBITaxa()
+    ncbi = ete3.NCBITaxa(dbfile=config["minhash"]["dbfile"])
     with open(hmmerfile, 'r') as hmmerdata:
         hmmerdatadict = json.load(hmmerdata)
     with open(minhashfile, 'r') as minhashdata:
