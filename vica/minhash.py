@@ -59,16 +59,17 @@ def _taxid_2_taxclass(taxid, classdict, taxinstance):
         Returns:
             int: the class of the taxid
     """
-    try:
-        lineage = taxinstance.get_lineage(taxid)
-        classtaxid = list(set(classdict.keys()).intersection(lineage))
-        if not len(classtaxid) == 1:
-            logging.info("Could not assign taxid %s to a higher taxonomic level", taxid)
-            return None
-        return classtaxid[0]
-    except Exception:
-        logging.info("could not assign %s to a class", taxid)
+    #try:
+    lineage = taxinstance.get_lineage(taxid)
+    classtaxid = list(set(classdict.keys()).intersection(lineage))
+    if not len(classtaxid) == 1:
+        logging.info("Could not assign taxid %s to a higher taxonomic level", taxid)
         return None
+    return classtaxid[0]
+    #except Exception:
+    #    logging.info("could not assign %s to a class, classtaxid is %s" % (taxid, classtaxid))
+    #    return None
+
 
 
 def _same_clade_as_query(hit, query):
