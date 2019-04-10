@@ -170,10 +170,12 @@ def train_and_eval(train_files, eval_files, modeldir, configpath=vica.CONFIG_PAT
         batch= config["train_eval"]["eval_batch_size"],
         epochs=1,
         filenames=eval_files)
-    #def my_auc(labels, predictions):
-    #    return {'auc': tf.metrics.auc(labels, predictions['probabilities'], curve="PR")}
+    def my_metrics(labels, predictions):
+        virus_precision = tf.metrics.precision_at_k(labels, predictions['probabilities'], 1, class_id=3)
+        virus_recall = tf.metrics.recall_at_k(labels, predictions['probabilities'], 1, class_id=3)
+        return {'virus_precision': virus_precision, 'virus_recall':  virus_recall}
     my_estimator = create_estimator(modeldir=modeldir, n_classes=n_classes)
-    #my_estimator = tf.estimator.add_metrics(my_estimator, my_auc)
+    my_estimator = tf.estimator.add_metrics(my_estimator, my_metrics)
     train_spec = tf.estimator.TrainSpec(input_fn=train_input_fn)
     eval_spec = tf.estimator.EvalSpec(input_fn=eval_input_fn,
                                       start_delay_secs = 60,
