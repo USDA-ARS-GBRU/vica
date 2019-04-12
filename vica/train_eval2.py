@@ -171,9 +171,16 @@ def train_and_eval(train_files, eval_files, modeldir, configpath=vica.CONFIG_PAT
         epochs=1,
         filenames=eval_files)
     def my_metrics(labels, predictions):
-        virus_precision = tf.metrics.precision_at_k(labels, predictions['probabilities'], 1, class_id=3)
-        virus_recall = tf.metrics.recall_at_k(labels, predictions['probabilities'], 1, class_id=3)
-        return {'virus_precision': virus_precision, 'virus_recall':  virus_recall}
+        metrics = {'pr_virus' : tf.metrics.precision_at_k(labels, predictions['probabilities'], 1, class_id=3),
+        'rc_virus': tf.metrics.recall_at_k(labels, predictions['probabilities'], 1, class_id=3),
+        'pr_0' : tf.metrics.precision_at_k(labels, predictions['probabilities'], 1, class_id=0),
+        'rc_0' : tf.metrics.recall_at_k(labels, predictions['probabilities'], 1, class_id=0),
+        'pr_1' : tf.metrics.precision_at_k(labels, predictions['probabilities'], 1, class_id=1),
+        'rc_1' : tf.metrics.recall_at_k(labels, predictions['probabilities'], 1, class_id=1),
+        'pr_2' : tf.metrics.precision_at_k(labels, predictions['probabilities'], 1, class_id=2),
+        'rc_2' : tf.metrics.recall_at_k(labels, predictions['probabilities'], 1, class_id=2)
+        }
+        return metrics
     my_estimator = create_estimator(modeldir=modeldir, n_classes=n_classes)
     my_estimator = tf.estimator.add_metrics(my_estimator, my_metrics)
     train_spec = tf.estimator.TrainSpec(input_fn=train_input_fn)
