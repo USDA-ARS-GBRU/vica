@@ -20,10 +20,10 @@ train_eval:
   codonlength: 178
   minhashlength: 280
   kmerlength: 136
-  train_batch_size: 1024
+  train_batch_size: 512
   eval_batch_size: 512
   epochs: 30
-  train_shuffle_buffer: 500000
+  train_shuffle_buffer: 100000
   # models [DNNLogistic, DNN]
   model: "DNNLogistic"
 khmer_features:

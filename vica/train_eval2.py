@@ -173,12 +173,12 @@ def train_and_eval(train_files, eval_files, modeldir, configpath=vica.CONFIG_PAT
     def my_metrics(labels, predictions):
         metrics = {'pr_virus' : tf.metrics.precision_at_k(labels, predictions['probabilities'], 1, class_id=3),
         'rc_virus': tf.metrics.recall_at_k(labels, predictions['probabilities'], 1, class_id=3),
-        'pr_0' : tf.metrics.precision_at_k(labels, predictions['probabilities'], 1, class_id=0),
-        'rc_0' : tf.metrics.recall_at_k(labels, predictions['probabilities'], 1, class_id=0),
-        'pr_1' : tf.metrics.precision_at_k(labels, predictions['probabilities'], 1, class_id=1),
-        'rc_1' : tf.metrics.recall_at_k(labels, predictions['probabilities'], 1, class_id=1),
-        'pr_2' : tf.metrics.precision_at_k(labels, predictions['probabilities'], 1, class_id=2),
-        'rc_2' : tf.metrics.recall_at_k(labels, predictions['probabilities'], 1, class_id=2)
+        'pr_bacteria' : tf.metrics.precision_at_k(labels, predictions['probabilities'], 1, class_id=0),
+        'rc_bacteria' : tf.metrics.recall_at_k(labels, predictions['probabilities'], 1, class_id=0),
+        'pr_archaea' : tf.metrics.precision_at_k(labels, predictions['probabilities'], 1, class_id=1),
+        'rc_archaea' : tf.metrics.recall_at_k(labels, predictions['probabilities'], 1, class_id=1),
+        'pr_eukaryota' : tf.metrics.precision_at_k(labels, predictions['probabilities'], 1, class_id=2),
+        'rc_eukaryota' : tf.metrics.recall_at_k(labels, predictions['probabilities'], 1, class_id=2)
         }
         return metrics
     my_estimator = create_estimator(modeldir=modeldir, n_classes=n_classes)
