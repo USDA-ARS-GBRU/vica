@@ -92,7 +92,7 @@ def shuffle(mergefile, dtemp):
     shufflefile = os.path.join(dtemp, "shuffle.csv")
 
     try:
-        options = ['shuf', '-o', shufflefile, shufflefile]
+        options = ['shuf', '-o', shufflefile, mergefile]
         subprocess.run(options,  check=True)
         return shufflefile
     except RuntimeError:
