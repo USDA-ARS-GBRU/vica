@@ -19,8 +19,8 @@ get_features:
 classifier: null
 train_eval:
   codonlength: 178
-  minhashlength: 280
-  kmerlength: 136
+  minhashlength: 4
+  kmerlength: 255
   train_batch_size: 512
   eval_batch_size: 512
   epochs: 30
