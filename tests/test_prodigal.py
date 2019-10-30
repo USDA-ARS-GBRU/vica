@@ -4,6 +4,7 @@ import filecmp
 import csv
 import shutil
 
+import numpy as np
 import nose
 import yaml
 from Bio import SeqIO
@@ -17,24 +18,12 @@ with open(vica.CONFIG_PATH) as cf:
 codon_list = config["prodigal"]["codon_list"]
 
 
-def test_clr():
-    composition =[1, 4, 7, 9, 10, 0, 1]
-    result = [0.27108151858446849, 1.084326074337874, 1.8975706300912796,
-              2.4397336672602168, 2.7108151858446852, 0.0, 0.27108151858446849]
-    for i, val in enumerate(result):
-        nose.tools.assert_almost_equal(vica.prodigal.clr(composition)[i], val)
-
-def test_ilr():
-    composition =[1, 4, 7, 9, 10, 0, 1]
-    result = [-0.57505074013627433, -0.99601709884611478, -1.1738174079530661,
-              -1.1516977356976139, 1.5342671140651829, 1.0457196607598642]
-    for i, val in enumerate(result):
-        nose.tools.assert_almost_equal(vica.prodigal.ilr(composition)[i], val)
 def test_call_genes():
     td = tempfile.mkdtemp()
     outfile1 = os.path.join(td,"genes.fasta")
+    trans = os.path.join(td, "translations.faa")
     vica.prodigal._call_genes(infile="tests/test-data/2testseqs.fasta",
-                         outfile=outfile1)
+                         outfile=outfile1, translations=trans)
     nose.tools.ok_(filecmp.cmp("tests/test-data/calledgenes.fasta", outfile1, shallow=False))
     shutil.rmtree(td)
 
@@ -55,7 +44,7 @@ def test_codon_to_dict():
     r2 = vica.prodigal._codon_to_dict(genestring, 2)
     nose.tools.eq_(r0, d0)
     nose.tools.eq_(r1, d1)
-    nose.tools.eq_(r2, d2, msg="{} did not mactch expected value of {}".format(r2, d2))
+    nose.tools.eq_(r2, d2, msg="{} did not match expected value of {}".format(r2, d2))
 
 
 def _parse_prodigal_id_from_biopython():
@@ -67,17 +56,25 @@ def almost_equal(value_1, value_2, accuracy = 10**-8):
     '''a Function to compare tuples of float values'''
     return abs(value_1 - value_2) < accuracy
 
-def test_count_dict_to_clr_array():
-    d0 = {'CGT': 1, 'GAT': 1, 'ATC': 2, 'ACT': 1, 'ACG': 2, 'GAC': 2, 'GTC': 1,
-          'CGC': 1, 'CCA': 1, 'TAG': 1}
-    expected = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.81225239635623547, 0.0, 0.0, 0.0, 0.0, 0.81225239635623547, 0.0, 0.0, 0.0, 0.81225239635623547, 0.0, 0.81225239635623547, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.81225239635623547, 0.0, 0.0, 1.6245047927124709, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.6245047927124709, 0.0, 0.0, 0.0, 0.0, 0.81225239635623547, 0.0, 0.81225239635623547, 0.0, 1.6245047927124709, 0.0, 0.0, 0.0, 0.0, 0.0]
-    result = vica.prodigal.count_dict_to_clr_array(d0, codon_list)
-    nose.tools.ok_(all(almost_equal(*values) for values in zip(expected, result)))
-
 def test_count_dict_to_ilr_array():
     d0 = {'CGT': 1, 'GAT': 1, 'ATC': 2, 'ACT': 1, 'ACG': 2, 'GAC': 2, 'GTC': 1,
           'CGC': 1, 'CCA': 1, 'TAG': 1}
-    expected = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.78471036590622656, 0.052430666733412762, 0.049250035659379708, 0.046433378917902231, 0.043921579351258642, -0.75001803758170915, 0.079267717285667116, 0.075578802966779754, 0.072218046827921739, -0.72600691487382352, 0.099480195671282773, -0.70090152321249855, 0.12262596457641053, 0.11816533618132451, 0.11401788429298802, 0.11015174113954165, 0.10653922134156935, 0.10315615749345099, 0.09998135851902494, -0.70322219713140899, 0.11773010326165942, 0.11441309478231763, -1.4911237639366819, 0.15163392649017504, 0.14769470968813433, 0.14395499611465096, 0.14040000307035622, 0.13701637323833493, 0.13379200691796261, 0.13071591741042154, 0.12777810591205632, -1.4817806559659221, 0.15721923036048868, 0.15390898109601467, 0.15073525918484715, 0.14768978849961878, -0.65948476591381477, 0.15772634569942362, -0.64983138856456379, 0.16701245952274074, -1.4457210713825195, 0.19026503939080927, 0.18689725044635552, 0.1836466155121933, 0.18050712578909411, 0.17747317650455946]
+    expected = np.array([-8.82897217e-16, -2.70205994e-17,  4.36278823e-16, -2.60685790e-15,
+        1.36645246e-15,  7.79053701e-16, -4.46755806e-15, -2.72346331e-15,
+        1.42899667e-15, -6.07576770e-16,  3.48032867e-15, -4.90782530e-15,
+       -8.82516983e-15, -5.41953679e+00,  3.62108033e-01,  3.40141269e-01,
+        3.20688264e-01,  3.03340730e-01, -5.17993711e+00,  5.47455887e-01,
+        5.21978708e-01,  4.98767926e-01, -5.01410629e+00,  6.87051686e-01,
+       -4.84071799e+00,  8.46906011e-01,  8.16099053e-01,  7.87455022e-01,
+        7.60753826e-01,  7.35804259e-01,  7.12439410e-01,  6.90512925e-01,
+       -4.85674553e+00,  8.13093153e-01,  7.90184510e-01, -5.44861146e+00,
+        9.16125926e-01,  8.92326380e-01,  8.69732171e-01,  8.48253988e-01,
+        8.27811128e-01,  8.08330491e-01,  7.89745696e-01,  7.71996335e-01,
+       -5.47898717e+00,  8.74342355e-01,  8.55933085e-01,  8.38283085e-01,
+        8.21346327e-01, -4.74940324e+00,  8.98378702e-01, -4.67531415e+00,
+        9.69651246e-01, -5.29348079e+00,  1.04827636e+00,  1.02972133e+00,
+        1.01181176e+00,  9.94514562e-01,  9.77798841e-01])
+
     result = vica.prodigal.count_dict_to_ilr_array(d0, codon_list)
     nose.tools.ok_(all(almost_equal(*values) for values in zip(expected, result)))
 
@@ -156,7 +153,8 @@ def test_contigs_to_feature_file():
     infile = "tests/test-data/2testseqs.fasta"
     dt = tempfile.mkdtemp()
     outfile = os.path.join(dt, "codons.csv")
+    trans = os.path.join(dt, "translations.faa")
     expected =  'tests/test-data/codons.csv'
-    vica.prodigal.contigs_to_feature_file(infile=infile, outfile=outfile, dtemp=dt, codon_list=codon_list)
-    # nose.tools.ok_(filecmp.cmp(expected, outfile, shallow=False))
+    vica.prodigal.contigs_to_feature_file(infile=infile, outfile=outfile, translations=trans, dtemp=dt, codon_list=codon_list)
+    nose.tools.ok_(filecmp.cmp(expected, outfile, shallow=False))
     shutil.rmtree(dt)

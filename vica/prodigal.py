@@ -7,38 +7,11 @@ import subprocess
 import os
 import logging
 import csv
-import yaml
 
 import numpy as np
-# import scipy.linalg
-import scipy.stats
 from Bio import SeqIO
-# from skbio.stats.composition import ilr
+import skbio.stats.composition
 from collections import defaultdict
-
-
-def clr(composition):
-    """Calculates a centered log-ratio transformation from a list of values.
-
-    Args:
-        composition (list): a list of integers of floats containing the
-            compositional data
-
-    Returns:
-        a list with the centered log-ratio transformed values
-
-    References:
-        Aitchison, J. (John), 2003. The statistical analysis of
-        compositional data. Blackburn Press.
-
-    """
-    with np.errstate(divide='ignore', invalid='ignore'):
-        a = np.array(composition, dtype=np.float32)
-        am =np.ma.masked_equal(a, 0)
-        gm = scipy.stats.mstats.gmean(am)
-        clrm = np.log(am/gm)
-        clrarray = np.ma.getdata(clrm)
-    return list(clrarray)
 
 
 def _call_genes(infile, outfile, translations):
@@ -108,7 +81,7 @@ def _codon_to_dict(genestring, offset):
             selected reading frame
 
     """
-    assert offset in [0,1,2], "Offset must be 0, 1, or 2"
+    assert offset in [0, 1, 2], "Offset must be 0, 1, or 2"
     framen = _gene_to_codon(genestring[offset:])
     cdict = {}
     for codon in framen:
@@ -132,11 +105,12 @@ def _parse_prodigal_id_from_biopython(idval):
     """
     return '_'.join(str(idval).split('_')[:-1])
 
-def count_dict_to_clr_array(count_dict, codon_list):
-    """ Converts a count dictionary to a CLR list
+def count_dict_to_ilr_array(count_dict, codon_list):
+    """ Converts a count dictionary to a ILR list
 
     Takes a dictionary of counts where the key is the upper case codon,
-    orders them by codon, and performs a centered log-ratio transformation
+    orders them by codon, and performs a multiplicative repalcement then an
+    isometric log-ratio transformation using the J.J.Egozcue orthonormal basis
     returning a list.
 
     Args:
@@ -155,33 +129,9 @@ def count_dict_to_clr_array(count_dict, codon_list):
             output_list.append(count_dict[i])
         else:
             output_list.append(0)
-    return clr(output_list)
-
-def count_dict_to_clr_array(count_dict, codon_list):
-    """ Converts a count dictionary to a CLR list
-
-    Takes a dictionary of counts where the key is the upper case codon,
-    orders them by codon, and performs a centered log-ratio transformation
-    returning a list.
-
-    Args:
-        count_dict (dict): a dictionary where codon is the key and the
-            value is the count
-        codon_list (list): A lexicographically sorted list of codons
-
-    Returns:
-        (list):  A vector of centered log-ratio transformed values in
-            ordered by the lexicographically sorted codons they correspond to.
-            The length is len(codon_list).
-
-    """
-    output_list = []
-    for i in codon_list:
-        if i in count_dict:
-            output_list.append(count_dict[i])
-        else:
-            output_list.append(0)
-    return clr(output_list)
+    codonlist_z = skbio.stats.composition.multiplicative_replacement(output_list)
+    codon_ilr = skbio.stats.composition.ilr(codonlist_z)
+    return codon_ilr
 
 def dsum(*dicts):
     """Add up values in multiple dicts returning their sum.
@@ -248,9 +198,9 @@ def count_codons(seqio_iterator, csv_writer_instance, codon_list):
         Args:
 
         """
-        l0 = count_dict_to_clr_array(codon_dict[0], codon_list)
-        l1 = count_dict_to_clr_array(codon_dict[1], codon_list)
-        l2 = count_dict_to_clr_array(codon_dict[2], codon_list)
+        l0 = count_dict_to_ilr_array(codon_dict[0], codon_list)
+        l1 = count_dict_to_ilr_array(codon_dict[1], codon_list)
+        l2 = count_dict_to_ilr_array(codon_dict[2], codon_list)
         id_and_data = [idval]
         id_and_data.extend(list(np.concatenate((l0, l1, l2))))
         csv_writer_instance.writerow(id_and_data)
@@ -261,7 +211,7 @@ def count_codons(seqio_iterator, csv_writer_instance, codon_list):
     for record in seqio_iterator:
         base_id = _parse_prodigal_id_from_biopython(record.id)
         if base_id == last_base_id:
-                codon_dict = count_codon_in_gene(record=record, cdict=codon_dict)
+            codon_dict = count_codon_in_gene(record=record, cdict=codon_dict)
         elif base_id is not last_base_id:
             if codon_dict != {}:
                 record_line(idval=last_base_id, codon_dict=codon_dict, csv_writer_instance=csv_writer_instance)

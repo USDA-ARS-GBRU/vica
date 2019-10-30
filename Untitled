@@ -1,0 +1,17 @@
+#!/bin/bash
+
+#SBATCH --job-name=100kfeat
+#SBATCH --output=100kfeat_%A_%a.out
+#SBATCH --error=100kfeat_%A_%a.err
+#SBATCH --array=1-11
+#SBATCH --time=12:00:00
+#SBATCH --partition=gbru-mem768
+#SBATCH -n 4
+
+
+export PATH=$PATH:~/bbmap
+source activate /project/gbru/gbru_ars_rqc/vicaenvnogpu
+FILES=(100kfastas/*)
+FILE=${FILES[$SLURM_TASK_ARRAY_ID]}
+
+vica get_features -i $FILE -o $FILE.tfrecord

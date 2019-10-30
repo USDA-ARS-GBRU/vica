@@ -141,7 +141,7 @@ def minhashremote(infile, outfile, server_url, filtertaxa=False):
     a file.
 
     Args:
-        infile (str): A multi-sequence fasta file for which to calulate
+        infile (str): A multi-sequence fasta file for which to calculate
             minhash taxonomy.
         outfile (str): a path to write the file retuned from the minhash
             server

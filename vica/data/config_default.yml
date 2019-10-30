@@ -6,7 +6,8 @@ split_shred:
 minhash:
   # location of remote server to send minhash sketches to
   server_url: "https://refseq-sketch.jgi-psf.org/sketch"
-  dbfile: "/project/gbru/gbru_ars_rqc/.etetoolkit/taxa.sqlite"
+  dbfile: null
+  #dbfile: "/project/gbru/gbru_ars_rqc/.etetoolkit/taxa.sqlite"
   # NCBI taxonomy ids and labels for high level classes
   taxfilterlevel: ["genus", "subgenus", "species group", "species subgroup", "species", "subspecies", "varietas", "forma"]
 
