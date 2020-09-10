@@ -477,6 +477,8 @@ class Split:
                                         handle=outfile)
                         except KeyError:
                             logging.info('leaf.name '+leaf.name+' is not in self.profile')
+                        except AttributeError:
+                            logging.info('leaf.name '+leaf.name+' does not have samples allocated to it. This is normal for leaves")
 
     def write_sequence_data(self, directory, overwrite=False, seq_length=5000, shuffle=True):
         """Write the training and test data to a directory optionally shuffle it
