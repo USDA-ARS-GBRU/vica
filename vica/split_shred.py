@@ -75,7 +75,7 @@ class Split:
         logging.info("loading pyfaidx index, or creating index if not present")
         self.pyfaidx_obj = pyfaidx.Fasta(fasta_file, read_ahead=100)
         logging.info("Loading ete3 NCBI taxonomy data object")
-        self.tax_instance = ncbi = NCBITaxa(dbfile=config["minhash"]["dbfile"])
+        self.tax_instance = ete3.NCBITaxa(dbfile=config["minhash"]["dbfile"])
         self.pruned_tree = None
         logging.info("Profiling sequences taxonomically")
         self.profile = self.set_profile(fasta_file)
