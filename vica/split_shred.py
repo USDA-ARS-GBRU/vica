@@ -1,4 +1,4 @@
-"""A module to process genomic training and test data formatted
+QW2 A3  3 E4RL]H """A module to process genomic training and test data formatted
     by BBtools.
 
     The module contains functions to split data into testing and training
@@ -478,7 +478,7 @@ class Split:
                         except KeyError:
                             logging.info('leaf.name '+leaf.name+' is not in self.profile')
                         except AttributeError:
-                            logging.info('leaf.name '+leaf.name+' does not have samples allocated to it. This is normal for leaves")
+                            logging.info('leaf.name '+leaf.name+' does not have samples allocated to it. This is normal for leaves')
 
     def write_sequence_data(self, directory, overwrite=False, seq_length=5000, shuffle=True):
         """Write the training and test data to a directory optionally shuffle it
